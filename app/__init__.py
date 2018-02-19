@@ -4,7 +4,7 @@
 from flask import Flask, render_template
 from flask_bootstrap import Bootstrap
 # Import SQLAlchemy
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 #import login manager 
 from flask_login import LoginManager, current_user, login_required
 
