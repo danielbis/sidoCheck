@@ -5,8 +5,16 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 
 #Author: DANIEL BIS
-#define user model
 
+"""
+User to Employee = One to One 
+User to Shop = One to One
+Shop to User = Many to One 
+Shop to Employe = One to Many
+
+"""
+
+#define user model
 class User(UserMixin, db.Model):
 
     __tablename__ = "Users"
@@ -23,7 +31,7 @@ class User(UserMixin, db.Model):
 
 
     shops = relationship("Shop", backref="Users")
-    employee = relationship("Employee", backref="Users")
+    employee = relationship("Employee", backref = "Users")
 
     #relationships (will be defined later)
     #Appointments = relationship("Appointment", backref = "Users")
@@ -46,7 +54,6 @@ class Shop(db.Model):
     shopname = db.Column(db.String(80), nullable=False)
     location = db.Column(db.String(80), nullable=False)
     img_path = db.Column(db.String(120), nullable=True)
-    employees = relationship("Employee", backref="Shops")
     #Enable backpropagation between Shops and their working hours
     schedules = relationship("Schedule", backref="Shops")
 
@@ -67,7 +74,6 @@ class Employee(db.Model):
 
     employeeId = db.Column(db.Integer, primary_key = True)
     userId = db.Column(db.Integer, ForeignKey("Users.id"))
-    shopId = db.Column(db.Integer, ForeignKey("Shops.shopId"))
     first_name = db.Column(db.String(128), nullable = False)
     last_name = db.Column(db.String(128), nullable = False)
     manager = db.Column(db.Integer, unique = False, default = 0) #default to false

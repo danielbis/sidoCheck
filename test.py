@@ -1,5 +1,9 @@
 #Authors: Daniel Bis and Abraham D’mitri Joseph
 
+########################################################################################
+########  "premature optimization is root cause of all evil" - Donald Knuth ###########
+########################################################################################
+
 from app import app, db
 from app.mod_auth.models import User, Shop, Employee
 from flask import abort, url_for
@@ -19,20 +23,14 @@ class TestBase(unittest.TestCase):
         self.app = app.test_client()
         db.drop_all()
         db.create_all()
-
-        print("creating")
-        user1 = User("testuser", "testuserlast", "testuser@gmail.com", "testuserpass")
-        user2 = User("shop1", "shop1", "8506667676", "shop1@gmail.com", "shop1pass")
-
-        #print("appended")
-        db.session.add(user1)
-        db.session.add(user2)
-        db.session.commit()
+        
         return app
 
     # executed after each test
     def tearDown(self):
-        pass
+        db.session.close()
+        db.drop_all()
+
 
     ###############
     #### tests ####
@@ -67,17 +65,80 @@ class TestBase(unittest.TestCase):
             follow_redirects=True
         )  
 
-    def test_valid_user_registration(self):
+    """def test_valid_user_registration(self):
         response = self.register('test', 'User1','testUser1@gmail.com','FlaskSucks')
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'<h1>New user has been created!</h1>', response.data)
+        self.assertIn(b'<h1>New user has been created!</h1>', response.data)"""
 
 
     def test_user_model(self):
+        user1 = User("testuser", "testuserlast", "testuser@gmail.com", "testuserpass")
+        user2 = User("shop1", "shop1", "8506667676", "shop1@gmail.com", "shop1pass")
+        db.session.add(user1)
+        db.session.add(user2)
+        db.session.commit()
         self.assertEqual(User.query.count(), 2)
 
-    """def test_shop_model(self):
-        self.assertEqual(Shop.query.count(), 1)"""
+    def test_shop_model(self):
+        user1 = User("testuser", "testuserlast", "testuser@gmail.com", "testuserpass")
+        user2 = User("shop1", "shop1", "8506667676", "shop1@gmail.com", "shop1pass")
+        new_shop = Shop("shop1", 'location')
+        user2.shops.append(new_shop)
+
+        #print("appended")
+        db.session.add(user1)
+        db.session.add(user2)
+        db.session.commit()
+        self.assertEqual(Shop.query.count(), 1)
+
+    def test_employee_manager_model(self):
+        user1 = User("shop1", "shop1", "8506667676", "shop1@gmail.com", "shop1pass")
+        new_shop = Shop("shop1", 'location')
+        user1.shops.append(new_shop)
+        db.session.add(user1)
+        db.session.commit()
+
+        user2 = User("testuser", "testuserlast", "testuser@gmail.com", "testuserpass")
+        new_employee = Employee("testuser", "testuserlast", 1) #manager
+
+        employer = Shop.query.filter_by(shopname= "shop1").first()
+        user2.employee.append(new_employee);
+        #adding employee to the list of workers in the shop
+        user2.shops.append(employer)
+
+        db.session.add(user2)
+        db.session.commit()
+        empls = Employee.query.all()
+        for e in empls:
+            print(e.first_name, " ", e.last_name)
+        self.assertEqual(Employee.query.count(), 1)
+
+    def test_employee_model(self):
+        user1 = User("shop1", "shop1", "8506667676", "shop1@gmail.com", "shop1pass")
+        new_shop = Shop("shop1", 'location')
+        user1.shops.append(new_shop)
+        db.session.add(user1)
+        db.session.commit()
+
+        user2 = User("testuser", "testuserlast", "testuser@gmail.com", "testuserpass")
+        new_employee = Employee("testuser", "testuserlast", 0) #not a manager 
+
+        employer = Shop.query.filter_by(shopname= "shop1").first()
+        if new_employee.manager:
+            user2.shops.append(employer)
+        
+        user2.employee.append(new_employee);
+        #adding employee to the list of workers in the shop
+
+        db.session.add(user2)
+        db.session.commit()
+        empls = Employee.query.all()
+        shops_employee_2 = User.query.filter_by(email="testuser@gmail.com").first().shops
+        self.assertEqual(len(shops_employee_2), 0)
+
+
+
+
 
 
 if __name__ == "__main__":
