@@ -20,7 +20,7 @@ class TestBase(unittest.TestCase):
         app.config['CSRF_ENABLED'] = False
         app.config['WTF_CSRF_ENABLED'] = False
         app.config['DEBUG'] = False
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/mydb'
+        app.config['SQLALCHEMY_DATABASE_URI'] = os.environ["SIDOCHECK_TEST_DB"]
         self.app = app.test_client()
         db.drop_all()
         db.create_all()
