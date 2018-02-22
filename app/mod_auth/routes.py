@@ -15,6 +15,7 @@ from app import db, login_manager
 from app import app
 #Import module models containing User
 from app.mod_auth.models import User, Shop, Employee
+from app.mod_customer.routes import dashboardcustomer
 
 #Define the blueprint: 'auth', sets its url prefix: app.url/auth
 mod = Blueprint('mod_auth', __name__, url_prefix = "/auth")
@@ -33,9 +34,9 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
             if check_password_hash(user.password, form.password.data):
-                login_user(user, remember=form.remember.data)
+                login_user(user)
                 if len(user.employee) == 0: #check if customer or provider
-                    return redirect(url_for('dashboardcustomer'))
+                    return redirect(url_for('mod_customer.dashboardcustomer'))
                 else:
                     return redirect(url_for('dashboardprovider'))
 
@@ -86,7 +87,7 @@ def signup_shop():
             db.session.rollback()
             return '<h1>This email address is already taken.</h1>'
         
-        return render_template('auth/login.html', form = RegisterFormEmployee())
+        return render_template('auth/login.html', form = LoginForm())
         #return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
 
     return render_template('auth/signup_shop.html', form=form)

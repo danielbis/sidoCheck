@@ -7,7 +7,7 @@
 from app import app, db
 from app.mod_auth.models import User, Shop, Employee
 from flask import abort, url_for
-
+from urllib.parse import urlparse
 import os
 import unittest
 import tempfile
@@ -18,6 +18,7 @@ class TestBase(unittest.TestCase):
     def setUp(self):
         app.config['TESTING'] = True
         app.config['CSRF_ENABLED'] = False
+        app.config['WTF_CSRF_ENABLED'] = False
         app.config['DEBUG'] = False
         app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/mydb'
         self.app = app.test_client()
@@ -53,6 +54,9 @@ class TestBase(unittest.TestCase):
         )
 
     def login(self, email, password):
+        user1 = User("testuser", "testuserlast", "testuser@gmail.com", "testuserpass")
+        db.session.add(user1)
+        db.session.commit()
         return self.app.post(
             'auth/login',
             data=dict(email=email, password=password),
@@ -65,10 +69,17 @@ class TestBase(unittest.TestCase):
             follow_redirects=True
         )  
 
-    """def test_valid_user_registration(self):
+    def test_valid_user_registration(self):
         response = self.register('test', 'User1','testUser1@gmail.com','FlaskSucks')
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'<h1>New user has been created!</h1>', response.data)"""
+        self.assertIn(b'<h1>New user has been created!</h1>', response.data)
+
+    def test_login(self):
+        expectedPath = "localhost:8080/dashboardcustomer"
+        response = self.login("testuser@gmail.com", "testuserpass")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn (b'<title>Dashboard Customer</title>', response.data)
+
 
 
     def test_user_model(self):

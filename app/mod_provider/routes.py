@@ -41,3 +41,4 @@ def add_schedule():
 		return '<h1>New schedule added! </h1>'
 	print("form not validated")
 	return render_template('provider/add_schedule.html', form = form)
+
