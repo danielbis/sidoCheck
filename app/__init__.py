@@ -23,13 +23,13 @@ db = SQLAlchemy(app)
 # Define the database object which is imported
 # by modules and controllers
 
-
+ 
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 # Import a module / component using its blueprint handler variable (mod_auth)
-from app.mod_auth.routes import mod 
+from app.mod_auth.routes import mod
 from app.mod_provider.routes import provider_mod
 from app.mod_customer.routes import customer_mod
 

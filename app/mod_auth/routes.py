@@ -14,7 +14,7 @@ from app import db, login_manager
 
 from app import app
 #Import module models containing User
-from app.mod_auth.models import User, Shop, Employee
+from app.mod_auth.models import User, Shop
 from app.mod_customer.routes import dashboardcustomer
 
 #Define the blueprint: 'auth', sets its url prefix: app.url/auth
@@ -35,7 +35,7 @@ def login():
         if user:
             if check_password_hash(user.password, form.password.data):
                 login_user(user)
-                if len(user.employee) == 0: #check if customer or provider
+                if len(user.role) == "user": #check if customer or provider
                     return redirect(url_for('mod_customer.dashboardcustomer'))
                 else:
                     return redirect(url_for('dashboardprovider'))
@@ -52,7 +52,7 @@ def signup():
     if form.validate_on_submit():
         hashed_password = generate_password_hash(form.password.data, method='sha256')
         try:
-            new_user = User(firstname=form.firstname.data, lastname = form.lastname.data, email=form.email.data, password=hashed_password)
+            new_user = User(firstname=form.firstname.data, lastname = form.lastname.data, email=form.email.data, password=hashed_password, role = "customer")
             #check if email is taken
             #user = User.query.filter_by(email=form.email.data).first()
             db.session.add(new_user)
@@ -78,10 +78,12 @@ def signup_shop():
     if form.validate_on_submit():
         hashed_password = generate_password_hash(form.password.data, method='sha256')
         try:
-            new_user = User(firstname=form.shopname.data, lastname = form.shopname.data, phonenumber = form.phonenumber.data, email=form.email.data, password=hashed_password)
+            new_user = User(firstname=form.shopname.data, lastname = form.shopname.data, phonenumber = form.phonenumber.data, email=form.email.data, password=hashed_password, role = "shop")
             new_shop = Shop(shopname=form.shopname.data, location = form.address.data)
-            new_user.shops.append(new_shop)
-            db.session.add(new_user)
+            #db.session.add(new_shop)
+            db.session.add(new_shop)
+            new_shop.users.append(new_user)
+
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
@@ -92,6 +94,9 @@ def signup_shop():
 
     return render_template('auth/signup_shop.html', form=form)
 
+#write a function that not only ensures that login is required
+#but also checks if employee and if manager
+#@login_required 
 @mod.route('/signupemployee', methods=['GET', 'POST'])
 def signup_employee():
     form = RegisterFormEmployee()
@@ -99,20 +104,20 @@ def signup_employee():
     if form.validate_on_submit():
         hashed_password = generate_password_hash(form.password.data, method='sha256')
         
-        try:
-            new_user = User(firstname=form.firstname.data, lastname = form.lastname.data, email=form.email.data, phonenumber = form.phonenumber.data, password=hashed_password)
+        try:            
             managerCheck = 0
             if form.manager.data:
                 managerCheck = 1
-            new_employee = Employee(firstname=form.firstname.data, lastname = form.lastname.data, manager = managerCheck)
+            new_user = User(firstname=form.firstname.data, lastname = form.lastname.data, email=form.email.data, phonenumber = form.phonenumber.data, password=hashed_password, role="employee", manager = managerCheck)
+
             #quering for shop where the current user is a manager
-            employer = Shop.query.filter_by(userId = current_user.id).first()
-            #making user an employee
-            new_user.employee.append(new_employee);
-            #if new employee is a manager, append a shop to him for future references
-            if form.manager.data:
-                new_user.shops.append(employer)
+            temp_user = User.query.filter_by(id = current_user.id).first()
+            employer_id = temp_user.shopId
+            employer = Shop.query.filter_by(shopId=employer_id).first()
             db.session.add(new_user)
+            #making user an employee
+            # append a shop for future references
+            employer.users.append(new_user)
             db.session.commit()
         except IntegrityError:
             db.session.rollback()

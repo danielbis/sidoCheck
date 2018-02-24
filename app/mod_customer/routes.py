@@ -9,7 +9,7 @@ from app import app, db, login_manager
 
 
 #Import module models containing User
-from app.mod_auth.models import User, Shop, Employee
+from app.mod_auth.models import User, Shop
 from app.mod_provider.models import Schedule
 
 customer_mod = Blueprint("mod_customer", __name__)

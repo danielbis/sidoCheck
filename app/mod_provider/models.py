@@ -1,7 +1,7 @@
 # Author: DANIEL BIS
 
 from app import db
-from app.mod_auth.models import User, Shop, Employee
+from app.mod_auth.models import User, Shop
 from flask_login import UserMixin
 from sqlalchemy import *
 from flask_sqlalchemy import SQLAlchemy
@@ -52,8 +52,7 @@ class Schedule(db.Model):
     start_time = db.Column(db.DateTime, nullable = False)
     end_time = db.Column(db.DateTime, nullable = False)
 
-    employeeId = db.Column(db.Integer, ForeignKey("Employees.employeeId"))
-    shopId = db.Column(db.Integer, ForeignKey("Shops.shopId"))
+    emplId = db.Column(db.Integer, ForeignKey("Users.id"))
 
     def __init__(self, starttime, endtime, weekday = -1, servicelen = 20):
         self.weekDay = weekday
@@ -64,4 +63,6 @@ class Schedule(db.Model):
 
     def __repr__(self):
         return '<Employee ID %r, Week Day %r, StartTime %r, EndTime %r, Service Length>' \
-               % (self.employeeid, self.weekday, self.start_time, self.end_time, self.service_length, )
+               % (self.emplId, self.weekday, self.start_time, self.end_time, self.service_length, )
+
+

@@ -14,7 +14,7 @@ from app import db, login_manager
 from app import app
 
 #Import module models containing User
-from app.mod_auth.models import User, Shop, Employee
+from app.mod_auth.models import User, Shop
 from app.mod_auth.routes import load_user
 
 from app.mod_provider.models import Schedule
@@ -27,15 +27,10 @@ def add_schedule():
 	form = DateForm()
 
 	if form.validate_on_submit():
-		shop = Shop.query.filter_by(userId = current_user.id).first()
-		employee_userObj = User.query.filter_by(email = form.email.data).first()
-		logging.info(employee_userObj.email)
-		employee = employee_userObj.employee[0]
-		logging.info(employee.userId)
+		employee = User.query.filter_by(email = form.email.data).first()
 		new_schedule = Schedule(starttime = form.start_time.data, endtime = form.end_time.data)
 
 		employee.schedules.append(new_schedule)
-		shop.schedules.append(new_schedule)
 		db.session.add(new_schedule)
 		db.session.commit()
 		return '<h1>New schedule added! </h1>'
