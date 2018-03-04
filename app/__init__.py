@@ -30,13 +30,9 @@ login_manager.login_view = 'login'
 
 # Import a module / component using its blueprint handler variable (mod_auth)
 from app.mod_auth.routes import mod
-from app.mod_provider.routes import provider_mod
-from app.mod_customer.routes import customer_mod
 
 # Register blueprint(s)
 app.register_blueprint(mod_auth.routes.mod)
-app.register_blueprint(mod_provider.routes.provider_mod)
-app.register_blueprint(mod_customer.routes.customer_mod)
 # app.register_blueprint(xyz_module)
 # ..
 
@@ -45,11 +41,6 @@ app.register_blueprint(mod_customer.routes.customer_mod)
 @app.route('/')
 def index():
     return render_template('index.html')
-
-@app.route('/dashboardprovider')
-@login_required
-def dashboardprovider():
-    return render_template('dashboardprovider.html', name=current_user.first_name)
 
 
 

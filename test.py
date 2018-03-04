@@ -84,54 +84,14 @@ class TestBase(unittest.TestCase):
 
  #(USER) def __init__(self, firstname, lastname, email, password, role, manager = 0, phonenumber = "")
     def test_user_model(self):
-        user1 = User("testuser", "testuserlast", "testuser@gmail.com", "testuserpass", "customer")
-        user2 = User("testuser2", "testuser2", "shop1@gmail.com", "shop1pass", "customer", 1, "8506667676")
+        user1 = User("testuser", "testuserlast")
+        user2 = User("testuser2", "testuser2")
         db.session.add(user1)
         db.session.add(user2)
         db.session.commit()
         self.assertEqual(User.query.count(), 2)
 
-    def test_shop_model(self):
-        user1 = User("testuser", "testuserlast", "testuser@gmail.com", "testuserpass", "shop")
-        user2 = User("shop1", "shop1", "shop1@gmail.com", "shop1pass", "shop", 1, "8506667676")
-        new_shop = Shop("shop1", 'location')
-        new_shop.users.append(user2)
-        #print("appended")
-        db.session.add(user1)
-        db.session.add(user2)
-        db.session.commit()
-        u1 = User.query.filter_by(first_name="shop1").first()
-        shop1 = Shop.query.filter_by(shopname="shop1").first()
-        self.assertEqual(u1.shopId, shop1.shopId)
-
-    def test_employee_model(self):
-        user1 = User("testuser", "testuserlast", "testuser@gmail.com", "testuserpass", "customer")
-        user2 = User("testuser2", "testuser2last",  "shop1@gmail.com","shop1pass", "employee", 1, "8506667676")
-        db.session.add(user1)
-        db.session.add(user2)
-        db.session.commit()
-
-        empl_count = User.query.filter_by(role="employee").count()
-        self.assertEqual(empl_count, 1)
-
-    def test_add_schedule(self):
-        #manager rights
-        user1 = User("shop1", "shop1", "shop1@gmail.com", "shop1pass", "shop", 1, "8506667676")
-        new_shop = Shop("shop1", 'location')
-        db.session.add(new_shop)
-        new_shop.users.append(user1)
-        user2 = User("testuser2", "testuser2last",  "testuser1@gmail.com","shop1pass", "employee", 1, "8506667676")
-        new_shop.users.append(user2)
-        db.session.commit()
-        empl = User.query.filter_by(email="testuser1@gmail.com").first()
-        #shop = Shop.query.filter_by(shopId= empl.shopId)
-
-        schedule = Schedule(starttime = "2018-02-22 11:00:00", endtime = "2018-02-22 6:00:00")
-        empl.schedules.append(schedule)
-        db.session.commit()
-
-        schedule_count = Schedule.query.filter_by(emplId=empl.id).count()
-        self.assertEqual(schedule_count, 1)
+   
 
 
 
