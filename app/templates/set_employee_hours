@@ -1,0 +1,77 @@
+<!-- Author Sam Maloney -->
+
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+Set Employee Hours
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+{% endblock %}
+
+{% block content %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Sido</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li class="active"><a href="#">Set Employee Schedule<span class="sr-only">{{name}}</span></a></li>
+            <li><a href="{{ url_for('mod_auth.logout') }}">Log Out</a></li>
+
+
+           
+
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+  <br><br>
+
+  <div class="container">
+
+  <form class="add_schedule" method="POST" action="/templates/set_employee_hours">
+
+  {{ form.hidden_tag() }}
+  {{ wtf.form_field(form.email) }}
+
+  <br><br>
+
+   <div>
+      <meta charset="utf-8">
+      <meta name="empscheduler" content="width=device-width, initial-scale=1">
+      <title>PickDate</title>
+      <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+      <script src="https://cdn.jsdelivr.net/npm/gijgo@1.8.2/combined/js/gijgo.min.js" type="text/javascript"></script>
+      <link href="https://cdn.jsdelivr.net/npm/gijgo@1.8.2/combined/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+    </div>
+    <div>
+      <input id="schedulepicker" width="276" />
+      <script>
+          $('#datepicker').datepicker({
+              uiLibrary: 'bootstrap4'
+          });
+      </script>
+    </div>
+
+    <br><br>
+    Shift Start Time
+    {{ wtf.form_field(form.start_time) }}
+
+    <br></br>
+
+    Shift End Time
+    {{ wtf.form_field(form.end_time) }}
+
+    <br></br>
+
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
+</form>
+
+</div>
+
+{% endblock %}
