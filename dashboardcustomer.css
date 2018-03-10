@@ -1,0 +1,14 @@
+.img-responsive {
+    max-width: 90%; /* or to whatever you want here */
+    height: auto; /* or to whatever you want here */
+}
+
+.row_offset{
+    margin-top: 10%;
+}
+
+.span12{
+    -moz-box-shadow: 0 0 2px black;
+    -webkit-box-shadow: 0 0 2px black;
+    box-shadow: 0 0 2px black;
+}

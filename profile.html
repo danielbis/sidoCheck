@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+<!-- Author Daniel Bis -->
+
+<!--Please pass in a particular shop description, name, location(just city like tallahassee, image), -->
+
+
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+Provider profile
+{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="../../static/providerprofile.css">
+{{super()}}
+{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Sido</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li class="active"><a href="#">Welcome to {{shop.name}}<span class="sr-only">{{name}}</span></a></li>
+                <li><a href="{{ url_for('mod_auth.logout') }}">Log Out</a></li>
+
+
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container" style="margin-top: 5%; ">
+    <img src="{{url_for('static', filename='city.jpg')}}" class="img-responsive"/>
+    <p class="card-text">We specialize in many services and our shop is located in {{shop.location}}</p>
+    <p class="card-text">{{shop.description}}</p>
+
+
+     </div>
+
+
+
+
+
+    {% endblock %}
+
