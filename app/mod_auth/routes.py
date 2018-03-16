@@ -8,7 +8,7 @@ from flask_sqlalchemy  import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from sqlalchemy.exc import IntegrityError
- 
+from datetime import datetime
 #import database object from app module 
 from app import db, login_manager
 
@@ -26,7 +26,7 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 #set route and accepted methods
-@mod.route('/login', methods=['GET', 'POST'])
+@mod.route('/login', methods=['GET', 'POST']) 
 def login():
     form = LoginForm()
 
@@ -35,7 +35,7 @@ def login():
         if user:
             if check_password_hash(user.password, form.password.data):
                 login_user(user)
-                if len(user.role) == "user": #check if customer or provider
+                if user.role == "customer": #check if customer or provider
                     return redirect(url_for('mod_customer.dashboardcustomer'))
                 else:
                     return redirect(url_for('dashboardprovider'))
@@ -103,7 +103,7 @@ def signup_employee():
 
     if form.validate_on_submit():
         hashed_password = generate_password_hash(form.password.data, method='sha256')
-        
+         
         try:            
             managerCheck = 0
             if form.manager.data:

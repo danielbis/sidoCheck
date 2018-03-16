@@ -28,19 +28,22 @@ Dashboard Customer
       </div>
     </nav>
 
-{% for shop in shops %}
-
-<div class="card" style="width: 18rem; margin-top: 2%">
-  <div class="card-body">
-    <h5 class="card-title">shop.name</h5>
-    <h6 class="card-subtitle mb-2 text-muted">shop.location</h6>
-    <p class="card-text">Shop Description</p>
-    <a href="#" class="card-link">Explore</a>
-    <a href="#" class="card-link">Next Available</a>
-  </div>
+<div class="container" style="margin-top: 5%; ">
+ {% for shop in shops %}
+   <div class="row " style="margin-top: 5%">
+        <div class="col-md-12" style="margin-top: 5%">
+            <div class="card w-50" style="width: 50rem;">
+                <img src="{{url_for('static', filename='city.jpg')}}" class="img-responsive"/>
+                <div class="card-body">
+                    <h5 class="card-title">{{shop.shopname}}</h5>
+                    <p class="card-text">We specialize in many services and our shop is located in {{shop.location}}</p>
+                    <p class="card-text">shop.description</p>
+                    <a href="{{ url_for('mod_customer.employee_list', shopname = shop.shopname) }}"" class="btn btn-primary">Page</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+{% endfor %}
 </div>
-
-
-{%- endfor %}
-
 {% endblock %}

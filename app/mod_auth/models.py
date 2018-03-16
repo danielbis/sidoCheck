@@ -33,6 +33,7 @@ class User(UserMixin, db.Model):
 
     shopId = db.Column(db.Integer, ForeignKey("Shops.shopId"))
     schedules = relationship("Schedule", backref="Users")
+    appointments = relationship("Appointment", backref="Users")
 
     #relationships (will be defined later)
     #Appointments = relationship("Appointment", backref = "Users")
@@ -54,7 +55,7 @@ class Shop(db.Model):
     __tablename__ = "Shops"
     shopId = db.Column(db.Integer, primary_key = True)
     users = relationship("User", backref="Shops")   #db.Column(db.Integer, ForeignKey("Users.id"))
-    shopname = db.Column(db.String(80), nullable=False)
+    shopname = db.Column(db.String(80), nullable=False, unique=True)
     location = db.Column(db.String(80), nullable=False)
     img_path = db.Column(db.String(120), nullable=True)
     #Enable backpropagation between Shops and their working hours

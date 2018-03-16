@@ -1,0 +1,49 @@
+<!-- Author Daniel Bis -->
+
+
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+Dashboard Customer
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+{% endblock %}
+
+{% block content %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Sido</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li class="active"><a href="#">Welcome to <span class="sr-only">{{shopname}}</span></a></li>
+            <li><a href="{{ url_for('mod_auth.logout') }}">Log Out</a></li>
+           
+
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+<div class="container" style="margin-top: 5%; ">
+ {% for employee in employees %}
+   <div class="row " style="margin-top: 5%">
+        <div class="col-md-12" style="margin-top: 5%">
+            <div class="card w-50" style="width: 50rem;">
+                <img src="{{url_for('static', filename='city.jpg')}}" class="img-responsive"/>
+                <div class="card-body">
+                    <h5 class="card-title">{{employee.first_name}} {{employee.last_name}}</h5>
+                    <p class="card-text"> {{employee.email}}</p>
+                    <p class="card-text">employee.description</p>
+                    <a href="{{url_for('mod_customer.availability', shopname=shopname, empl_id = employee.id)}}"class="btn btn-primary">Availability</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+{% endfor %}
+</div>
+{% endblock %}
