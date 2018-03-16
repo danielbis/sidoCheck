@@ -3,28 +3,42 @@ from app import app, db
 #Import models
 from app.mod_auth.models import User, Shop
 
-from app.mod_provider.models import Schedule, Appointment
+from app.mod_provider.models import Schedule, Appointment, Service
 
 from datetime import *
 
-# get employee's time slots for the day
-# get all of the appointments that are scheduled for him
-# return the time slots that are not scheduled
+"""
+	Finds employees schedule (daily_hours) for a day (@date) 
+	Finds employees appointments (appointments) for a day (@date)
+	Returns a list of time slots (python datetime.datetime format) that are available.
+"""
 
 def check_availability_by_emplId(emplId, date, slots_required = 1):
-	daily_hours = db.session.query(Schedule.start_time, Schedule.end_time).filter(Schedule.emplId == emplId, Schedule.start_time.between(datetime.combine(date, datetime.min.time()), datetime.combine(date, datetime.max.time()) )).first()
-	booked = db.session.query(Appointment.date_scheduled).filter(Appointment.employeeId == emplId, Appointment.date_scheduled.between(datetime.combine(date, datetime.min.time()), datetime.combine(date, datetime.max.time()) )).all()
-
+	
+	# get work hours for that day and appointments scheduled between them for employee with id emplId
+	daily_hours = db.session.query(Schedule).filter(Schedule.emplId == emplId, Schedule.start_time.between(datetime.combine(date, datetime.min.time()), datetime.combine(date, datetime.max.time()) )).first()
+	appointments = db.session.query(Appointment).filter(Appointment.employeeId == emplId, Appointment.date_scheduled.between(datetime.combine(date, datetime.min.time()), datetime.combine(date, datetime.max.time()) )).all()
+	
+	booked = [a.date_scheduled for a in appointments]
+	start_time = daily_hours.start_time
+	end_time = daily_hours.end_time
 	interval = timedelta(minutes=20)
-	print("dh ", daily_hours[0])
-	print("booked ", booked)
-	slot = daily_hours[0]
-	print("start time: ", slot)
+	
+	"""
+		Debuggin prints 
+
+	print("daily_hours.start_time ", daily_hours.start_time, " type is datetime: ", type(daily_hours.start_time) is datetime  )
+	print("start time is ", start_time, " type is datetime: ", type(start_time) is datetime)
+	print("end time is ", end_time, " type is datetime: ", type(end_time) is datetime)
+	print("booked[0] is ",booked[0], "t ype is datetime ", type(booked[0]) is datetime)
+	"""
+	
 	time_slots = []
-	while(slot < daily_hours[1]):
-		if slot not in booked: #change to datetime object for comparison
-			time_slots.append(slot)
-		slot += interval
+
+	while(start_time < end_time):
+		if start_time not in booked: #change to datetime object for comparison
+			time_slots.append(start_time)
+		start_time += interval
 	
 	bound = len(time_slots) - (slots_required - 1)
 	for i in range(0, bound):
@@ -35,8 +49,11 @@ def check_availability_by_emplId(emplId, date, slots_required = 1):
 
 	return time_slots
 
-# find all available time slots for shop - @shop_id, for a date - @date
-
+"""
+	Find all available time slots for shop - @shop_id, for a date - @date
+	Calls check_availability_by_emplId for every employee and appends to 
+	a global list
+"""
 def check_availability_by_shop(shop_id, date):
 	shop = Shop.query.filter_by(shopId=shop_id).first()
 	employees = [u.id for u in shop.users]
@@ -50,5 +67,53 @@ def check_availability_by_shop(shop_id, date):
 		shop_slots.append(e)
 
 	return shop_slots
+
+
+"""
+	Finds Employees Appointments for a day (@date)
+	and returns a list of dictionaries in format:
+
+	{
+		time: datetime.datetime
+		clients_first: str 
+		clients_last: str
+		clients_phone: str
+		clients_email: str
+		service_type: str
+		service_price: int
+		employee_id: int
+		empl_first: str
+		empl_last: str
+		empl_phone: string
+		empl_email: str
+	}
+
+"""
+def get_employees_appointments_by_date(emplId, date):
+
+	appointments = db.session.query(Appointment).filter(Appointment.employeeId == emplId, Appointment.date_scheduled.between(datetime.combine(date, datetime.min.time()), datetime.combine(date, datetime.max.time()) )).all()
+	empl = User.query.filter_by(id = emplId).first()
+	# list to be returned
+	a_list = []
+	for a in appointments:
+		s = Service.query.filter_by(service_id=a.service_id).first()
+		o = {
+			"time": a.date_scheduled,
+			"client_first": a.client_first,
+			"client_last": a.client_last, 
+			"client_phone": a.client_phone, 
+			"service_type": s.service_name, 
+			"service_price": s.service_price, 
+			"empl_id": a.employeeId, 
+			"empl_first": empl.first_name,
+			"empl_last": empl.last_name,
+			"empl_phone": empl.phonenumber, 
+			"empl_email": empl.email
+		}
+		a_list.append(o)
+
+	return a_list
+
+
 
 

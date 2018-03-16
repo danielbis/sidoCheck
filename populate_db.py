@@ -76,11 +76,11 @@ for i in range (1,7):
 			for a in range(1,6):
 				ap = None
 				if a < 3:
-					ap = Appointment(datetime(2018, 3, d, 11, a*20, 0), "test_user" + str(a), "test_user_last" + str(a),"123456000" + str(a), "test_user" + str(a) +"@email.com", a, (i*3 - 3))
+					ap = Appointment( datetime(2018, 3, d, 11, a*20, 0), "test_user" + str(a), "test_user_last" + str(a),"123456000" + str(a), "test_user" + str(a) +"@email.com", a, 1)
 				elif a < 5:
-					ap = Appointment(datetime(2018, 3, d, 12, (a-2)*20, 0), "test_user" + str(a), "test_user_last" + str(a),"123456000" + str(a), "test_user" + str(a) +"@email.com", a, (i*3-2))
+					ap = Appointment(datetime(2018, 3, d, 12, (a-2)*20, 0), "test_user" + str(a), "test_user_last" + str(a),"123456000" + str(a), "test_user" + str(a) +"@email.com", a, 2)
 				else:
-					ap = Appointment(datetime(2018, 3, d, 2, (a-4)*20, 0), "test_user" + str(a),"test_user_last" + str(a), "123456000" + str(a), "test_user" + str(a) +"@email.com", a, (i*3-1))
+					ap = Appointment(datetime(2018, 3, d, 2, (a-4)*20, 0), "test_user" + str(a),"test_user_last" + str(a), "123456000" + str(a), "test_user" + str(a) +"@email.com", a, 3)
 				print("date: ", ap.date_scheduled, "email: ", ap.client_email)
 				empl.appointments.append(ap)
 
