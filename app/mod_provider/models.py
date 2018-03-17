@@ -82,9 +82,9 @@ class Service(db.Model):
     __tablename__ = 'Services'
     service_id = db.Column(db.Integer, primary_key=True)
     service_name = db.Column(db.String(128))
-    service_length = db.Column(db.String(128))
+    service_length = db.Column(db.Integer) #preferebly multiples of 20 
     service_price = db.Column(db.Integer)
-    providers = db.relationship("User", secondary=service_identifier)
+    providers = db.relationship("User", secondary=service_identifier, backref=db.backref('Services'))
 
     def __init__(self, service_name, service_length, service_price):
         self.service_name = service_name

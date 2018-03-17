@@ -20,6 +20,8 @@
 
   <script type="text/javascript">
   var $slots = $('#ts'); 
+  var time_slot;
+  var date_string;
   $(function(){
     $('#datepicker').datepicker({
       inline: true,
@@ -27,26 +29,68 @@
       dayNamesMin: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
       altField: ".dtpick",
       onSelect : function executeQuery() {
+                  date_string = $("#datepicker").val();
+                  console.log("date_string ", date_string)
                   $.ajax({
                       method: 'get',
                       url: '/timeslots',
                       data: { date : $("#datepicker").val(), 
-                              empl_id: {{empl_id}} 
+                              empl_id: {{empl_id}}, 
+                              service_id: $('#serviceSelect').find(":selected").val()
                             },
                       success: function(data) {
                           data = data;
                           $slots.empty();
-                          for (i in data){
+                          var len = data.length;
+                          var i;
+                          for (i = 0; i < len; i++){
+                            if (i == 0 || i % 4 == 0){
+                              $slots.append("<div class='row justify-content-md-center'>" );
+                            }
                               $slots.append(
-                                  "<div class='col-sm-3' id='slot'> <button type='button' class='btn-custom btn-lg btn-block'>" + data[i] +"</button></div>"
-
-                                  );
-                              };
-                      }
+                                "<div class='col-sm-2'> <button type='button' class='btn-custom btn-lg btn-block' value='"+data[i]+"' id = 'slot'>" + data[i] +"</button> </div>"
+                                );
+                              if (i == len -1 || i % 4 == 3){
+                                $slots.append("</div>");
+                              }
+                            }
+                          }
                     });
                   }
     })
   });
+
+  function book(){
+    console.log("date_string ", date_string)
+
+    $.ajax({
+      method:'post', 
+      url:'/bookslot', 
+      data: JSON.stringify({ date_string: date_string, 
+              empl_id: {{empl_id}}, 
+              service_id: $('#serviceSelect').find(":selected").val(),
+              time_slot: time_slot
+      }), 
+      contentType: 'application/json',
+      error: function(data){
+        alert("Somethong went wrong. Try again please.")
+      },
+      success: function(data) {
+        if (data == "/confirmation"){
+          window.location.href = "/confirmation";
+        }
+        else{
+          alert("Sorry, this time slot is no longer available.")
+        }
+      }
+    })
+  }
+
+  $(document).on("click", "#slot", function(){
+    time_slot = $(this).val();
+    $('#book-it').append('<button type="button" class="btn btn-primary btn-lg btn-block" onclick = "book()">Book it</button>')
+  });
+
   </script>
 {% endblock %}
 
@@ -72,13 +116,38 @@ Schedule Appointment
       </div>
     </nav>
 
-<div id="datepicker" style="margin-top: 80px;"> </div>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-2"></div>
+    <div class="col-sm-8">
+      <div class="form-group" style="margin-top: 80px;">
+        <label for="serviceSelect">Example select</label>
+        <select class="form-control form-control-lg" id="serviceSelect">
+          {% for service in services %}
+          <option value="{{service.service_id}}">{{service.service_name}} ${{service.service_price}}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="col-sm-2"></div>
+  </div>
 
-<div class = "container-fluid" id="ts">
-
+  <div class="row">
+    <div class="col-sm-2"></div>
+    <div class="col-sm-8">    <div id="datepicker"> </div>
+    </div>
+    <div class="col-sm-2"></div>
+  </div>
 </div>
+  
+
+<div class = "container" style = "text-align: center;" id="ts">
   
 </div>
   
+<div class="container" id="book-it">
+
+</div>
+
 
 {% endblock %}

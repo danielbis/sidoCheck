@@ -29,21 +29,26 @@ Dashboard Customer
     </nav>
 
 <div class="container" style="margin-top: 5%; ">
- {% for employee in employees %}
-   <div class="row " style="margin-top: 5%">
-        <div class="col-md-12" style="margin-top: 5%">
-            <div class="card w-50" style="width: 50rem;">
-                <img src="{{url_for('static', filename='city.jpg')}}" class="img-responsive"/>
+  {% for employee_row in employees | batch(3, '&nbsp;') %}
+  <div class="row">
+      {% for employee in employee_row %}
+      <div class="col-md-4">
+        <div class="card" style="width: 100%; margin-bottom: 2rem; border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 0.25rem; text-align: justify;" >
+                <img src="{{url_for('static', filename='city.jpg')}}" style="width: 100%"; class="img-responsive"/>
                 <div class="card-body">
                     <h5 class="card-title">{{employee.first_name}} {{employee.last_name}}</h5>
                     <p class="card-text"> {{employee.email}}</p>
                     <p class="card-text">employee.description</p>
-                    <a href="{{url_for('mod_customer.availability', shopname=shopname, empl_id = employee.id)}}"class="btn btn-primary">Availability</a>
+                    <a href="{{url_for('mod_customer.availability', shopname=shopname, empl_id = employee.id)}}" class="btn btn-primary btn-block">Availability</a>
                 </div>
             </div>
-        </div>
-    </div>
-    </div>
-{% endfor %}
-</div>
+      </div>
+      {% endfor %}
+  </div>
+  
+  {% endfor %}
+  
+  </div>
+
 {% endblock %}

@@ -13,15 +13,90 @@ Login
 {% endblock %}
 
 {% block content %}
-    <div class="container">
+<style type="text/css">
+	/*body{
+		position: absolute;
+	    min-height:90%;
+	    width: 100%;
+	    height: auto;
+	    top: 0;
+	    left: 0;
 
-      <form class="form-signin" method="POST" action="/auth/login">
-        <h2 class="form-signin-heading">Please sign in</h2>
-        {{ form.hidden_tag() }}
-        {{ wtf.form_field(form.email) }}
-        {{ wtf.form_field(form.password) }}
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-      </form>
+		background: linear-gradient(
+	      rgba(0, 0, 0, 0.5),
+	      rgba(0, 0, 0, 0.5)
+    	), url({{url_for("static" , filename="background.jpeg")}});
+	  	-webkit-background-size: cover; /* Add in these *//*
+	    -moz-background-size: cover;    /* four lines to *//*
+	    -o-background-size: cover;      /* remove the white space*//*
+	    background-size: cover;         /* around images 
+	    color: white;
+  } */
+	  body{
+		  width: 100%;
+		  height: 100%;
+		  float: left;
+		  background-image: 
+	    	linear-gradient(
+	      	rgba(0, 0, 0, 0.5),
+	      	rgba(0, 0, 0, 0.5)
+	    	), url({{url_for("static" , filename="background.jpeg")}});	
+		  background-size: cover;
+		  color: white;
+	}
+	
+</style>
+
+    <div class="container module darken" style="text-align: center;">	
+    	<div class="row"> 
+    		<div class="col-lg-4">
+    			<h1> welcome to Sido </h1>
+    		</div>
+    		<div class="col-lg-8">
+				<form class="form-signin" method="POST" action="/auth/login">
+					<h2 class="form-signin-heading">Please sign in</h2>
+					{{ form.hidden_tag() }}
+					{{ wtf.form_field(form.email) }}
+					{{ wtf.form_field(form.password) }}
+					<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+				</form>
+
+				<div class= "center-block" style="width: 300px; text-align:center;">
+					<a href="{{ url_for('mod_auth.signup') }}"><button class="btn btn-lg btn-success btn-block" style="display: block; margin: 0 auto;" type="button">Create Account</button></a> <br>
+					<a href="{{ url_for('mod_auth.signup_shop') }}">
+					<button class="btn btn-lg btn-success btn-block" style="display: block; margin: 0 auto; type="submit" name= "guest" value="guest"> Register your Shop!</button> </a>
+				</div>
+		</div>
+		</div>
+
+		 <hr>
+
 
     </div> 
+    <div class="container" >
+        <!-- Example row of columns -->
+        <div class="row">
+          <div class="col-md-4">
+            <h2>Heading</h2>
+            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+            <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+          </div>
+          <div class="col-md-4">
+            <h2>Heading</h2>
+            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+            <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+          </div>
+          <div class="col-md-4">
+            <h2>Heading</h2>
+            <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+            <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+          </div>
+        </div>
+
+        <hr>
+
+      </div> <!-- /container -->
+
+
 {% endblock %}
+

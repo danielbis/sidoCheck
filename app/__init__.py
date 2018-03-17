@@ -1,7 +1,7 @@
 #Author: DANIEL BIS
 
 # Import flask and template operators
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for
 from flask_bootstrap import Bootstrap
 # Import SQLAlchemy
 from flask_sqlalchemy import SQLAlchemy
@@ -44,7 +44,7 @@ app.register_blueprint(mod_customer.routes.customer_mod)
 #Home page
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return redirect(url_for("mod_auth.login"))
 
 @app.route('/dashboardprovider')
 @login_required

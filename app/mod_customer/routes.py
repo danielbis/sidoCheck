@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, Blueprint, jsonify, request
+from flask import Flask, render_template, redirect, url_for, Blueprint, jsonify, request, session
 from flask_sqlalchemy  import SQLAlchemy
 from flask_wtf import FlaskForm 
 from flask_login import login_user, login_required, logout_user, current_user
@@ -11,8 +11,8 @@ from app import app, db, login_manager
 
 #Import module models containing User
 from app.mod_auth.models import User, Shop
-from app.mod_provider.models import Schedule, Appointment
-from app.mod_provider.api import check_availability_by_emplId
+from app.mod_provider.models import Schedule, Appointment, Service
+from app.mod_provider.api import check_availability_by_emplId, is_slot_open
 from datetime import *
 
 customer_mod = Blueprint("mod_customer", __name__)
@@ -36,24 +36,100 @@ def employee_list(shopname):
 @login_required
 def availability(shopname, empl_id):
 	form = DateForm()
+	services = Service.query.filter(Service.providers.any(id=empl_id)).all()
+	employee = User.query.filter_by(id=empl_id).first()
 	if form.validate_on_submit():
 		print(form.dt.data.strftime('%x'))
 		return render_template('<h1> Booked </h1>')
-	return render_template('customer/availability.html', shopname=shopname, form = form, empl_id = empl_id)
+	return render_template('customer/availability.html', shopname=shopname, form = form, empl_id = empl_id, employee = employee, services=services)
 
 @customer_mod.route('/timeslots', methods=["GET", "POST"])
+@login_required
 def timeslots():
 
 	date_string = request.args.get('date', 0, type=str)
 	date_string = date_string[:-4] + date_string[-2:]
 	empl_id = request.args.get('empl_id', 0, type=int)
+	service_id = request.args.get('service_id', 0, type=int)
 	d = datetime.strptime(date_string, '%m/%d/%y').date()
+	service = Service.query.filter_by(service_id=service_id).first()
 	print("date is: ", date_string)
 	print("date object is: ", d)
 	print("empl_id is: ", empl_id)
-	slots = [x.strftime("%I:%M") for x in check_availability_by_emplId(empl_id, d)] 
+	print("service_id is: ", service_id)
+	slots = [x.strftime("%H:%M") for x in check_availability_by_emplId(empl_id, d, int(int(service.service_length)/20)) ] 
 
 	return jsonify(slots)
+
+@customer_mod.route('/bookslot', methods=["GET", "POST"])
+@login_required
+def bookslot():
+	
+
+	#retrieve data from ajax request
+	request_json = request.get_json()
+	date_string = request_json['date_string']
+	service_id = request_json['service_id']
+	time_slot = request_json['time_slot']
+	empl_id = request_json['empl_id']
+
+	#process the data
+	print("date string: ", date_string)
+	date_string = date_string[:-4] + date_string[-2:]
+	d = datetime.strptime(date_string, '%m/%d/%y').date()
+	print("date is: ", d)
+
+	date_string += " " + time_slot
+	print("date and time: ", date_string)
+	datetime_object = datetime.strptime(date_string, '%m/%d/%y %H:%M')
+	print("datetime is: ", datetime_object)
+
+	service = Service.query.filter_by(service_id=service_id).first()
+	slots_required = int(int(service.service_length)/20)
+
+	if (is_slot_open(empl_id, d, datetime_object, slots_required)):
+		#datescheduled, username, user_last_name, userphone, useremail, userId, service_id)
+		employee = User.query.filter_by(id=empl_id).first()
+		interval = timedelta(minutes=20)
+		for i in range(0,slots_required):
+			a = Appointment(datetime_object + (i*interval), current_user.first_name, current_user.last_name, current_user.phonenumber, current_user.email, current_user.id, service_id)
+			employee.appointments.append(a)
+
+		
+		db.session.commit()
+		session["confirmation"] = { 
+			"service_name": service.service_name, 
+			"price": service.service_price, 
+			"service_length": service.service_length,
+			"date_scheduled": datetime_object,
+			"employee_name": employee.first_name + " "+employee.last_name,
+			"customer_name": current_user.first_name + " " + current_user.last_name,
+			"customer_id": current_user.id, 
+			"customer_email": current_user.email, 
+			"empl_id": empl_id
+		}
+
+		return jsonify("/confirmation")		
+	return jsonify("slot_taken")
+
+@customer_mod.route('/confirmation', methods=["GET", "POST"])
+@login_required
+def confirmation():
+	confirmation = session.pop("confirmation", None)
+	a = Appointment.query.filter_by(date_scheduled = confirmation["date_scheduled"], employeeId = confirmation["empl_id"], userId = confirmation["customer_id"]).first()
+
+	
+
+	if (a == None):
+		confirmation["message"] = "Booking failed due to technical problems"
+	elif (a.userId != current_user.id or confirmation["empl_id"] != a.employeeId):
+		confirmation["message"] = "Booking failed due to technical problems"
+	else:
+		confirmation["message"] = "Congratulation! Your appointment was booked!"
+	return render_template("customer/confirmation.html", confirmation = confirmation)
+
+
+
 
 
 

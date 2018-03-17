@@ -36,18 +36,40 @@ def check_availability_by_emplId(emplId, date, slots_required = 1):
 	time_slots = []
 
 	while(start_time < end_time):
-		if start_time not in booked: #change to datetime object for comparison
+		if start_time not in booked: 
 			time_slots.append(start_time)
 		start_time += interval
 	
-	bound = len(time_slots) - (slots_required - 1)
+	if len(time_slots) < slots_required:
+		return []
+	print("slots required is ", slots_required, "number of slots: ", len(time_slots))
+
+
+	bound = len(time_slots) - (slots_required)
+	print("bound is: ", bound)
+	short = []
 	for i in range(0, bound):
 		for j in range(0, slots_required):
 			if time_slots[i+j] != time_slots[i] + (j*interval):
-				del(time_slots[i])
+				short.append(i)
 				break
 
+	for i in short:
+		del(time_slots[i])
+
 	return time_slots
+
+def is_slot_open(empl_id, date, datetime_object, slots_required=1):
+	print("is_open? : ", datetime_object )
+	slots = check_availability_by_emplId(empl_id, date, slots_required)
+	for i in range(0,len(slots)):
+		print(slots[i])
+		if slots[i] == datetime_object:
+			print("FOUND")
+			return True
+	
+	return False
+
 
 """
 	Find all available time slots for shop - @shop_id, for a date - @date
