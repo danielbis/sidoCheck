@@ -40,7 +40,7 @@ def login():
 
         return '<h1>Invalid username or password</h1>'
 
-    return render_template('auth/login.html', form=form)
+    return render_template('index.html', form=form)
 
 #Daniel Bis and Christian Pileggi
 @mod.route('/signup', methods=['GET', 'POST'])
@@ -71,8 +71,8 @@ def signup_shop():
 
     if form.validate_on_submit():
         hashed_password = generate_password_hash(form.password.data, method='sha256')
-        new_user = User(firstname=form.shopname.data, lastname = form.shopname.data, phonenumber = form.phonenumber.data, email=form.email.data, password=hashed_password)
-        new_shop = Shop(shopname=form.shopname.data, location = form.address.data)
+        new_user = User(firstname=form.shopname.data, lastname=form.shopname.data,  email=form.email.data)
+        new_shop = Shop(shopname=form.shopname.data, location=form.address.data, password=hashed_password, phonenumber=form.phonenumber.data)
         #check if email is taken
         user = User.query.filter_by(email=form.email.data).first()
         if user != None:

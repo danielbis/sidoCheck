@@ -1,18 +1,22 @@
-#Author: DANIEL BIS
+# Author: DANIEL BIS
 
 # Import flask and template operators
-from flask import Flask, render_template
+from flask import Flask, render_template, flash, redirect, url_for
 from flask_bootstrap import Bootstrap
+from sqlalchemy.orm.exc import NoResultFound
+
 # Import SQLAlchemy
 from flask_sqlalchemy import SQLAlchemy
-#import login manager 
-from flask_login import LoginManager, current_user, login_required
+# import login manager
+from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 
 # Define the WSGI application object
 app = Flask(__name__)
 Bootstrap(app)
 # Configurations
 app.config.from_object('config')
+
+import sys
 
 
 # Define the database object which is imported
@@ -26,7 +30,7 @@ db = SQLAlchemy(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'login'
+login_manager.login_view = 'google.login'
 
 # Import a module / component using its blueprint handler variable (mod_auth)
 from app.mod_auth.routes import mod 
@@ -39,10 +43,153 @@ app.register_blueprint(mod_provider.routes.provider_mod)
 # ..
 
 
-#Home page
+from flask import Flask, redirect, url_for
+from flask_dance.contrib.google import make_google_blueprint, google
+import os
+from flask_dance.contrib.twitter import make_twitter_blueprint, twitter
+
+
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+app.secret_key = "supersekrit"
+
+
+blueprint = make_google_blueprint(
+    client_id="91401939367-hau5et1aki5vdnf243cbug7fv28ub4l4.apps.googleusercontent.com",
+    client_secret="spVfLRtr9dR7n3Y5NGcEMJ0B",
+    scope=["profile", "email"]
+)
+app.register_blueprint(blueprint, url_prefix="/login")
+
+
+from flask_dance.consumer.backend.sqla import OAuthConsumerMixin, SQLAlchemyBackend
+from app.mod_auth.models import OAuth, User
+from flask_dance.consumer import oauth_authorized, oauth_error
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+blueprint.backend = SQLAlchemyBackend(OAuth, db.session, user=current_user)
+
+@oauth_authorized.connect_via(blueprint)
+def google_logged_in(blueprint, token):
+    if not token:
+        flash("Failed to log in with Google.", category="error")
+        return False
+
+    resp = blueprint.session.get("/oauth2/v2/userinfo")
+    if not resp.ok:
+        msg = "Failed to fetch user info from Google."
+        flash(msg, category="error")
+        return False
+
+    print(resp, file=sys.stdout)
+
+    google_info = resp.json()
+    google_user_id = str(google_info["id"])
+
+    # Find this OAuth token in the database, or create it
+    query = OAuth.query.filter_by(
+        provider=blueprint.name,
+        provider_user_id=google_user_id,
+    )
+    try:
+        oauth = query.one()
+    except NoResultFound:
+        oauth = OAuth(
+            provider=blueprint.name,
+            provider_user_id=google_user_id,
+            token=token,
+        )
+
+    if oauth.user:
+        login_user(oauth.user)
+        flash("Successfully signed in with Google.")
+
+    else:
+        print("in else ", file=sys.stdout)
+        print(resp.json, file=sys.stdout)
+
+        # Create a new local user account for this user
+        user = User(
+            # Remember that `email` can be None, if the user declines
+            # to publish their email address on GitHub!
+            email=google_info["email"],
+            firstname=google_info["given_name"],
+            lastname=google_info["family_name"],
+            password=0
+        )
+        # Associate the new local user account with the OAuth token
+        oauth.user = user
+        # Save and commit our database models
+        db.session.add_all([user, oauth])
+        db.session.commit()
+        # Log in the new local user account
+        login_user(user)
+        flash("Successfully signed in with GitHub.")
+
+    # Disable Flask-Dance's default behavior for saving the OAuth token
+    print("end", file=sys.stdout)
+    return False
+
+
+# notify on OAuth provider error
+@oauth_error.connect_via(blueprint)
+def github_error(blueprint, error, error_description=None, error_uri=None):
+    msg = (
+        "OAuth error from {name}! "
+        "error={error} description={description} uri={uri}"
+    ).format(
+        name=blueprint.name,
+        error=error,
+        description=error_description,
+        uri=error_uri,
+    )
+    flash(msg, category="error")
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    flash("You have logged out")
+    return redirect(url_for("index"))
+
+
 @app.route('/')
 def index():
+    #if google.authorized:
+     #       return "<h1> This Should be the next view</h1>"
+    return redirect(url_for("mod_auth.login"))
+
+#Home page
+'''
+@app.route('/')
+def index():
+    if google.authorized:
+        resp = google.get("/oauth2/v2/userinfo")
+        assert resp.ok, resp.text
+        return "You are {email} on Google".format(email=resp.json()["email"])
+    if not google.authorized:
+        return redirect(url_for("google.login"))
+    resp = google.get("/oauth2/v2/userinfo")
+    assert resp.ok, resp.text
     return render_template('index.html')
+
+
+@app.route('/privacypolicy')
+def privacy_policy():
+    return render_template('privacypolicy.html')
+
+@app.route('/google')
+def google_login():
+    if not google.authorized:
+        return redirect(url_for("google.login"))
+    resp = google.get("/oauth2/v2/userinfo")
+    assert resp.ok, resp.text
+    return "You are {email} on Google".format(email=resp.json()["email"])
+    #return render_template('index.html')
 
 @app.route('/dashboardprovider')
 @login_required
@@ -53,6 +200,8 @@ def dashboardprovider():
 @login_required
 def dashboardcustomer():
     return render_template('dashboard_customer.html', name=current_user.first_name)
+
+'''
 
 # Sample HTTP error handling
 """@app.errorhandler(404)
