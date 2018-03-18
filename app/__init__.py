@@ -46,10 +46,7 @@ app.register_blueprint(mod_customer.routes.customer_mod)
 def index():
     return redirect(url_for("mod_auth.login"))
 
-@app.route('/dashboardprovider')
-@login_required
-def dashboardprovider():
-    return render_template('dashboardprovider.html', name=current_user.first_name)
+
 
 
 

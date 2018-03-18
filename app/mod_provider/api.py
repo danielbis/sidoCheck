@@ -111,10 +111,10 @@ def check_availability_by_shop(shop_id, date):
 	}
 
 """
-def get_employees_appointments_by_date(emplId, date):
+def get_employees_appointments_by_date(empl, date):
 
-	appointments = db.session.query(Appointment).filter(Appointment.employeeId == emplId, Appointment.date_scheduled.between(datetime.combine(date, datetime.min.time()), datetime.combine(date, datetime.max.time()) )).all()
-	empl = User.query.filter_by(id = emplId).first()
+	appointments = db.session.query(Appointment).filter(Appointment.employeeId == empl.id, Appointment.date_scheduled.between(datetime.combine(date, datetime.min.time()), datetime.combine(date, datetime.max.time()) )).all()
+	#empl = User.query.filter_by(id = emplId).first()
 	# list to be returned
 	a_list = []
 	for a in appointments:

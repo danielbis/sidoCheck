@@ -38,7 +38,7 @@ def login():
                 if user.role == "customer": #check if customer or provider
                     return redirect(url_for('mod_customer.dashboardcustomer'))
                 else:
-                    return redirect(url_for('dashboardprovider'))
+                    return redirect(url_for('mod_provider.dashboardprovider'))
 
         return '<h1>Invalid username or password</h1>'
 

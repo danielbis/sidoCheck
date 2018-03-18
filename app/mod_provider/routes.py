@@ -17,9 +17,27 @@ from app import app
 from app.mod_auth.models import User, Shop
 from app.mod_auth.routes import load_user
 
-from app.mod_provider.models import Schedule
-
+from app.mod_provider.models import Schedule, Appointment, Service
+from app.mod_provider.api import check_availability_by_emplId, is_slot_open, get_employees_appointments_by_date 
+from datetime import *
 provider_mod = Blueprint("mod_provider", __name__, url_prefix = "/provider")
+
+@provider_mod.route('/dashboardprovider')
+@login_required
+def dashboardprovider():
+	employees = User.query.filter_by(shopId = current_user.shopId).all()
+	empl_app = []
+	for e in employees:
+		if e.id == current_user.id:
+			del(e)
+		else:
+			d = date.today()
+			a = get_employees_appointments_by_date(e, d)
+			empl_app.append((e, a))
+			
+	
+	return render_template('dashboardprovider.html', name=current_user.first_name, employees = employees, empl_app=empl_app)
+
 
 @provider_mod.route('/addschedule', methods = ['GET', 'POST'])
 def add_schedule():
