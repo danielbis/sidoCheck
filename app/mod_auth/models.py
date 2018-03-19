@@ -3,6 +3,7 @@ from flask_login import UserMixin
 from sqlalchemy import *
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
+from flask_dance.consumer.backend.sqla import OAuthConsumerMixin, SQLAlchemyBackend
 
 #Author: DANIEL BIS
 
@@ -38,7 +39,7 @@ class User(UserMixin, db.Model):
     #relationships (will be defined later)
     #Appointments = relationship("Appointment", backref = "Users")
 
-    def __init__(self, firstname, lastname, email, password, role, manager = 0, phonenumber = ""):
+    def __init__(self, firstname, lastname, email, password, role,manager = 0, phonenumber = ""):
         self.first_name = firstname
         self.last_name = lastname
         self.email = email
@@ -60,14 +61,19 @@ class Shop(db.Model):
     img_path = db.Column(db.String(120), nullable=True)
     #Enable backpropagation between Shops and their working hours
 
-
-    def __init__(self, shopname, location, img = ""):
+    def __init__(self, shopname, location, img=""):
         self.shopname = shopname
         self.location = location
         self.img_path = img
-        
 
     def __repr__(self):
         return '<Name %r>' %self.shopname
+
+
+class OAuth(OAuthConsumerMixin, db.Model):
+    provider_user_id = db.Column(db.String(256), unique=True)
+    user_id = db.Column(db.Integer, db.ForeignKey(User.id))
+    user = db.relationship(User)
+
 
 

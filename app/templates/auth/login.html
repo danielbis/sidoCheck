@@ -9,7 +9,7 @@ Login
 
 {% block styles %}
 {{super()}}
-<link rel="stylesheet" href="../../static/signin.css">
+<link rel="stylesheet" href="../../static/signin.css" xmlns="http://www.w3.org/1999/html">
 {% endblock %}
 
 {% block content %}
@@ -62,10 +62,13 @@ Login
 				</form>
 
 				<div class= "center-block" style="width: 300px; text-align:center;">
+                    <a href="{{ url_for("google.login") }}" class="btn btn-lg btn-success btn-block" style="display: block; margin: 0 auto;" type="button"> Google </button><a/><br>
+
 					<a href="{{ url_for('mod_auth.signup') }}"><button class="btn btn-lg btn-success btn-block" style="display: block; margin: 0 auto;" type="button">Create Account</button></a> <br>
 					<a href="{{ url_for('mod_auth.signup_shop') }}">
 					<button class="btn btn-lg btn-success btn-block" style="display: block; margin: 0 auto; type="submit" name= "guest" value="guest"> Register your Shop!</button> </a>
 				</div>
+
 		</div>
 		</div>
 
