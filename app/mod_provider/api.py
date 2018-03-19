@@ -42,11 +42,8 @@ def check_availability_by_emplId(emplId, date, slots_required = 1):
 	
 	if len(time_slots) < slots_required:
 		return []
-	print("slots required is ", slots_required, "number of slots: ", len(time_slots))
-
 
 	bound = len(time_slots) - (slots_required)
-	print("bound is: ", bound)
 	short = []
 	for i in range(0, bound):
 		for j in range(0, slots_required):
@@ -60,10 +57,10 @@ def check_availability_by_emplId(emplId, date, slots_required = 1):
 	return time_slots
 
 def is_slot_open(empl_id, date, datetime_object, slots_required=1):
-	print("is_open? : ", datetime_object )
 	slots = check_availability_by_emplId(empl_id, date, slots_required)
+	print("date_time object in API ", datetime_object)
 	for i in range(0,len(slots)):
-		print(slots[i])
+		print(slots[i], " ?= ", datetime_object)
 		if slots[i] == datetime_object:
 			print("FOUND")
 			return True
@@ -76,21 +73,28 @@ def is_slot_open(empl_id, date, datetime_object, slots_required=1):
 	Calls check_availability_by_emplId for every employee and appends to 
 	a global list
 """
-def check_availability_by_shop(shop_id, date):
+def check_availability_by_shop(shop_id, date, slots_required = 1):
 	shop = Shop.query.filter_by(shopId=shop_id).first()
-	employees = [u.id for u in shop.users]
+	employees = [u for u in shop.users]
 	del(employees[0]) #  this is an id representing the shop, doesnt have schedules --> remove it
-	print(employees)
 	shop_slots = []
 	for empl in employees:
-		print("EMPL ID: ", empl) 
-		empl_slots = check_availability_by_emplId(empl, date)
-		e = {'id': id, 'availability': empl_slots}
+		empl_slots = check_availability_by_emplId(empl.id, date, slots_required)
+		e = {'id': empl.id, 'name': empl.first_name + empl.last_name, 'availability': empl_slots}
 		shop_slots.append(e)
 
 	return shop_slots
 
+def get_next_available(shopId, date, slots_required = 1):
+	slots = check_availability_by_shop(shopId, date, slots_required)
 
+	for s in slots:
+		s["availability"] = list(filter(lambda x: x > datetime.now(), s["availability"]))
+	
+	slots = list(filter(lambda x: len(x["availability"]) > 0, slots))
+			
+
+	return slots
 """
 	Finds Employees Appointments for a day (@date)
 	and returns a list of dictionaries in format:

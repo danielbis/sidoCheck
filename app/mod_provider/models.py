@@ -23,6 +23,7 @@ class Appointment(db.Model):
 
     employeeId = db.Column(db.Integer, ForeignKey("Users.id"))
     userId = db.Column(db.Integer)
+
     service_id = db.Column(db.Integer)
 
     def __init__(self, datescheduled, username, user_last_name, userphone, useremail, userId, service_id):

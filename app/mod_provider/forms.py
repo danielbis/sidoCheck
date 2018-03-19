@@ -2,7 +2,7 @@
 
 from datetime import datetime, date
 from flask_wtf import FlaskForm 
-from wtforms import StringField
+from wtforms import StringField, SelectField
 from wtforms.fields.html5 import  DateTimeField
 from wtforms.validators import InputRequired, Length, Email
 
@@ -12,3 +12,8 @@ class DateForm(FlaskForm):
 	end_time = DateTimeField('end_time')
 
 
+class ServiceForm(FlaskForm):
+    service = SelectField(
+        'Service', coerce=int
+        
+    )

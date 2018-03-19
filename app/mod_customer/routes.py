@@ -68,7 +68,7 @@ def bookslot():
 
 	#retrieve data from ajax request
 	request_json = request.get_json()
-	date_string = request_json['date_string']
+	date_string = str(request_json['date_string'])
 	service_id = request_json['service_id']
 	time_slot = request_json['time_slot']
 	empl_id = request_json['empl_id']
@@ -86,7 +86,7 @@ def bookslot():
 
 	service = Service.query.filter_by(service_id=service_id).first()
 	slots_required = int(int(service.service_length)/20)
-
+	print("empl_id is ", empl_id, " service id is: ", service_id, " slots required ", slots_required, " d is ", d, " datetime_object is ", datetime_object )
 	if (is_slot_open(empl_id, d, datetime_object, slots_required)):
 		#datescheduled, username, user_last_name, userphone, useremail, userId, service_id)
 		employee = User.query.filter_by(id=empl_id).first()
@@ -121,16 +121,34 @@ def confirmation():
 	
 
 	if (a == None):
+		print("a is none")
 		confirmation["message"] = "Booking failed due to technical problems"
-	elif (a.userId != current_user.id or confirmation["empl_id"] != a.employeeId):
+	elif (int(a.userId) != int(current_user.id) or int(confirmation["empl_id"]) != int(a.employeeId)):
+		print("a.userId ", a.userId, " current_user.id ", current_user.id, " confirmation[empl_id] ", confirmation["empl_id"], " a.employeeId ", a.employeeId )
 		confirmation["message"] = "Booking failed due to technical problems"
 	else:
 		confirmation["message"] = "Congratulation! Your appointment was booked!"
 	return render_template("customer/confirmation.html", confirmation = confirmation)
 
 
+@customer_mod.route('/history', methods=["GET", "POST"])
+@login_required
+def history():
+	my_appointments = Appointment.query.filter_by(userId = current_user.id).all()
 
+	today = datetime.now()
+	# mark upcoming appointemnts
+	for a in my_appointments:
+		employee = User.query.filter_by(id = a.employeeId).first()
+		shop = Shop.query.filter_by(shopId = employee.shopId).first()
+		if a.date_scheduled > today:
+			a.upcoming = True
+		else:
+			a.upcoming = False
 
-
-
+		a.shop = shop.shopname
+		a.employee = employee.first_name + employee.last_name
+	my_appointments.sort(key=lambda r: r.date_scheduled, reverse=True)
+	
+	return render_template("customer/history.html", my_appointments = my_appointments)
 

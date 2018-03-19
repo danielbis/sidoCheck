@@ -2,6 +2,7 @@
 
 
 {% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}
 Dashboard
@@ -30,6 +31,19 @@ Dashboard
     </nav>
 <!--Table of shit right here-->
 <div class="container" style="margin-top: 5%;">
+	<div class="row"> 
+	<form method="POST", action="/provider/dashboardprovider">
+	<div class="col-sm-6">
+		{{ form.hidden_tag() }}
+	    {{ wtf.form_field(form.service) }}
+    </div>
+    <div class="col-sm-6" style="text-align: right;">
+     	<button class="btn btn-lg btn-primary btn-block align-text-bottom" type="submit" style="margin-top: 3%;">Walk-in</button>
+    </div>
+	</form>
+	</div>
+	
+
 	<style>
 	table,th,td {
 		border: 1px solid black;
