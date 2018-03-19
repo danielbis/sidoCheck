@@ -29,6 +29,7 @@ def dashboardcustomer():
 def employee_list(shopname):
 	shop = Shop.query.filter_by(shopname=shopname).first()
 	employees = shop.users
+	employees.pop(0) # delete shop user from employees
 
 	return render_template('customer/employee_list.html', employees=employees, shopname=shopname)
 
