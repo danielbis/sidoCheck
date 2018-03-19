@@ -33,7 +33,9 @@ Dashboard Customer
   <div class="row">
       {% for employee in employee_row %}
       <div class="col-md-4">
+        {% if employee.id %}
         <div class="card" style="width: 100%; margin-bottom: 2rem; border: 1px solid rgba(0, 0, 0, 0.125);
+        }
     border-radius: 0.25rem; text-align: justify;" >
                 <img src="{{url_for('static', filename='city.jpg')}}" style="width: 100%"; class="img-responsive"/>
                 <div class="card-body">
@@ -43,6 +45,7 @@ Dashboard Customer
                     <a href="{{url_for('mod_customer.availability', shopname=shopname, empl_id = employee.id)}}" class="btn btn-primary btn-block">Availability</a>
                 </div>
             </div>
+          {% endif %}
       </div>
       {% endfor %}
   </div>

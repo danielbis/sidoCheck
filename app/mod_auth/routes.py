@@ -64,7 +64,7 @@ def signup():
 
         
 
-        return '<h1>New user has been created!</h1>'
+        return redirect(url_for("mod_auth.login"))
         #return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
 
     return render_template('auth/signup.html', form=form)
@@ -122,7 +122,7 @@ def signup_employee():
         except IntegrityError:
             db.session.rollback()
             return '<h1> This email is already taken </h1>'
-        return '<h1>New employee has been created!</h1>'
+        return redirect(url_for("mod_provider.dashboardprovider"))
         #return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
 
     return render_template('auth/signup_employee.html', form=form)

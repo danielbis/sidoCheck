@@ -87,15 +87,21 @@ def walkin():
 def addservice():
 
 	shop = Shop.query.filter_by(shopId = current_user.shopId).first()
-	form = AddServiceForm()
+	employees = shop.users[1:]
 
+	form = AddServiceForm()
+	form.employees.choices = [(e.id, e.first_name + " " + e.last_name) for e in employees]
+	print(form.employees.choices)
 	if form.validate_on_submit():
+		print("choices: ", form.employees.data)
 		s = Service(form.service_name.data, form.service_length.data, form.service_price.data)
+		s.providers.append(current_user)
 		for u in shop.users:
-			s.providers.append(u)
+			if u.id in form.employees.data:
+				s.providers.append(u)
 		db.session.add(s)
 		db.session.commit()
-		return '<h1> Service added </h1>'
+		return redirect(url_for("mod_provider.dashboardprovider"))
 
 
 	return render_template('provider/addservice.html', form = form)
