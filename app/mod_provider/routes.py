@@ -4,7 +4,7 @@ from flask_sqlalchemy  import SQLAlchemy
 from flask_wtf import FlaskForm 
 from flask_login import login_user, login_required, logout_user, current_user
 import logging
-from app.mod_provider.forms import DateForm, ServiceForm
+from app.mod_provider.forms import DateForm, ServiceForm, AddServiceForm
 
 #import database object and login manager from app module
 from app import db, login_manager
@@ -81,6 +81,24 @@ def walkin():
 	print("date_today is ", d.strftime("%m/%d/%Y"))
 
 	return render_template('provider/walkin.html', slots_shop = slots_shop, service_id=service_id, date_today = str(d.strftime("%m/%d/%Y")))
+
+@provider_mod.route('/addservice', methods=['GET', 'POST'])
+@login_required
+def addservice():
+
+	shop = Shop.query.filter_by(shopId = current_user.shopId).first()
+	form = AddServiceForm()
+
+	if form.validate_on_submit():
+		s = Service(form.service_name.data, form.service_length.data, form.service_price.data)
+		for u in shop.users:
+			s.providers.append(u)
+		db.session.add(s)
+		db.session.commit()
+		return '<h1> Service added </h1>'
+
+
+	return render_template('provider/addservice.html', form = form)
 
 
 
