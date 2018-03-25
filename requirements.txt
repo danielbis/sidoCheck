@@ -17,5 +17,6 @@ wtforms-html5==0.2.2
 Flask-dance==0.13.0
 blinker===1.4
 SQLAlchemy-Utils==0.33.0
+WTForms-Components==0.10.3
 
 

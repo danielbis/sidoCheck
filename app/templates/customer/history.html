@@ -15,11 +15,13 @@ Dashboard Customer
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
         <div class="navbar-header">
-          <a class="navbar-brand" href="#">Sido</a>
+          <a class="navbar-brand" href="{{url_for('mod_customer.dashboardcustomer')}}">Sido</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li class="active"><a href="#">Welcome to <span class="sr-only">{{shopname}}</span></a></li>
+            <li><a href="{{url_for('mod_customer.dashboardcustomer')}}">Dashboard </a></li>
+            <li class="active"><a href="{{ url_for('mod_customer.history') }}">Your Appointments</a></li>
+
             <li><a href="{{ url_for('mod_auth.logout') }}">Log Out</a></li>
            
 

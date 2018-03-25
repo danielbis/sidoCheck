@@ -1,0 +1,88 @@
+<!-- Author Daniel Bis -->
+
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+Login
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="../../static/signin.css" xmlns="http://www.w3.org/1999/html">
+{% endblock %}
+
+{% block scripts %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+<script type="text/javascript">
+var time_slot;
+var empl_id;
+$(document).on("click", "#slot", function(){
+    time_slot = $(this).text();
+    empl_id = $(this).val();
+    
+    $.ajax({
+      method:'post', 
+      url:'/bookslot', 
+      data: JSON.stringify({ 
+              date_string: "{{date_string}}",
+              empl_id: empl_id, 
+              service_id: {{service_id}},
+              time_slot: time_slot
+      }), 
+      contentType: 'application/json',
+      error: function(data){
+        alert("Somethong went wrong. Try again please.")
+      },
+      success: function(data) {
+        if (data == "/confirm"){
+          window.location.href = "/provider/confirm_shop";
+        }
+        else{
+          alert("Sorry, this time slot is no longer available.")
+        }
+      }
+    })
+  });
+
+</script>
+{% endblock %}
+{% block content %}
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+         <div class="navbar-header">
+          <a class="navbar-brand" href="{{url_for('mod_provider.dashboardprovider')}}">Sido</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li> <a href="{{ url_for('mod_provider.add_schedule') }}">Add schedule</a></li>
+            <li><a href="{{ url_for('mod_auth.signup_employee') }}">Add employee</a></li>
+            <li class="active"><a href="{{ url_for('mod_provider.addservice') }}">Add service</a></li>
+            <li class="active"><a href="{{ url_for('mod_provider.book_appointment_date') }}">Book Appointment</a></li>
+
+            <li><a href="{{ url_for('mod_auth.logout') }}">Log Out</a></li>
+
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="container" style="text-align: center;">	
+    	
+		{% for s in slots %}
+    <div class="row"> {{s[0].first_name}} {{s[0].last_name}}</div>
+    {% for slots_row in s[1] | batch(6, '&nbsp;') %}
+    <div class="row">
+      {% for slot in slots_row %}
+      <div class="col-md-2">
+      <button class="btn-primary btn-lg" value="{{s[0].id}}" id="slot">{{slot}}</button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+    {% endfor %}
+	</div>
+
+
+
+{% endblock %}

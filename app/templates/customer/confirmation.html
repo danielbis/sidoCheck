@@ -29,6 +29,18 @@ Dashboard Customer
     </nav>
 
 <div class="container" style="margin-top: 5%; ">
- <h1> {{confirmation["message"]}} </h1>
+ {% if confirmation["open"] == "True" %}
+ <h1 style="color: green;"> {{confirmation["message"]}} </h1>
+ <h3> Service: {{confirmation.service_name}} </h3>
+ <h3> Time: {{confirmation.date_scheduled}} </h3>
+ <h3> Price: {{confirmation.price}} </h3>
+ <h3> Provider: {{confirmation.employee_name}}</h3> 
+ <h3> Shop: {{confirmation.shopname}} </h3> 
+ {% endif %}
+ {% if confirmation["open"] == "False" %}
+  <h1 style="color: red;"> {{confirmation["message"]}} </h1>
+ {% endif %}
+ <a href="{{ url_for('mod_customer.dashboardcustomer') }}"><button class="btn btn-lg btn-primary btn-block">Back to the main page</button></a>
+
 </div>
 {% endblock %}

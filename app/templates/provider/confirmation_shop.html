@@ -1,0 +1,54 @@
+<!-- Author Daniel Bis -->
+
+
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+Dashboard Customer
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+{% endblock %}
+
+{% block content %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+         <div class="navbar-header">
+          <a class="navbar-brand" href="{{url_for('mod_provider.dashboardprovider')}}">Sido</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li class="active"><a href="#">Welcome to {{name}}</a></li>
+            <li><a href="{{ url_for('mod_provider.add_schedule') }}">Add schedule</a></li>
+
+            <li><a href="{{ url_for('mod_auth.signup_employee') }}">Add employee</a></li>
+            <li><a href="{{ url_for('mod_provider.addservice') }}">Add service</a></li>
+            <li class="active"><a href="{{ url_for('mod_provider.book_appointment_date') }}">Book Appointment</a></li>
+
+            <li><a href="{{ url_for('mod_auth.logout') }}">Log Out</a></li>
+
+          </ul>
+        </div>
+      </div>
+    </nav>
+</nav>
+
+
+<div class="container" style="margin-top: 5%; ">
+ {% if confirmation["open"] == "True" %}
+ <h1 style="color: green;"> {{confirmation["message"]}} </h1>
+ <h3> Service: {{confirmation.service_name}} </h3>
+ <h3> Time: {{confirmation.date_scheduled}} </h3>
+ <h3> Price: {{confirmation.price}} </h3>
+ <h3> Provider: {{confirmation.employee_name}}</h3> 
+ <h3> Shop: {{confirmation.shopname}} </h3> 
+ <h3> Customer: {{confirmation.customer_name}}</h3>
+ {% endif %}
+ {% if confirmation["open"] == "False" %}
+  <h1 style="color: red;"> {{confirmation["message"]}} </h1>
+ {% endif %}
+ <a href="{{ url_for('mod_provider.dashboardprovider') }}"><button class="btn btn-lg btn-primary btn-block">Back to the main page</button></a>
+
+</div>
+{% endblock %}

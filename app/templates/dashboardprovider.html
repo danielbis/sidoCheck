@@ -11,20 +11,57 @@ Dashboard
 {% block styles %}
 {{super()}}
 {% endblock %}
+{% block scripts %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+<script type="text/javascript">
+
+$(document).on("click", "#slot", function(){
+    var r = confirm("Are you sure that you want to cancel this appointment?");
+    if (r == true){
+    	$.ajax({
+	      method:'post', 
+	      url:'/provider/cancel_appointment', 
+	      data: JSON.stringify({ 
+	              appointment_id: $(this).val(), 
+	              
+	      }), 
+	      contentType: 'application/json',
+	      error: function(data){
+	        alert("Somethong went wrong. Try again please.")
+	      },
+	      success: function(data) {
+	        if (data == "success"){
+	          window.location.href = "/provider/dashboardprovider";
+	        }
+	        else{
+	          alert("Sorry, this time slot is no longer available.")
+	        }
+	      }
+	    })
+    }
+    
+  });
+
+</script>
+{% endblock %}
 
 {% block content %}
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="#">Sido</a>
+         <div class="navbar-header">
+          <a class="navbar-brand" href="{{url_for('mod_provider.dashboardprovider')}}">Sido</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li class="active"><a href="#">Welcome<span class="sr-only">{{name}}</span></a></li>
-            <li><a href="{{ url_for('mod_auth.logout') }}">Log Out</a></li>
-            <li><a href="{{ url_for('mod_auth.signup_employee') }}">Add employee</a></li>
+            <li class="active"><a href="#">Welcome to {{name}}</a></li>
             <li><a href="{{ url_for('mod_provider.add_schedule') }}">Add schedule</a></li>
+
+            <li><a href="{{ url_for('mod_auth.signup_employee') }}">Add employee</a></li>
             <li><a href="{{ url_for('mod_provider.addservice') }}">Add service</a></li>
+            <li><a href="{{ url_for('mod_provider.book_appointment_date') }}">Book Appointment</a></li>
+
+            <li><a href="{{ url_for('mod_auth.logout') }}">Log Out</a></li>
 
           </ul>
         </div>
@@ -57,6 +94,7 @@ Dashboard
 	      <th scope="col">Time</th>
 	      <th scope="col">Service</th>
 	      <th scope="col">Client Name</th>
+	      <th scope="col">Cancel</th>
 	    </tr>
 	  </thead>
 	  <tbody>
@@ -67,6 +105,7 @@ Dashboard
 	      <td>{{a["time"]}}</td>
 	      <td>{{a["service_type"]}}</td>
 	      <td>{{a["clien_first"]}} {{a["client_last"]}}</td>
+	      <td> <button id = "slot" class="btn btn-danger" value= '{{ a["appointment_id"] }}' type="submit">Cancel</button></td>
 	    </tr>
 	    {% endfor %}
 	    {% endfor %}

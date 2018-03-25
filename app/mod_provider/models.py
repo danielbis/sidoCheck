@@ -38,7 +38,7 @@ class Appointment(db.Model):
  
     def __repr__(self):
         return '<Client Name %r, User Email %r, Date and Time %r, EmployeeID %r>' \
-               % (self.client_first, self.client_email, self.datescheduled, self.employeeId)
+               % (self.client_first, self.client_email, self.date_scheduled, self.employeeId)
 
 
 """Schedule class representing a daily availability for each of the employees. 

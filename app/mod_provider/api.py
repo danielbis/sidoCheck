@@ -6,6 +6,7 @@ from app.mod_auth.models import User, Shop
 from app.mod_provider.models import Schedule, Appointment, Service
 
 from datetime import *
+from itertools import cycle
 
 """
 	Finds employees schedule (daily_hours) for a day (@date) 
@@ -128,6 +129,7 @@ def get_employees_appointments_by_date(empl, date):
 		s = Service.query.filter_by(service_id=a.service_id).first()
 		o = {
 			"time": a.date_scheduled,
+			"appointment_id": a.appointmentId,
 			"client_first": a.client_first,
 			"client_last": a.client_last, 
 			"client_phone": a.client_phone, 
@@ -144,5 +146,18 @@ def get_employees_appointments_by_date(empl, date):
 	return a_list
 
 
+def filter_history(appointments):
+
+	time_diff = timedelta(minutes=20)
+	to_remove = []
+	idx = 0
+	for app in appointments:
+		if (idx < len(appointments)-1):
+			print("diff is ", type(appointments[idx+1].date_scheduled - appointments[idx].date_scheduled) is timedelta)
+			print("time_diff ", time_diff)
+			if (appointments[idx].date_scheduled - appointments[idx+1].date_scheduled == time_diff) and (appointments[idx].employeeId == appointments[idx+1].employeeId):
+				del(appointments[idx])
+			idx +=1
+	return appointments
 
 

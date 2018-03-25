@@ -15,11 +15,15 @@ Dashboard Customer
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
         <div class="navbar-header">
-          <a class="navbar-brand" href="#">Sido</a>
+          <a class="navbar-brand" href="{{url_for('mod_customer.dashboardcustomer')}}">Sido</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li class="active"><a href="#">Welcome to <span class="sr-only">{{shopname}}</span></a></li>
+            <li class="active"><a href="#">{{shopname}}'s crew is listed below </a></li>
+            <li><a href="{{url_for('mod_customer.dashboardcustomer')}}">Dashboard </a></li>
+
+            <li><a href="{{ url_for('mod_customer.history') }}">Your Appointments</a></li>
+
             <li><a href="{{ url_for('mod_auth.logout') }}">Log Out</a></li>
            
 
@@ -33,7 +37,6 @@ Dashboard Customer
   <div class="row">
       {% for employee in employee_row %}
       <div class="col-md-4">
-        {% if employee.id %}
         <div class="card" style="width: 100%; margin-bottom: 2rem; border: 1px solid rgba(0, 0, 0, 0.125);
         }
     border-radius: 0.25rem; text-align: justify;" >
@@ -45,7 +48,6 @@ Dashboard Customer
                     <a href="{{url_for('mod_customer.availability', shopname=shopname, empl_id = employee.id)}}" class="btn btn-primary btn-block">Availability</a>
                 </div>
             </div>
-          {% endif %}
       </div>
       {% endfor %}
   </div>
