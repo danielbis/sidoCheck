@@ -36,6 +36,7 @@ Dashboard Customer
   {% for employee_row in employees | batch(3, '&nbsp;') %}
   <div class="row">
       {% for employee in employee_row %}
+      {% if employee.id  %}
       <div class="col-md-4">
         <div class="card" style="width: 100%; margin-bottom: 2rem; border: 1px solid rgba(0, 0, 0, 0.125);
         }
@@ -49,6 +50,7 @@ Dashboard Customer
                 </div>
             </div>
       </div>
+      {% endif %}
       {% endfor %}
   </div>
   

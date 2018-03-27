@@ -31,12 +31,14 @@ def dashboardprovider():
 		else:
 			d = date.today()
 			a = get_employees_appointments_by_date(e, d)
-			empl_app.append((e, a))
+			empl_app += a
 	
 	form = ServiceForm()
 	shops_services = Service.query.filter(Service.providers.any(id=current_user.id)).all()	
 	form.service.choices = [(s.service_id, s.service_name) for s in shops_services]
 	shop = Shop.query.filter_by(shopId = current_user.shopId).first()
+	empl_app.sort(key=lambda r: r["time"], reverse=True)
+
 	if form.validate_on_submit():
 		session["walkin_service_id"] = form.service.data
 		return redirect(url_for("mod_provider.walkin"))

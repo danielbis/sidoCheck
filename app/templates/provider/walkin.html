@@ -67,7 +67,7 @@ Schedule Appointment
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li class="active"><a href="#">Welcome to {{name}}</a></li>
+            <li><a href="{{url_for('mod_provider.dashboardprovider')}}">Dashboard</a></li>
             <li><a href="{{ url_for('mod_provider.add_schedule') }}">Add schedule</a></li>
 
             <li><a href="{{ url_for('mod_auth.signup_employee') }}">Add employee</a></li>

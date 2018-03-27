@@ -60,8 +60,8 @@ Sign Up
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
+            <li><a href="{{url_for('mod_provider.dashboardprovider')}}">Dashboard</a></li>
             <li class="active"><a href="{{ url_for('mod_provider.add_schedule') }}">Add schedule</a></li>
-
             <li><a href="{{ url_for('mod_auth.signup_employee') }}">Add employee</a></li>
             <li><a href="{{ url_for('mod_provider.addservice') }}">Add service</a></li>
             <li><a href="{{ url_for('mod_provider.book_appointment_date') }}">Book Appointment</a></li>
@@ -74,28 +74,37 @@ Sign Up
 </nav>
 <div class="container" style="margin-top: 10%; text-align:center;">
 
-  <form method="POST" action="/provider/addschedule">
-	   <div class="row"; width="50%;">
-	   <h5> Enter employee's email address </h5>
+  <form method="POST" class="form-group" action="/provider/addschedule">
+	   <div class="form-group row"; style="width: 100%; margin-left: 0.2%;">
+	   <label for="email_input">Enter employee's email address </label>
 	   	{{ form.hidden_tag() }}
-	    {{ form.email(placeholder="Email Address") }}
+	    {{ form.email(placeholder="Email Address", class_="form-control", id="email_input") }}
 	    </div>
 	   	
-	    <div class="row">
-	   	<h5> Select Date Range </h5>
-	    {{ form.start_date(id="from") }}
-	    {{ form.end_date(id="to") }}
-
+	    <div class="form-group row">
+		
+		<div class="col-md-6">
+		<label for="from">Select Starting Date </label>
+		{{ form.start_date(id="from", class_="form-control") }}
+		</div>
+		<div class="col-md-6">
+		<label for="to">Select Ending Date </label>
+	    {{ form.end_date(id="to", class_="form-control") }}
+	    </div>
 	    </div>
 	   
-	    <div class="row">
-	    <h5> Select Start and End Time </h5>
-	    {{ form.start_time() }}
-	   
-	    {{ form.end_time() }}
+	    <div class="form-group row">
+	    <div class="col-md-6">
+	    <label for="s_time">Select Start and End Time </label>
+	    {{ form.start_time(class_="form-control form-control-lg", id="s_time") }}
+	    </div>
+	   	<div class="col-md-6">
+	   	<label for="e_time">Select Starting Date </label>
+	    {{ form.end_time(class_="form-control form-control-lg", id="e_time") }}
+	    </div>
 	    </div>
 	    
-	    <input class="btn-success btn-lg" type="submit" value="Add">
+	    <input class="btn-success btn-lg btn-block" type="submit" value="Add">
 	</form>
 
 </div> <!-- /container -->

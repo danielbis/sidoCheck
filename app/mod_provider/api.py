@@ -115,7 +115,7 @@ def get_next_available(shopId, date, slots_required = 1):
 		empl_first: str
 		empl_last: str
 		empl_phone: string
-		empl_email: str
+		empl_email: str 
 	}
 
 """

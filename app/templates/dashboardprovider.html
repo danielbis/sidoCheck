@@ -47,7 +47,7 @@ $(document).on("click", "#slot", function(){
 {% endblock %}
 
 {% block content %}
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <nav class="navbar navbar-inverse navbar-fixed-top .bg-secondary" >
       <div class="container-fluid">
          <div class="navbar-header">
           <a class="navbar-brand" href="{{url_for('mod_provider.dashboardprovider')}}">Sido</a>
@@ -76,7 +76,7 @@ $(document).on("click", "#slot", function(){
 	    {{ wtf.form_field(form.service) }}
     </div>
     <div class="col-sm-6" style="text-align: right;">
-     	<button class="btn btn-lg btn-primary btn-block align-text-bottom" type="submit" style="margin-top: 3%;">Walk-in</button>
+     	<button class="btn btn-primary btn-block btn-lg align-text-bottom" type="submit" style="margin-top: 3%;">Walk-in</button>
     </div>
 	</form>
 	</div>
@@ -98,16 +98,14 @@ $(document).on("click", "#slot", function(){
 	    </tr>
 	  </thead>
 	  <tbody>
-	    {% for e in empl_app %}
-	    {% for a in e[1] %}
+	    {% for a in empl_app %}
             <tr>
-	      <th scope="row">{{e[0].first_name}} {{e[0].last_name}}</th>
+	      <th scope="row">{{a["empl_first"]}} {{a["empl_last"]}}</th>
 	      <td>{{a["time"]}}</td>
 	      <td>{{a["service_type"]}}</td>
 	      <td>{{a["clien_first"]}} {{a["client_last"]}}</td>
 	      <td> <button id = "slot" class="btn btn-danger" value= '{{ a["appointment_id"] }}' type="submit">Cancel</button></td>
 	    </tr>
-	    {% endfor %}
 	    {% endfor %}
 	  </tbody>
 	</table>	    

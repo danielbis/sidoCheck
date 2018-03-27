@@ -35,6 +35,7 @@ Dashboard Customer
   {% for shop_row in shops | batch(2, '&nbsp;') %}
   <div class="row">
   {% for shop in shop_row %}
+  {% if shop.shopId > -1 %}
    <div class="col-md-6">
        <div class="card" style="width:100%; margin-bottom: 20px; border: 1px solid rgba(0, 0, 0, 0.125);
           border-radius: 0.25rem;" >
@@ -47,7 +48,9 @@ Dashboard Customer
         </div>
       </div>
     </div>
+    {% endif %}
       {% endfor %}
+    }
   </div>
 {% endfor %}
 </div>
