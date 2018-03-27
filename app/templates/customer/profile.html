@@ -1,0 +1,53 @@
+
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block title %}
+my_profile.first_name
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Sido</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav navbar-right">
+        <li class="active"><a href="#">Welcome to Dashboard Customer<span class="sr-only">{{name}}</span></a></li>
+        <li><a href="{{ url_for('mod_customer.history') }}">Your Appointments</a></li>
+
+        <li><a href="{{ url_for('mod_auth.logout') }}">Log Out</a></li>
+          <li><a href="{{ url_for('mod_customer.profile') }}">Profile</a></li>
+
+
+      </ul>
+    </div>
+  </div>
+</nav>
+<div class="container" style="margin-top: 5%;">
+  <h1>PROFILE</h1>
+
+<h1>Name: {{ my_profile.first_name }} {{ my_profile.last_name }}</h1>
+<h1>Email: {{ my_profile.email }}</h1>
+<h1>Phone Number: {{ my_profile.phonenumber }}</h1>
+
+{% if my_profile == current_user %}
+<p><a href="{{ url_for('mod_customer.edit_profile') }}">Edit your profile</a></p>
+<p><a href="{{ url_for('mod_customer.update_password') }}">Update Password</a></p>
+
+{% endif %}
+
+
+
+
+
+</div>
+
+
+{% endblock %}

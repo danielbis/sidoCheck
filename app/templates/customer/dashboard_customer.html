@@ -1,0 +1,55 @@
+<!-- Author Daniel Bis -->
+
+
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+Dashboard Customer
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+{% endblock %}
+
+{% block content %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Sido</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li class="active"><a href="#">Welcome to Dashboard Customer<span class="sr-only">{{name}}</span></a></li>
+            <li><a href="{{ url_for('mod_customer.history') }}">Your Appointments</a></li>
+
+            <li><a href="{{ url_for('mod_auth.logout') }}">Log Out</a></li>
+              <li><a href="{{ url_for('mod_customer.profile') }}">Profile</a></li>
+
+
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+<div class="container" style="margin-top: 5%;">
+
+  {% for shop_row in shops | batch(2, '&nbsp;') %}
+  <div class="row">
+  {% for shop in shop_row %}
+   <div class="col-md-6">
+       <div class="card" style="width:100%; margin-bottom: 20px; border: 1px solid rgba(0, 0, 0, 0.125);
+          border-radius: 0.25rem;" >
+        <img class="card-img-top" src="{{ url_for('static', filename='barber.jpg') }}" alt="Card image cap" style="width:100%;">
+        <div class="card-body">
+          <h5 class="card-title">{{shop.shopname}}</h5>
+          <p class="card-text"> We are located on {{shop.location}}</p>
+          <p class="card-text"><small class="text-muted">Next available spot at 5:20 PM</small></p>
+          <a href="{{ url_for('mod_customer.employee_list', shopname = shop.shopname) }}"" class="btn btn-primary btn-block">Page</a>
+        </div>
+      </div>
+    </div>
+      {% endfor %}
+  </div>
+{% endfor %}
+</div>
+{% endblock %}

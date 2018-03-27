@@ -1,0 +1,48 @@
+<!-- Author Daniel Bis -->
+
+
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+Dashboard Customer
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+{% endblock %}
+
+{% block content %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Sido</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li class="active"><a href="#">Welcome to <span class="sr-only">{{shopname}}</span></a></li>
+            <li><a href="{{ url_for('mod_auth.logout') }}">Log Out</a></li>
+
+
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+
+
+
+
+
+<ul class="list-group" style="margin-top: 5%">
+{% for a in my_appointments %}
+
+{% if a.upcoming %}
+  <li class="list-group-item list-group-item-success"> You have an appointment with {{a.employee}} at {{a.shopname}} starts at {{a.date_scheduled}} </li>
+{% endif %}
+{% if a.upcoming != True %}
+  <li class="list-group-item list-group-item-dark"> You saw {{a.employee}} at {{a.shopname}} on the {{a.date_scheduled}} </li>
+{% endif %}
+
+{% endfor %}
+</ul>
+{% endblock %}
