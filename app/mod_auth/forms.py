@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm 
 from wtforms import StringField, PasswordField, BooleanField
 from wtforms.validators import InputRequired, Email, Length
-
+from flask_wtf.file import FileField, FileAllowed, FileRequired
 
 # Define the login form (WTForms)
 
@@ -20,6 +20,7 @@ class RegisterFormShop(FlaskForm):
     shopname = StringField('shopname', validators=[InputRequired(), Length(min=2, max=64)])
     address = StringField('address', validators=[InputRequired(), Length(min=8, max=128)])
     phonenumber = StringField('phonenumber', validators=[InputRequired(), Length(min=10, max=12)])
+    image = FileField(validators=[FileAllowed(['jpg', 'png'], 'Images only!')]) #validators=[FileRequired()]
     password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
 
 class RegisterFormEmployee(FlaskForm):
@@ -29,3 +30,4 @@ class RegisterFormEmployee(FlaskForm):
     phonenumber = StringField('phonenumber', validators=[InputRequired(), Length(min=10, max=12)])
     password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
     manager = BooleanField('manager')
+    image = FileField(validators=[FileAllowed(['jpg', 'png'], 'Images only!')]) #validators=[FileRequired()]

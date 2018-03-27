@@ -35,22 +35,28 @@ Dashboard Customer
   {% for shop_row in shops | batch(2, '&nbsp;') %}
   <div class="row">
   {% for shop in shop_row %}
-  {% if shop.shopId > -1 %}
+  {% if shop.shopId %}
    <div class="col-md-6">
        <div class="card" style="width:100%; margin-bottom: 20px; border: 1px solid rgba(0, 0, 0, 0.125);
           border-radius: 0.25rem;" >
+        {% if shop.img_path|length > 1 %}
+        <img class="card-img-top" src="/static/img/{{shop.img_path}}"  alt="Card image cap" style="width:100%;">
+        {% endif %}
+        {% if shop.img_path |length < 1 %}
         <img class="card-img-top" src="{{ url_for('static', filename='barber.jpg') }}" alt="Card image cap" style="width:100%;">
+        {% endif %}
         <div class="card-body">
           <h5 class="card-title">{{shop.shopname}}</h5>
           <p class="card-text"> We are located on {{shop.location}}</p>
           <p class="card-text"><small class="text-muted">Next available spot at 5:20 PM</small></p>
+
           <a href="{{ url_for('mod_customer.employee_list', shopname = shop.shopname) }}"" class="btn btn-primary btn-block">Page</a>
         </div>
       </div>
     </div>
     {% endif %}
       {% endfor %}
-    }
+    
   </div>
 {% endfor %}
 </div>

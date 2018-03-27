@@ -41,7 +41,13 @@ Dashboard Customer
         <div class="card" style="width: 100%; margin-bottom: 2rem; border: 1px solid rgba(0, 0, 0, 0.125);
         }
     border-radius: 0.25rem; text-align: justify;" >
-                <img src="{{url_for('static', filename='city.jpg')}}" style="width: 100%"; class="img-responsive"/>
+                {% if employee.img_path|length > 1 %}
+                  <img class="img-responsive" src="/static/img/{{employee.img_path}}" alt="Card image cap" style="width: 100%";/>
+                {% endif %}
+                {% if employee.img_path|length < 1 %}
+                  <img src="{{url_for('static', filename='city.jpg')}}" style="width: 100%"; class="img-responsive"/>
+                {% endif %}
+
                 <div class="card-body">
                     <h5 class="card-title">{{employee.first_name}} {{employee.last_name}}</h5>
                     <p class="card-text"> {{employee.email}}</p>

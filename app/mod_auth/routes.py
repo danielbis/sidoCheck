@@ -1,11 +1,14 @@
  #Author: DANIEL BIS
 
 #flask dependencies
+import os
 from flask import Flask, render_template, redirect, url_for, Blueprint
 from flask_wtf import FlaskForm 
 from app.mod_auth.forms import RegisterForm, RegisterFormShop, RegisterFormEmployee, LoginForm
 from flask_sqlalchemy  import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
+
 from flask_login import login_user, login_required, logout_user, current_user
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
@@ -78,8 +81,12 @@ def signup_shop():
     if form.validate_on_submit():
         hashed_password = generate_password_hash(form.password.data, method='sha256')
         try:
+            f = form.image.data
+            filename = secure_filename(f.filename)
+            path = os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)
+            f.save(path)
             new_user = User(firstname=form.shopname.data, lastname = form.shopname.data, phonenumber = form.phonenumber.data, email=form.email.data, password=hashed_password, role = "shop")
-            new_shop = Shop(shopname=form.shopname.data, location = form.address.data)
+            new_shop = Shop(shopname=form.shopname.data, location = form.address.data, img = filename) # storing only the filename since all of the images are in the same directory
             #db.session.add(new_shop)
             db.session.add(new_shop)
             new_shop.users.append(new_user)
@@ -108,7 +115,12 @@ def signup_employee():
             managerCheck = 0
             if form.manager.data:
                 managerCheck = 1
-            new_user = User(firstname=form.firstname.data, lastname = form.lastname.data, email=form.email.data, phonenumber = form.phonenumber.data, password=hashed_password, role="employee", manager = managerCheck)
+            f = form.image.data
+            filename = secure_filename(f.filename)
+            path = os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)
+            f.save(path)
+
+            new_user = User(firstname=form.firstname.data, lastname = form.lastname.data, email=form.email.data, phonenumber = form.phonenumber.data, password=hashed_password, role="employee", manager = managerCheck, img = filename)
 
             #quering for shop where the current user is a manager
             temp_user = User.query.filter_by(id = current_user.id).first()

@@ -30,6 +30,7 @@ class User(UserMixin, db.Model):
     phonenumber = db.Column(db.String(60), nullable=True)
     date_created = db.Column(db.DateTime, default = db.func.current_timestamp())
     date_modified = db.Column(db.DateTime, default = db.func.current_timestamp(), onupdate = db.func.current_timestamp())
+    img_path = db.Column(db.String(120), nullable=True)
 
 
     shopId = db.Column(db.Integer, ForeignKey("Shops.shopId"))
@@ -39,7 +40,7 @@ class User(UserMixin, db.Model):
     #relationships (will be defined later)
     #Appointments = relationship("Appointment", backref = "Users")
 
-    def __init__(self, firstname, lastname, email, password, role,manager = 0, phonenumber = ""):
+    def __init__(self, firstname, lastname, email, password, role,manager = 0, phonenumber = "", img=""):
         self.first_name = firstname
         self.last_name = lastname
         self.email = email
@@ -47,6 +48,7 @@ class User(UserMixin, db.Model):
         self.phonenumber = phonenumber
         self.role = role
         self.manager = manager
+        self.img_path = img
 
     def __repr__(self):
         return '<Name %r, Email %r>' % (self.first_name, self.email)
