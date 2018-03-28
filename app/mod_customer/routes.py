@@ -1,9 +1,10 @@
-from flask import Flask, render_template, redirect, url_for, Blueprint, jsonify, request, session
+from flask import Flask, render_template, redirect, url_for, Blueprint, jsonify, request, session, flash
 from flask_sqlalchemy  import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_wtf import FlaskForm 
 from flask_login import login_user, login_required, logout_user, current_user
 import logging
-from app.mod_customer.forms import DateForm, DateForm_v2
+from app.mod_customer.forms import DateForm, DateForm_v2, EditProfile, UpdatePassword
 
 #import database object and login manager from app module
 from app import app, db, login_manager
@@ -217,6 +218,60 @@ def history():
 	my_appointments = filter_history(my_appointments)
 
 	return render_template("customer/history.html", my_appointments = my_appointments)
+@customer_mod.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+	my_profile= User.query.filter_by(id= current_user.id).first()
+
+	return render_template('customer/profile.html', my_profile= my_profile)
+
+
+@customer_mod.route('/edit_profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+	form = EditProfile()
+	form_action= url_for('mod_customer.edit_profile')
+
+	profile= User.query.filter_by(id= current_user.id).first()
+
+	if request.method== 'GET':
+		form.email.data = profile.email
+		form.phonenumber.data= profile.phonenumber
+
+	if form.validate_on_submit():
+		profile.email=form.email.data
+		profile.phonenumber=form.phonenumber.data
+		db.session.commit()
+		flash('Profile Updated')
+		return 'Profile Updated'
+
+	return render_template('customer/edit_profile.html',form=form,form_action=form_action, profile= profile, title= "Update Profile")
+
+
+@customer_mod.route('/update_password', methods=['GET', 'POST'])
+@login_required
+def update_password():
+	form = UpdatePassword()
+	form_action= url_for('mod_customer.update_password')
+
+	profile= User.query.filter_by(id= current_user.id).first()
+
+	if form.validate_on_submit():
+		if check_password_hash(profile.password, form.old_password.data):
+			if form.new_password.data == form.val_password.data:
+				profile.password = generate_password_hash(form.new_password.data, method='sha256')
+				db.session.commit()
+
+				return '<h1>Password Updated</h1>'
+			else:
+				return '<h1>Passwords do not match</h1>'
+
+		else:
+			return '<h1>Incorrect Password</h1>'
+
+
+
+	return render_template('customer/update_password.html',form=form,form_action=form_action, profile= profile, title= "Update Password")
 
 
 
