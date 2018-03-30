@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from flask_dance.consumer.backend.sqla import OAuthConsumerMixin, SQLAlchemyBackend
 
-#Author: DANIEL BIS
+#   Author: DANIEL BIS
 
 """
 User to Employee = One to One 
@@ -15,14 +15,18 @@ Shop to Employe = One to Many
 
 """
 
-#define user model
+"""
+    Define user model
+"""
+
+
 class User(UserMixin, db.Model):
 
     __tablename__ = "Users"
     id = db.Column(db.Integer, primary_key = True);
     first_name = db.Column(db.String(128), nullable = False)
     last_name = db.Column(db.String(128), nullable = False)
-        #identification data email&password
+    #   identification data email&password
     email = db.Column(db.String(64), nullable = False, unique = True)
     password = db.Column(db.String(128), nullable = False)
     role = db.Column(db.String(32), nullable=False )
@@ -32,13 +36,12 @@ class User(UserMixin, db.Model):
     date_modified = db.Column(db.DateTime, default = db.func.current_timestamp(), onupdate = db.func.current_timestamp())
     img_path = db.Column(db.String(120), nullable=True)
 
-
     shopId = db.Column(db.Integer, ForeignKey("Shops.shopId"))
     schedules = relationship("Schedule", backref="Users")
     appointments = relationship("Appointment", backref="Users")
 
-    #relationships (will be defined later)
-    #Appointments = relationship("Appointment", backref = "Users")
+    #   relationships (will be defined later)
+    #   Appointments = relationship("Appointment", backref = "Users")
 
     def __init__(self, firstname, lastname, email, password, role,manager = 0, phonenumber = "", img=""):
         self.first_name = firstname
@@ -55,13 +58,14 @@ class User(UserMixin, db.Model):
 
 
 class Shop(db.Model):
+
     __tablename__ = "Shops"
     shopId = db.Column(db.Integer, primary_key = True)
-    users = relationship("User", backref="Shops")   #db.Column(db.Integer, ForeignKey("Users.id"))
+    users = relationship("User", backref="Shops")
     shopname = db.Column(db.String(80), nullable=False, unique=True)
     location = db.Column(db.String(80), nullable=False)
     img_path = db.Column(db.String(120), nullable=True)
-    #Enable backpropagation between Shops and their working hours
+    #   Enable backpropagation between Shops and their working hours
 
     def __init__(self, shopname, location, img=""):
         self.shopname = shopname

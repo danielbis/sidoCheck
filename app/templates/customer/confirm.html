@@ -6,6 +6,8 @@ Dashboard Customer
 
 {% block styles %}
 {{super()}}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
 {% endblock %}
 
 {% block content %}
@@ -25,15 +27,46 @@ Dashboard Customer
       </div>
     </nav>
 
-<div class="container" style="margin-top: 5%; ">
- <h2> Please, confirm if you would like to book this appointment with {{confirmation.employee_name}}</h2> 
- <h3> Service: {{confirmation.service_name}} </h3>
- <h3> Time: {{confirmation.date_scheduled}} </h3>
- <h3> Shop: {{confirmation.shop_name}} </h3> 
- <h3> Price: {{confirmation.price}} </h3>
- <form method="POST" action="/confirm">
-   <button class="btn btn-lg btn-success btn-block" type="submit">Confirm</button>
- </form>
-  <a href="{{ url_for('mod_customer.dashboardcustomer') }}"><button class="btn btn-lg btn-danger btn-block">Cancel</button></a>
+<div class="container" style="margin-top: 10%; ">
+
+
+    <div class="card border-dark text-center">
+  <div class="card-header">
+    Is below information correct?
+  </div>
+  <div class="card-body">
+    <h5 class="card-title"> Please, confirm if you would like to book this appointment with {{confirmation.employee_name}}.
+</h5>
+      <div class="row">
+          <div class="col col-md-6" style="text-align: right;">
+              <p><b>Service: </b> {{confirmation.service_name}}</p>
+          </div>
+          <div class="col col-md-6" style="text-align: left;">
+              <p><b>Time: </b> {{confirmation.date_scheduled}}</p>
+
+          </div>
+      </div>
+      <div class="row">
+          <div class="col col-md-6" style="text-align: right;">
+            <p> <b>Shop:</b> {{confirmation.shop_name}}</p>
+
+          </div>
+          <div class="col col-md-6" style="text-align: left;">
+              <p><b>Price: </b> {{confirmation.price}}</p>
+
+          </div>
+      </div>
+    <form method="POST" action="/confirm">
+        <button class="btn btn-lg btn-success btn-block " type="submit">Confirm</button>
+    </form>
+      <a href="{{ url_for('mod_customer.dashboardcustomer') }}"><button class="btn btn-lg btn-danger btn-block ">Cancel</button></a>
+    </div>
+  </div>
+  <div class="card-footer text-muted">
+    Powered by Sido
+  </div>
 </div>
+
+
+
 {% endblock %}
