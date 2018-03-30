@@ -3,7 +3,7 @@
 #flask dependencies
 import os
 from flask import Flask, render_template, redirect, url_for, Blueprint
-from flask_wtf import FlaskForm 
+from flask_wtf import FlaskForm
 from app.mod_auth.forms import RegisterForm, RegisterFormShop, RegisterFormEmployee, LoginForm
 from flask_sqlalchemy  import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -12,7 +12,7 @@ from werkzeug.utils import secure_filename
 from flask_login import login_user, login_required, logout_user, current_user
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
-#import database object from app module 
+#import database object from app module
 from app import db, login_manager
 
 from app import app
@@ -29,7 +29,7 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 #set route and accepted methods
-@mod.route('/login', methods=['GET', 'POST']) 
+@mod.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
 
@@ -65,7 +65,7 @@ def signup():
             db.session.rollback()
             return '<h1>This email address is already taken.</h1>'
 
-        
+
 
         return redirect(url_for("mod_auth.login"))
         #return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
@@ -95,7 +95,7 @@ def signup_shop():
         except IntegrityError:
             db.session.rollback()
             return '<h1>This email address is already taken.</h1>'
-        
+
         return render_template('auth/login.html', form = LoginForm())
         #return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
 
@@ -103,15 +103,15 @@ def signup_shop():
 
 #write a function that not only ensures that login is required
 #but also checks if employee and if manager
-#@login_required 
+#@login_required
 @mod.route('/signupemployee', methods=['GET', 'POST'])
 def signup_employee():
     form = RegisterFormEmployee()
 
     if form.validate_on_submit():
         hashed_password = generate_password_hash(form.password.data, method='sha256')
-         
-        try:            
+
+        try:
             managerCheck = 0
             if form.manager.data:
                 managerCheck = 1
@@ -150,8 +150,3 @@ def dashboard():
 def logout():
     logout_user()
     return redirect(url_for('index'))
-
-
-
-
-

@@ -34,16 +34,16 @@ class Appointment(db.Model):
         self.client_email = useremail
         self.userId = userId
         self.service_id = service_id
-        
- 
+
+
     def __repr__(self):
         return '<Client Name %r, User Email %r, Date and Time %r, EmployeeID %r>' \
                % (self.client_first, self.client_email, self.date_scheduled, self.employeeId)
 
 
-"""Schedule class representing a daily availability for each of the employees. 
-   It stores the WeekDay (0-6), ServiceLength (intervals), 
-   StartTime (Employess start), EndTime(Emplouees End Time)                                                             
+"""Schedule class representing a daily availability for each of the employees.
+   It stores the WeekDay (0-6), ServiceLength (intervals),
+   StartTime (Employess start), EndTime(Emplouees End Time)
                                                                 """
 class Schedule(db.Model):
 
@@ -83,7 +83,7 @@ class Service(db.Model):
     __tablename__ = 'Services'
     service_id = db.Column(db.Integer, primary_key=True)
     service_name = db.Column(db.String(128))
-    service_length = db.Column(db.Integer) #preferebly multiples of 20 
+    service_length = db.Column(db.Integer) #preferebly multiples of 20
     service_price = db.Column(db.Integer)
     providers = db.relationship("User", secondary=service_identifier, backref=db.backref('Services'))
 
@@ -94,4 +94,3 @@ class Service(db.Model):
     def __repr__(self):
         return '<Service ID %r, Service name %r, Length %r, Price %r>' \
                % (self.service_id, self.service_name, self.service_length, self.service_price)
-

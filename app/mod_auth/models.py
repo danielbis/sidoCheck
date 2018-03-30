@@ -8,9 +8,9 @@ from flask_dance.consumer.backend.sqla import OAuthConsumerMixin, SQLAlchemyBack
 #Author: DANIEL BIS
 
 """
-User to Employee = One to One 
+User to Employee = One to One
 User to Shop = One to One
-Shop to User = Many to One 
+Shop to User = Many to One
 Shop to Employe = One to Many
 
 """
@@ -76,6 +76,3 @@ class OAuth(OAuthConsumerMixin, db.Model):
     provider_user_id = db.Column(db.String(256), unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     user = db.relationship(User)
-
-
-

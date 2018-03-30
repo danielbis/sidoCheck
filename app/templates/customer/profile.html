@@ -31,6 +31,15 @@ my_profile.first_name
   </div>
 </nav>
 <div class="container" style="margin-top: 5%;">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class=flashes>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
   <h1>PROFILE</h1>
 
 <h1>Name: {{ my_profile.first_name }} {{ my_profile.last_name }}</h1>
@@ -38,9 +47,8 @@ my_profile.first_name
 <h1>Phone Number: {{ my_profile.phonenumber }}</h1>
 
 {% if my_profile == current_user %}
-<p><a href="{{ url_for('mod_customer.edit_profile') }}">Edit your profile</a></p>
-<p><a href="{{ url_for('mod_customer.update_password') }}">Update Password</a></p>
-
+<a href="{{ url_for('mod_customer.edit_profile') }}" class="btn btn-primary btn-lg">Edit your profile</a>
+<a href="{{ url_for('mod_customer.update_password') }}"class="btn btn-primary btn-lg">Update Password</a>
 {% endif %}
 
 

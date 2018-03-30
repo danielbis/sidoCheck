@@ -243,7 +243,7 @@ def edit_profile():
 		profile.phonenumber=form.phonenumber.data
 		db.session.commit()
 		flash('Profile Updated')
-		return 'Profile Updated'
+		return redirect(url_for("mod_customer.profile"))
 
 	return render_template('customer/edit_profile.html',form=form,form_action=form_action, profile= profile, title= "Update Profile")
 
@@ -261,6 +261,9 @@ def update_password():
 			if form.new_password.data == form.val_password.data:
 				profile.password = generate_password_hash(form.new_password.data, method='sha256')
 				db.session.commit()
+				flash('Password Updated')
+
+				return redirect(url_for("mod_customer.profile"))
 
 				return '<h1>Password Updated</h1>'
 			else:
