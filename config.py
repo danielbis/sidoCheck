@@ -9,7 +9,8 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 # Define the database - we are working with
 # SQLite for this example
 SQLALCHEMY_TRACK_MODIFICATIONS = False
-SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:    @localhost/postgres'
+SQLALCHEMY_DATABASE_URI = os.environ["SIDOCHECK_DB"]
+# 'postgresql://postgres:    @localhost/postgres'
 
 #SQLALCHEMY_DATABASE_URI = os.environ["SIDOCHECK_DB"]
 # DANIEL YOUR PATH IS 'postgresql://localhost/cutcheck' SET ENV VARS ASAP
