@@ -42,9 +42,9 @@ profile.first_name
           {% endfor %}
       </p>
       <p>
-          {{ form.phonenumber.label }}<br>
-          {{ form.phonenumber(size=32) }}<br>
-          {% for error in form.phonenumber.errors %}
+          {{ form.phone_number.label }}<br>
+          {{ form.phone_number(size=32) }}<br>
+          {% for error in form.phone_number.errors %}
           <span style="color: red;">[{{ error }}]</span>
           {% endfor %}
       </p>

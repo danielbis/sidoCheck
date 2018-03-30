@@ -12,7 +12,7 @@ class Appointment(db.Model):
 
     __tablename__ = "Appointments"
 
-    appointmentId = db.Column(db.Integer, primary_key = True)
+    appointment_id = db.Column(db.Integer, primary_key = True)
     date_created = db.Column(db.DateTime, default = db.func.current_timestamp())
     date_modified = db.Column(db.DateTime, default = db.func.current_timestamp(), onupdate = db.func.current_timestamp())
     date_scheduled = db.Column(db.DateTime, nullable = False)
@@ -21,29 +21,29 @@ class Appointment(db.Model):
     client_phone = db.Column(db.String(15))
     client_email = db.Column(db.String(60))
 
-    employeeId = db.Column(db.Integer, ForeignKey("Users.id"))
-    userId = db.Column(db.Integer)
+    employee_id = db.Column(db.Integer, ForeignKey("Users.id"))
+    user_id = db.Column(db.Integer)
 
     service_id = db.Column(db.Integer)
 
-    def __init__(self, datescheduled, username, user_last_name, userphone, useremail, userId, service_id):
-        self.date_scheduled = datescheduled
-        self.client_first = username
-        self.client_last = user_last_name
-        self.client_phone = userphone
-        self.client_email = useremail
-        self.userId = userId
+    def __init__(self, date_scheduled, client_first, client_last, client_phone, client_email, user_id, service_id):
+        self.date_scheduled = date_scheduled
+        self.client_first = client_first
+        self.client_last = client_last
+        self.client_phone = client_phone
+        self.client_email = client_email
+        self.user_id = user_id
         self.service_id = service_id
 
 
     def __repr__(self):
-        return '<Client Name %r, User Email %r, Date and Time %r, EmployeeID %r>' \
-               % (self.client_first, self.client_email, self.date_scheduled, self.employeeId)
+        return '<Client Name %r, User Email %r, Date and Time %r, employee_id %r>' \
+               % (self.client_first, self.client_email, self.date_scheduled, self.employee_id)
 
 
 """Schedule class representing a daily availability for each of the employees.
    It stores the WeekDay (0-6), ServiceLength (intervals),
-   StartTime (Employess start), EndTime(Emplouees End Time)
+   start_time (Employess start), end_time(Emplouees End Time)
                                                                 """
 class Schedule(db.Model):
 
@@ -56,18 +56,18 @@ class Schedule(db.Model):
     start_time = db.Column(db.DateTime, nullable = False)
     end_time = db.Column(db.DateTime, nullable = False)
 
-    emplId = db.Column(db.Integer, ForeignKey("Users.id"))
+    employee_id = db.Column(db.Integer, ForeignKey("Users.id"))
 
-    def __init__(self, starttime, endtime, weekday = -1, interval_len = 20):
+    def __init__(self, start_time, end_time, weekday = -1, interval_len = 20):
         self.weekDay = weekday
         self.interval_length = interval_len
-        self.start_time = starttime
-        self.end_time = endtime
+        self.start_time = start_time
+        self.end_time = end_time
 
 
     def __repr__(self):
-        return '<Employee ID %r, Week Day %r, StartTime %r, EndTime %r, Service Length %r>' \
-               % (self.emplId, self.weekday, self.start_time, self.end_time, self.interval_length)
+        return '<Employee ID %r, Week Day %r, start time %r, end time %r, Service Length %r>' \
+               % (self.employee_id, self.weekday, self.start_time, self.end_time, self.interval_length)
 
 """
     Definition of many to many relationship between services offered by a given shop

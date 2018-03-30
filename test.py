@@ -82,7 +82,7 @@ class TestBase(unittest.TestCase):
         self.assertIn (b'<title>Dashboard Customer</title>', response.data)"""
 
 
- #(USER) def __init__(self, firstname, lastname, email, password, role, manager = 0, phonenumber = "")
+ #(USER) def __init__(self, firstname, lastname, email, password, role, manager = 0, phone_number = "")
     def test_user_model(self):
         user1 = User("testuser", "testuserlast", "testuser@gmail.com", "testuserpass", "customer")
         user2 = User("testuser2", "testuser2", "shop1@gmail.com", "shop1pass", "customer", 1, "8506667676")
@@ -101,8 +101,8 @@ class TestBase(unittest.TestCase):
         db.session.add(user2)
         db.session.commit()
         u1 = User.query.filter_by(first_name="shop1").first()
-        shop1 = Shop.query.filter_by(shopname="shop1").first()
-        self.assertEqual(u1.shopId, shop1.shopId)
+        shop1 = Shop.query.filter_by(shop_name="shop1").first()
+        self.assertEqual(u1.shop_id, shop1.shop_id)
 
     def test_employee_model(self):
         user1 = User("testuser", "testuserlast", "testuser@gmail.com", "testuserpass", "customer")
@@ -124,13 +124,13 @@ class TestBase(unittest.TestCase):
         new_shop.users.append(user2)
         db.session.commit()
         empl = User.query.filter_by(email="testuser1@gmail.com").first()
-        #shop = Shop.query.filter_by(shopId= empl.shopId)
+        #shop = Shop.query.filter_by(shop_id= empl.shop_id)
 
         schedule = Schedule(starttime = "2018-02-22 11:00:00", endtime = "2018-02-22 6:00:00")
         empl.schedules.append(schedule)
         db.session.commit()
 
-        schedule_count = Schedule.query.filter_by(emplId=empl.id).count()
+        schedule_count = Schedule.query.filter_by(employee_id=empl.id).count()
         self.assertEqual(schedule_count, 1)
 
 

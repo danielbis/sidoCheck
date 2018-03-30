@@ -4,7 +4,7 @@
 
 
 {% block title %}
-my_profile.shopname
+my_profile.shop_name
 {% endblock %}
 
 {% block styles %}
@@ -43,7 +43,7 @@ my_profile.shopname
         </ul>
       {% endif %}
     {% endwith %}
-  <h1>{{ my_profile.shopname }}</h1>
+  <h1>{{ my_profile.shop_name }}</h1>
   {% if my_profile.img_path|length > 1 %}
   <img class="card-img-top" src="/static/img/{{my_profile.img_path}}"  alt="Card image cap" style="width:50%;">
   {% endif %}
@@ -51,7 +51,7 @@ my_profile.shopname
   <img class="card-img-top" src="{{ url_for('static', filename='barber.jpg') }}" alt="Card image cap" style="width:50%;">
   {% endif %}
 <h1>Location: {{ my_profile.location }}</h1>
-<h1>Phone Number: {{ User_profile.phonenumber }}</h1>
+<h1>Phone Number: {{ User_profile.phone_number }}</h1>
 <h1>Owner Name: {{ User_profile.last_name }} {{ User_profile.first_name }}</h1>
 
 

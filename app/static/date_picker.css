@@ -141,17 +141,15 @@ body {
   color: #e0e0e0;
   text-shadow: 0px 1px 0px #4d7a85;
   filter: dropshadow(color=#4d7a85, offx=0, offy=1);
-  border: 1px solid #55838f;
+  border: 1px solid #6baa7c;
   position: relative;
   margin: -1px;
 }
 
 .ui-datepicker-calendar td:first-child .ui-state-active {
-  width: 29px;
   margin-left: 0;
 }
 .ui-datepicker-calendar td:last-child .ui-state-active {
-  width: 29px;
   margin-right: 0;
 }
 

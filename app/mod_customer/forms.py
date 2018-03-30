@@ -18,7 +18,7 @@ class DateForm_v2(FlaskForm):
 
 class EditProfile(FlaskForm):
 	email= StringField('Email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
-	phonenumber= StringField('Phone Number', validators=[InputRequired(), Length(min=10, max=12)])
+	phone_number= StringField('Phone Number', validators=[InputRequired(), Length(min=10, max=12)])
 	submit= SubmitField('Update')
 
 class UpdatePassword(FlaskForm):

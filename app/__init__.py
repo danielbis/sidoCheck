@@ -164,12 +164,16 @@ def index():
 
 
 
-
-
 # Sample HTTP error handling
-"""@app.errorhandler(404)
+@app.errorhandler(404)
 def not_found(error):
-    return render_template('404.html'), 404"""
+
+    return render_template('404.html', role=current_user.role), 404
+
+@app.errorhandler(Exception)
+def unhandled_exception(e):
+    # app.logger.error('Unhandled Exception: %s', (e))
+    return render_template('500.html', role=current_user.role), 500
 
 # Build the database:
 # This will create the database file using SQLAlchemy

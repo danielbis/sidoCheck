@@ -83,10 +83,10 @@ def signup_shop():
             else:
                 filename = 'city.jpg'
 
-            new_user = User(firstname=form.shopname.data, lastname=form.shopname.data,
-                            phonenumber=form.phonenumber.data, email=form.email.data, password=hashed_password,
+            new_user = User(firstname=form.shop_name.data, lastname=form.shop_name.data,
+                            phone_number=form.phone_number.data, email=form.email.data, password=hashed_password,
                             role="shop")
-            new_shop = Shop(shopname=form.shopname.data, location=form.address.data,
+            new_shop = Shop(shop_name=form.shop_name.data, location=form.address.data,
                             img=filename)  # storing only the filename since all of the images are in the same directory
             # db.session.add(new_shop)
             db.session.add(new_shop)
@@ -123,13 +123,13 @@ def signup_employee():
                 filename = 'city.jpg'
 
             new_user = User(firstname=form.firstname.data, lastname=form.lastname.data, email=form.email.data,
-                            phonenumber=form.phonenumber.data, password=hashed_password, role="employee",
+                            phone_number=form.phone_number.data, password=hashed_password, role="employee",
                             manager=managerCheck, img=filename)
 
             # quering for shop where the current user is a manager
             temp_user = User.query.filter_by(id=current_user.id).first()
-            employer_id = temp_user.shopId
-            employer = Shop.query.filter_by(shopId=employer_id).first()
+            employer_id = temp_user.shop_id
+            employer = Shop.query.filter_by(shop_id=employer_id).first()
             db.session.add(new_user)
             # making user an employee
             # append a shop for future references

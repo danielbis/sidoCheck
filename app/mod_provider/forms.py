@@ -51,9 +51,9 @@ class AddServiceForm(FlaskForm):
 
 	)"""
 class EditShopProfile(FlaskForm):
-	shopname = StringField('Shopname', validators=[InputRequired(), Length(min=2, max=64)])
+	shop_name = StringField('shop_name', validators=[InputRequired(), Length(min=2, max=64)])
 	location = StringField('Address', validators=[InputRequired(), Length(min=8, max=128)])
-	phonenumber = StringField('Phonenumber', validators=[InputRequired(), Length(min=10, max=12)])
+	phone_number = StringField('phone_number', validators=[InputRequired(), Length(min=10, max=12)])
 	email = StringField('Email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
 	lastname = StringField('Last name', validators=[InputRequired(), Length(min=2, max=32)])
 	firstname = StringField('First name', validators=[InputRequired(), Length(min=2, max=32)])

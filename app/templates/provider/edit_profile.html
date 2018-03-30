@@ -4,7 +4,7 @@
 
 
 {% block title %}
-profile.shopname
+profile.shop_name
 {% endblock %}
 
 {% block styles %}
@@ -38,9 +38,9 @@ profile.shopname
   <form action="/provider/edit_profile" method="post">
       {{ form.hidden_tag() }}
       <p>
-          {{ form.shopname.label }}<br>
-          {{ form.shopname(size=32) }}<br>
-          {% for error in form.shopname.errors %}
+          {{ form.shop_name.label }}<br>
+          {{ form.shop_name(size=32) }}<br>
+          {% for error in form.shop_name.errors %}
           <span style="color: red;">[{{ error }}]</span>
           {% endfor %}
       </p>
@@ -66,9 +66,9 @@ profile.shopname
           {% endfor %}
       </p>
       <p>
-        {{ form.phonenumber.label }}<br>
-        {{ form.phonenumber(size=32) }}<br>
-        {% for error in form.phonenumber.errors %}
+        {{ form.phone_number.label }}<br>
+        {{ form.phone_number(size=32) }}<br>
+        {% for error in form.phone_number.errors %}
         <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
     </p>

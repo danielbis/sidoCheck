@@ -44,7 +44,7 @@ my_profile.first_name
 
 <h1>Name: {{ my_profile.first_name }} {{ my_profile.last_name }}</h1>
 <h1>Email: {{ my_profile.email }}</h1>
-<h1>Phone Number: {{ my_profile.phonenumber }}</h1>
+<h1>Phone Number: {{ my_profile.phone_number }}</h1>
 
 {% if my_profile == current_user %}
 <a href="{{ url_for('mod_customer.edit_profile') }}" class="btn btn-primary btn-lg">Edit your profile</a>

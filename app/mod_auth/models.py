@@ -31,24 +31,24 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(128), nullable = False)
     role = db.Column(db.String(32), nullable=False )
     manager = db.Column(db.Integer, default=0)
-    phonenumber = db.Column(db.String(60), nullable=True)
+    phone_number = db.Column(db.String(60), nullable=True)
     date_created = db.Column(db.DateTime, default = db.func.current_timestamp())
     date_modified = db.Column(db.DateTime, default = db.func.current_timestamp(), onupdate = db.func.current_timestamp())
     img_path = db.Column(db.String(120), nullable=True)
 
-    shopId = db.Column(db.Integer, ForeignKey("Shops.shopId"))
+    shop_id = db.Column(db.Integer, ForeignKey("Shops.shop_id"))
     schedules = relationship("Schedule", backref="Users")
     appointments = relationship("Appointment", backref="Users")
 
     #   relationships (will be defined later)
     #   Appointments = relationship("Appointment", backref = "Users")
 
-    def __init__(self, firstname, lastname, email, password, role,manager = 0, phonenumber = "", img=""):
-        self.first_name = firstname
-        self.last_name = lastname
+    def __init__(self, first_name, last_name, email, password, role,manager = 0, phone_number = "", img=""):
+        self.first_name = first_name
+        self.last_name = last_name
         self.email = email
         self.password = password
-        self.phonenumber = phonenumber
+        self.phone_number = phone_number
         self.role = role
         self.manager = manager
         self.img_path = img
@@ -60,20 +60,20 @@ class User(UserMixin, db.Model):
 class Shop(db.Model):
 
     __tablename__ = "Shops"
-    shopId = db.Column(db.Integer, primary_key = True)
+    shop_id = db.Column(db.Integer, primary_key = True)
     users = relationship("User", backref="Shops")
-    shopname = db.Column(db.String(80), nullable=False, unique=True)
+    shop_name = db.Column(db.String(80), nullable=False, unique=True)
     location = db.Column(db.String(80), nullable=False)
     img_path = db.Column(db.String(120), nullable=True)
     #   Enable backpropagation between Shops and their working hours
 
-    def __init__(self, shopname, location, img=""):
-        self.shopname = shopname
+    def __init__(self, shop_name, location, img=""):
+        self.shop_name = shop_name
         self.location = location
         self.img_path = img
 
     def __repr__(self):
-        return '<Name %r>' %self.shopname
+        return '<Name %r>' %self.shop_name
 
 
 class OAuth(OAuthConsumerMixin, db.Model):
