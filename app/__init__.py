@@ -8,6 +8,10 @@ from flask_sqlalchemy import SQLAlchemy
 #import login manager 
 from flask_login import LoginManager, current_user, login_required
 from flask.ext.uploads import UploadSet, configure_uploads, IMAGES
+import logging
+from logging.handlers import RotatingFileHandler
+
+
 # Define the WSGI application object
 app = Flask(__name__)
 Bootstrap(app)
@@ -24,8 +28,25 @@ configure_uploads(app, images)
 db = SQLAlchemy(app)
 
 
-# Define the database object which is imported
-# by modules and controllers
+# Logging
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+info_handler = RotatingFileHandler('info_log.log', maxBytes=10000, backupCount=1)
+info_handler.setLevel(logging.INFO)
+info_handler.setFormatter(formatter)
+app.logger.addHandler(info_handler)
+
+debug_handler = RotatingFileHandler('debug_log.log', maxBytes=10000, backupCount=1)
+debug_handler.setLevel(logging.DEBUG)
+debug_handler.setFormatter(formatter)
+app.logger.addHandler(debug_handler)
+
+error_handler = RotatingFileHandler('error_log.log', maxBytes=10000, backupCount=1)
+error_handler.setLevel(logging.ERROR)
+error_handler.setFormatter(formatter)
+app.logger.addHandler(error_handler)
+
+
 
 
 login_manager = LoginManager()

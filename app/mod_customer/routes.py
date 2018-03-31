@@ -71,17 +71,12 @@ def bookslot():
     # retrieve data from ajax request
     request_json = request.get_json()
     date_string = str(request_json['date_string'])
-    print("dstr", date_string)
 
     # process the data
     date_string = date_string[:-4] + date_string[-2:]
-    print("date string in book_slot: ", date_string)
-    print("time_slot in bookslot is ", request_json['time_slot'])
-
     date_time_string = date_string + " " + request_json['time_slot']
-    print("date_time_string in book_slot: ", date_time_string)
 
-    print("empl id in bookslot: ", request_json['empl_id'])
+    app.logger.info("Attempting to book slot: %s, shop_id: %s", date_time_string, current_user.shop_id)
     parameters = {
         "service_id": request_json['service_id'],
         "time_slot": request_json['time_slot'],
@@ -89,7 +84,8 @@ def bookslot():
         "date_string": date_string,
         "date_time_string": date_time_string
     }
-    print('parameters are ', parameters)
+
+    # save to session to access in next screen
     session["parameters"] = parameters
 
     return jsonify("/confirm")
@@ -98,10 +94,60 @@ def bookslot():
 @customer_mod.route('/confirm', methods=["GET", "POST"])
 @login_required
 def confirm():
+
+    if request.method == 'POST':
+        parameters = session.pop("parameters", None)
+
+        # store parameters back for later
+        session["parameters"] = parameters
+
+        d = datetime.strptime(parameters['date_string'], '%m/%d/%y').date()
+        datetime_object = datetime.strptime(parameters['date_time_string'], '%m/%d/%y %H:%M')
+        service = Service.query.filter_by(service_id=parameters['service_id']).first()
+        slots_required = int(int(service.service_length) / 20)
+
+        print("empl_id is ", parameters['empl_id'], " service id is: ", parameters['service_id'], " slots required ",
+              slots_required, " d is ", d, " datetime_object is ", datetime_object)
+        employee = User.query.filter_by(id=parameters['empl_id']).first()
+        shop = Shop.query.filter_by(shop_id=employee.shop_id).first()
+
+        #confirmation object that will be needed in the next screen
+        confirmation_obj = {
+                "open": None,
+                "service_name": service.service_name,
+                "price": service.service_price,
+                "service_length": service.service_length,
+                "date_scheduled": datetime_object,
+                "employee_name": employee.first_name + " " + employee.last_name,
+                "customer_name": current_user.first_name + " " + current_user.last_name,
+                "customer_id": current_user.id,
+                "customer_email": current_user.email,
+                "empl_id": parameters['empl_id'],
+                "shop_name": shop.shop_name
+            }
+        if (is_slot_open(parameters['empl_id'], d, datetime_object, slots_required)):
+            # datescheduled, username, user_last_name, userphone, useremail, user_id, service_id)
+            interval = timedelta(minutes=20)
+            for i in range(0, slots_required):
+                a = Appointment(datetime_object + (i * interval), current_user.first_name, current_user.last_name,
+                                current_user.phone_number, current_user.email, current_user.id, parameters['service_id'])
+                employee.appointments.append(a)
+
+            db.session.commit()
+            confirmation_obj["open"] = "True"
+            session["confirmation"] = confirmation_obj
+        else:
+            confirmation_obj["open"] = "False"
+            session["confirmation"] = confirmation_obj
+
+        return redirect(url_for("mod_customer.confirmation"))
+
     parameters = session.pop("parameters", None)
+
+    #store parameters back for later
     session["parameters"] = parameters
 
-    # session["parameters"] = parameters
+    # format dates
     d = datetime.strptime(parameters['date_string'].replace("-", "/"), '%m/%d/%y').date()
     datetime_object = datetime.strptime(parameters['date_time_string'], '%m/%d/%y %H:%M')
 
@@ -120,57 +166,6 @@ def confirm():
         "employee_name": employee.first_name + " " + employee.last_name,
         "shop_name": shop.shop_name
     }
-    if request.method == 'POST':
-        parameters = session.pop("parameters", None)
-
-        d = datetime.strptime(parameters['date_string'], '%m/%d/%y').date()
-        datetime_object = datetime.strptime(parameters['date_time_string'], '%m/%d/%y %H:%M')
-        service = Service.query.filter_by(service_id=parameters['service_id']).first()
-        slots_required = int(int(service.service_length) / 20)
-
-        print("empl_id is ", parameters['empl_id'], " service id is: ", parameters['service_id'], " slots required ",
-              slots_required, " d is ", d, " datetime_object is ", datetime_object)
-        employee = User.query.filter_by(id=parameters['empl_id']).first()
-        shop = Shop.query.filter_by(shop_id=employee.shop_id).first()
-
-        if (is_slot_open(parameters['empl_id'], d, datetime_object, slots_required)):
-            # datescheduled, username, user_last_name, userphone, useremail, user_id, service_id)
-            interval = timedelta(minutes=20)
-            for i in range(0, slots_required):
-                a = Appointment(datetime_object + (i * interval), current_user.first_name, current_user.last_name,
-                                current_user.phone_number, current_user.email, current_user.id, parameters['service_id'])
-                employee.appointments.append(a)
-
-            db.session.commit()
-            session["confirmation"] = {
-                "open": "True",
-                "service_name": service.service_name,
-                "price": service.service_price,
-                "service_length": service.service_length,
-                "date_scheduled": datetime_object,
-                "employee_name": employee.first_name + " " + employee.last_name,
-                "customer_name": current_user.first_name + " " + current_user.last_name,
-                "customer_id": current_user.id,
-                "customer_email": current_user.email,
-                "empl_id": parameters['empl_id'],
-                "shop_name": shop.shop_name
-            }
-        else:
-            session["confirmation"] = {
-                "open": "False",
-                "service_name": service.service_name,
-                "price": service.service_price,
-                "service_length": service.service_length,
-                "date_scheduled": datetime_object,
-                "employee_name": employee.first_name + " " + employee.last_name,
-                "customer_name": current_user.first_name + " " + current_user.last_name,
-                "customer_id": current_user.id,
-                "customer_email": current_user.email,
-                "empl_id": parameters['empl_id'],
-                "shop_name": shop.shop_name
-            }
-
-        return redirect(url_for("mod_customer.confirmation"))
 
     return render_template("customer/confirm.html", confirmation=confirmation)
 
@@ -179,6 +174,10 @@ def confirm():
 @login_required
 def confirmation():
     confirmation = session.pop("confirmation", None)
+
+    # store confirmation back for later (refresh etc)
+    session["confirmation"] = confirmation
+
     if confirmation["open"] == "False":
         print("Slots taken")
         confirmation["message"] = "Sorry, this time is already booked."
@@ -270,8 +269,6 @@ def update_password():
                 flash('Password Updated')
 
                 return redirect(url_for("mod_customer.profile"))
-
-                return '<h1>Password Updated</h1>'
             else:
                 return '<h1>Passwords do not match</h1>'
 

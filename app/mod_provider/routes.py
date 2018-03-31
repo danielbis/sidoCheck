@@ -12,6 +12,8 @@ from app.mod_provider.forms import DateForm, ServiceForm, AddServiceForm, BookDa
 from app import db, login_manager
 # import the app object itself
 from app import app
+import logging
+import sys, traceback
 
 # Import module models containing User
 from app.mod_auth.models import User, Shop
@@ -28,6 +30,7 @@ provider_mod = Blueprint("mod_provider", __name__, url_prefix="/provider")
 @provider_mod.route('/dashboardprovider', methods=['GET', 'POST'])
 @login_required
 def dashboardprovider():
+
     employees = User.query.filter_by(shop_id=current_user.shop_id).all()
     empl_app = []
     for e in employees:
@@ -43,6 +46,8 @@ def dashboardprovider():
     form.service.choices = [(s.service_id, s.service_name) for s in shops_services]
     shop = Shop.query.filter_by(shop_id=current_user.shop_id).first()
     empl_app.sort(key=lambda r: r["time"], reverse=True)
+
+    app.logger.info('dashboard, shop: %s', shop.shop_name)
 
     if form.validate_on_submit():
         session["walkin_service_id"] = form.service.data
@@ -73,10 +78,13 @@ def add_schedule():
             while start_date <= end_date:
                 new_schedule = Schedule(starttime=datetime.combine(start_date, start_time),
                                         endtime=datetime.combine(end_date, end_time))
-                employee.schedules.append(new_schedule)
+                try:
+                    employee.schedules.append(new_schedule)
+                except Exception as e:
+                    app.logger.error(traceback.format_exc())
+
                 start_date += day
                 counter += 1
-            db.session.add(new_schedule)
             db.session.commit()
             sa = Schedule.query.count()
             if sa - sb == counter:
@@ -112,6 +120,7 @@ def walkin():
     d = date.today()
     slots_shop = get_next_available(current_user.shop_id, d, slots_required)
     for s in slots_shop:
+        print(s)
         s["availability"] = [x.strftime("%H:%M") for x in s["availability"]]
 
     print("date_today is ", d.strftime("%m/%d/%Y"))
@@ -136,7 +145,10 @@ def addservice():
         for u in shop.users:
             if u.id in form.employees.data:
                 s.providers.append(u)
-        db.session.add(s)
+        try:
+            db.session.add(s)
+        except Exception as e:
+            app.logger.error(traceback.format_exc())
         db.session.commit()
         return redirect(url_for("mod_provider.dashboardprovider"))
 
@@ -215,6 +227,9 @@ def confirm_shop():
         parameters = session.pop("parameters", None)
         guest_name = session.pop("guest_name", None)
 
+        session["parameters"] = parameters
+        session["guest_name"] = guest_name
+
         d = datetime.strptime(parameters['date_string'].replace("-", "/"), '%m/%d/%y').date()
         datetime_object = datetime.strptime(parameters['date_time_string'].replace("-", "/"), '%m/%d/%y %H:%M')
         service = Service.query.filter_by(service_id=parameters['service_id']).first()
@@ -228,17 +243,9 @@ def confirm_shop():
 
         shop = Shop.query.filter_by(shop_id=employee.shop_id).first()
 
-        if (is_slot_open(parameters['empl_id'], d, datetime_object, slots_required)):
-            # datescheduled, username, user_last_name, userphone, useremail, user_id, service_id)
-            interval = timedelta(minutes=20)
-            for i in range(0, slots_required):
-                a = Appointment(datetime_object + (i * interval), guest_name, "guest", current_user.phone_number,
-                                current_user.email, current_user.id, parameters['service_id'])
-                employee.appointments.append(a)
 
-            db.session.commit()
-            session["confirmation"] = {
-                "open": "True",
+        confirmation_obj = {
+                "open": None,
                 "service_name": service.service_name,
                 "price": service.service_price,
                 "service_length": service.service_length,
@@ -250,20 +257,26 @@ def confirm_shop():
                 "empl_id": parameters['empl_id'],
                 "shop_name": shop.shop_name
             }
+        if (is_slot_open(parameters['empl_id'], d, datetime_object, slots_required)):
+            try:
+                # datescheduled, username, user_last_name, userphone, useremail, user_id, service_id)
+                interval = timedelta(minutes=20)
+                for i in range(0, slots_required):
+                    a = Appointment(datetime_object + (i * interval), guest_name, "guest", current_user.phone_number,
+                                    current_user.email, current_user.id, parameters['service_id'])
+                    employee.appointments.append(a)
+                    app.logger.info('Appointment slot %s scheduled for employee: %s', i, employee.id)
+
+                db.session.commit()
+                confirmation_obj["open"] = 'True'
+                session["confirmation"] = confirmation_obj
+            except IntegrityError as IE:
+                db.session.rollback()
+                app.logger.error("cancel appointment, IntegrityError: %s", IE)
+
         else:
-            session["confirmation"] = {
-                "open": "False",
-                "service_name": service.service_name,
-                "price": service.service_price,
-                "service_length": service.service_length,
-                "date_scheduled": datetime_object,
-                "employee_name": employee.first_name + " " + employee.last_name,
-                "customer_name": guest_name,
-                "customer_id": current_user.id,
-                "customer_email": current_user.email,
-                "empl_id": parameters['empl_id'],
-                "shop_name": shop.shop_name
-            }
+            confirmation_obj["open"] = 'False'
+            session["confirmation"] = confirmation_obj
 
         return redirect(url_for("mod_provider.confirmation_shop"))
 
@@ -274,6 +287,7 @@ def confirm_shop():
 @login_required
 def confirmation_shop():
     confirmation = session.pop("confirmation", None)
+    session['confirmation'] = confirmation
     if confirmation["open"] == "False":
         print("Slots taken")
         confirmation["message"] = "Sorry, this time is already booked."
@@ -306,9 +320,11 @@ def cancel_appointment():
         a = Appointment.query.filter_by(appointment_id=appointment_id).first()
         db.session.delete(a)
         db.session.commit()
+        app.logger.info('Appointment canceled: %s', a.appointment_id)
         return jsonify("success")
-    except IntegrityError:
+    except IntegrityError as IE:
         db.session.rollback()
+        app.logger.error("cancel appointment, IntegrityError: %s", IE)
 
     return jsonify("failed")
 
@@ -322,6 +338,8 @@ def profile():
     return render_template('provider/profile.html', my_profile=my_profile, User_profile=User_profile)
 
 
+
+# Wrap commits into try/except blocks
 @provider_mod.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():

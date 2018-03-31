@@ -89,9 +89,11 @@ def check_availability_by_shop(shop_id, date, slots_required=1):
 
 def get_next_available(shop_id, date, slots_required=1):
     slots = check_availability_by_shop(shop_id, date, slots_required)
-
+    print('slots before filter ', slots)
     for s in slots:
         s["availability"] = list(filter(lambda x: x > datetime.now(), s["availability"]))
+
+    print('slots after filter ', slots)
 
     slots = list(filter(lambda x: len(x["availability"]) > 0, slots))
 
