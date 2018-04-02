@@ -78,13 +78,10 @@ def add_schedule():
             while start_date <= end_date:
                 new_schedule = Schedule(starttime=datetime.combine(start_date, start_time),
                                         endtime=datetime.combine(end_date, end_time))
-                try:
-                    employee.schedules.append(new_schedule)
-                except Exception as e:
-                    app.logger.error(traceback.format_exc())
-
+                employee.schedules.append(new_schedule)
                 start_date += day
                 counter += 1
+
             db.session.commit()
             sa = Schedule.query.count()
             if sa - sb == counter:
@@ -116,9 +113,8 @@ def walkin():
     print("s_id ", service_id)
     service = Service.query.filter_by(service_id=service_id).first()
     print("service ", service)
-    slots_required = int(int(service.service_length) / 20)
     d = date.today()
-    slots_shop = get_next_available(current_user.shop_id, d, slots_required)
+    slots_shop = get_next_available(current_user.shop_id, d, service.service_length)
     for s in slots_shop:
         print(s)
         s["availability"] = [x.strftime("%H:%M") for x in s["availability"]]
@@ -185,10 +181,9 @@ def book_appointment():
     shop = Shop.query.filter_by(shop_id=current_user.shop_id).first()
     service_id = session.pop("service_id", None)
     service = Service.query.filter_by(service_id=service_id).first()
-    slots_required = int(service.service_length / 20)
     slots = []
     for u in shop.users:
-        u_slots = [x.strftime("%H:%M") for x in check_availability_by_employee_id(u.id, d, slots_required)]
+        u_slots = [x.strftime("%H:%M") for x in check_availability_by_employee_id(u.id, d, service.service_length)]
         if (len(u_slots) > 0):
             slots.append((u, u_slots))
 
@@ -209,10 +204,10 @@ def confirm_shop():
     datetime_object = datetime.strptime(parameters['date_time_string'].replace("-", "/"), '%m/%d/%y %H:%M')
 
     service = Service.query.filter_by(service_id=parameters['service_id']).first()
-    slots_required = int(int(service.service_length) / 20)
 
-    print("empl_id is ", parameters['empl_id'], " service id is: ", parameters['service_id'], " slots required ",
-          slots_required, " d is ", d, " datetime_object is ", datetime_object)
+    print("empl_id is ", parameters['empl_id'], " service id is: ", parameters['service_id'],
+          " d is ", d, " datetime_object is ", datetime_object)
+
     employee = User.query.filter_by(id=parameters['empl_id']).first()
     shop = Shop.query.filter_by(shop_id=employee.shop_id).first()
     confirmation = {
@@ -223,6 +218,7 @@ def confirm_shop():
         "employee_name": employee.first_name + " " + employee.last_name,
         "shop_name": shop.shop_name
     }
+
     if request.method == 'POST':
         parameters = session.pop("parameters", None)
         guest_name = session.pop("guest_name", None)
@@ -233,7 +229,7 @@ def confirm_shop():
         d = datetime.strptime(parameters['date_string'].replace("-", "/"), '%m/%d/%y').date()
         datetime_object = datetime.strptime(parameters['date_time_string'].replace("-", "/"), '%m/%d/%y %H:%M')
         service = Service.query.filter_by(service_id=parameters['service_id']).first()
-        slots_required = int(int(service.service_length) / 20)
+        slots_required = int(service.service_length/20)
 
         print("empl_id is ", parameters['empl_id'], " service id is: ", parameters['service_id'], " slots required ",
               slots_required, " d is ", d, " datetime_object is ", datetime_object)
@@ -257,7 +253,7 @@ def confirm_shop():
                 "empl_id": parameters['empl_id'],
                 "shop_name": shop.shop_name
             }
-        if (is_slot_open(parameters['empl_id'], d, datetime_object, slots_required)):
+        if (is_slot_open(parameters['empl_id'], d, datetime_object, service.service_length)):
             try:
                 # datescheduled, username, user_last_name, userphone, useremail, user_id, service_id)
                 interval = timedelta(minutes=20)

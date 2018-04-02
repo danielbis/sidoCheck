@@ -15,7 +15,7 @@ from itertools import cycle
 """
 
 
-def check_availability_by_employee_id(employee_id, date, slots_required=1):
+def check_availability_by_employee_id(employee_id, date, service_length):
     #    get work hours for that day and appointments scheduled between them for employee with id employee_id
     daily_hours = db.session.query(Schedule).filter(Schedule.employee_id == employee_id, Schedule.start_time.between(
         datetime.combine(date, datetime.min.time()), datetime.combine(date, datetime.max.time()))).first()
@@ -23,41 +23,60 @@ def check_availability_by_employee_id(employee_id, date, slots_required=1):
                                                         Appointment.date_scheduled.between(
                                                             datetime.combine(date, datetime.min.time()),
                                                             datetime.combine(date, datetime.max.time()))).all()
+
     print("daily hours", daily_hours)
     if (daily_hours):
+        slots_required = int(service_length/daily_hours.interval_length)
         booked = [a.date_scheduled for a in appointments]
         start_time = daily_hours.start_time
         end_time = daily_hours.end_time
         interval = timedelta(minutes=20)
-
+        print('interval is, ', interval)
         time_slots = []
-
-        while (start_time < end_time):
+        print('start time is,  ', type(start_time) is datetime)
+        while start_time <= end_time - slots_required * interval:
             if start_time not in booked:
-                time_slots.append(start_time)
-            start_time += interval
+                switch = True
+                for i in range(1, slots_required):
+                    if start_time + i*interval in booked:
+                        switch = False
+                if switch:
+                    time_slots.append(start_time)
+                    start_time += slots_required * interval
+                else:
+                    start_time += interval
+            else:
+                start_time += interval
 
-        if len(time_slots) < slots_required:
+        """if len(time_slots) < slots_required:
             return []
-
-        bound = len(time_slots) - (slots_required)
+        print("sr: ", slots_required)
+        #bound = len(time_slots) - (slots_required)
         short = []
-        for i in range(0, bound):
-            for j in range(0, slots_required):
-                if time_slots[i + j] != time_slots[i] + (j * interval):
-                    short.append(i)
-                    break
-
-        for i in short:
-            del (time_slots[i])
+        i = 0
+        print("tsss: ", time_slots[i+slots_required])
+        for time_slot in time_slots:
+            print(time_slots[i+slots_required])
+            if time_slots[i+slots_required] - time_slot >= slots_required * interval:
+                for j in range(1,slots_required):
+                    print("j is: ", j, " " ,time_slots[i+j])
+                    time_slots.remove(time_slots[i+1])
+                i += 1
+            else:
+                time_slots.remove(time_slot)
+            if i == len(time_slots) - slots_required-1:
+                break
+            for j in range(1, slots_required):
+                if time_slots[i + j] == time_slots[i] + (j * interval):
+                        short.append(time_slots[i+j])"""
 
         return time_slots
     else:
         return []
 
 
-def is_slot_open(empl_id, date, datetime_object, slots_required=1):
-    slots = check_availability_by_employee_id(empl_id, date, slots_required)
+def is_slot_open(empl_id, date, datetime_object, service_length):
+    slots = check_availability_by_employee_id(empl_id, date, service_length)
     print("date_time object in API ", datetime_object)
     for i in range(0, len(slots)):
         print(slots[i], " ?= ", datetime_object)
@@ -74,21 +93,21 @@ def is_slot_open(empl_id, date, datetime_object, slots_required=1):
 """
 
 
-def check_availability_by_shop(shop_id, date, slots_required=1):
+def check_availability_by_shop(shop_id, date, service_length):
     shop = Shop.query.filter_by(shop_id=shop_id).first()
     employees = [u for u in shop.users]
     del (employees[0])  # this is an id representing the shop, doesnt have schedules --> remove it
     shop_slots = []
     for empl in employees:
-        empl_slots = check_availability_by_employee_id(empl.id, date, slots_required)
+        empl_slots = check_availability_by_employee_id(empl.id, date, service_length)
         e = {'id': empl.id, 'name': empl.first_name + empl.last_name, 'availability': empl_slots}
         shop_slots.append(e)
 
     return shop_slots
 
 
-def get_next_available(shop_id, date, slots_required=1):
-    slots = check_availability_by_shop(shop_id, date, slots_required)
+def get_next_available(shop_id, date, service_length):
+    slots = check_availability_by_shop(shop_id, date, service_length)
     print('slots before filter ', slots)
     for s in slots:
         s["availability"] = list(filter(lambda x: x > datetime.now(), s["availability"]))

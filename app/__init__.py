@@ -144,8 +144,8 @@ def google_logged_in(blueprint, token):
             # Remember that `email` can be None, if the user declines
             # to publish their email address on GitHub!
             email=google_info["email"],
-            firstname=google_info["given_name"],
-            lastname=google_info["family_name"],
+            first_name=google_info["given_name"],
+            last_name=google_info["family_name"],
             password="0",
             role="customer"
         )
@@ -183,18 +183,26 @@ def google_error(blueprint, error, error_description=None, error_uri=None):
 def index():
     return redirect(url_for("mod_auth.login"))
 
-
-
 # Sample HTTP error handling
 @app.errorhandler(404)
 def not_found(error):
 
-    return render_template('404.html', role=current_user.role), 404
+    try:
+        role = current_user.role
+    except AttributeError:
+        role = None
+
+    return render_template('404.html', role=role), 404
 
 @app.errorhandler(Exception)
 def unhandled_exception(e):
-    # app.logger.error('Unhandled Exception: %s', (e))
-    return render_template('500.html', role=current_user.role), 500
+
+    try:
+        role = current_user.role
+    except AttributeError:
+        role = None
+
+    return render_template('500.html', role=role), 500
 
 # Build the database:
 # This will create the database file using SQLAlchemy

@@ -60,7 +60,9 @@ def timeslots():
     print("empl_id is: ", empl_id)
     print("service_id is: ", service_id)
     slots = [x.strftime("%H:%M") for x in
-             check_availability_by_employee_id(empl_id, d, int(int(service.service_length) / 20))]
+             check_availability_by_employee_id(empl_id, d, service.service_length)]
+
+    print("slots: ", slots)
 
     return jsonify(slots)
 
@@ -125,7 +127,7 @@ def confirm():
                 "empl_id": parameters['empl_id'],
                 "shop_name": shop.shop_name
             }
-        if (is_slot_open(parameters['empl_id'], d, datetime_object, slots_required)):
+        if (is_slot_open(parameters['empl_id'], d, datetime_object, service.service_length)):
             # datescheduled, username, user_last_name, userphone, useremail, user_id, service_id)
             interval = timedelta(minutes=20)
             for i in range(0, slots_required):

@@ -39,6 +39,9 @@
             {% if role == 'employee' %}
                 <a href="{{url_for('mod_provider.dashboardprovider')}}"><button class="go-back">Go Back</button></a>
             {% endif %}
+            {% if role == None %}
+                <a href="{{url_for('mod_auth.login')}}"><button class="go-back">Go Back</button></a>
+            {% endif %}
 		</div>
 </div>
 

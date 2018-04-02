@@ -9,8 +9,16 @@ Login
 
 {% block styles %}
 {{super()}}
-<link rel="stylesheet" href="../../static/signin.css" xmlns="http://www.w3.org/1999/html">
+
+    <link rel="stylesheet" href="../../static/signin.css" xmlns="http://www.w3.org/1999/html">
+    <link rel="stylesheet" href="../../static/bootstrap-social.css" xmlns="http://www.w3.org/1999/html">
+
 {% endblock %}
+{% block scripts %}
+  {{super()}}
+<script defer src="https://use.fontawesome.com/releases/v5.0.9/js/all.js" integrity="sha384-8iPTk2s/jMVj81dnzb/iFR2sdA7u06vHJyyLlAd4snFpCl/SnyUjRrbdJsw1pGIl" crossorigin="anonymous"></script>
+{% endblock %}
+
 
 {% block content %}
 <style type="text/css">
@@ -58,11 +66,11 @@ Login
 					{{ form.hidden_tag() }}
 					{{ wtf.form_field(form.email) }}
 					{{ wtf.form_field(form.password) }}
-					<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+					<button class="btn btn-lg btn-success btn-block" type="submit">Sign in</button>
 				</form>
 
 				<div class= "center-block" style="width: 300px; text-align:center;">
-                    <a href="{{ url_for("google.login") }}" class="btn btn-lg btn-success btn-block" style="display: block; margin: 0 auto;" type="button"> Google </button><a/><br>
+                    <a href="{{ url_for("google.login") }}" class="btn btn-lg btn-block btn-social btn-google" style="display: block; margin: 0 auto;" type="button"> <i class="fab fa-google" style="margin-top: 5px;"></i> Sign in with Google </button><a/><br>
 
 					<a href="{{ url_for('mod_auth.signup') }}"><button class="btn btn-lg btn-success btn-block" style="display: block; margin: 0 auto;" type="button">Create Account</button></a> <br>
 					<a href="{{ url_for('mod_auth.signup_shop') }}">

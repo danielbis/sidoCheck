@@ -6,12 +6,14 @@
 
 from app import app, db
 from app.mod_auth.models import User, Shop
-from app.mod_provider.models import Schedule
+from app.mod_provider.models import Schedule, Appointment, Service
+from app.mod_provider import api
 from flask import abort, url_for
 from urllib.parse import urlparse
 import os
 import unittest
 import tempfile
+from datetime import datetime, date
 
 
 class TestBase(unittest.TestCase):
@@ -50,7 +52,7 @@ class TestBase(unittest.TestCase):
     def register(self, firstname, lastname, email, password):
         return self.app.post(
             'auth/signup',
-            data=dict(firstname = firstname, lastname = lastname, email=email, password=password),
+            data=dict(first_name = firstname, last_name = lastname, email=email, password=password),
             follow_redirects=True
         )
 
@@ -64,6 +66,18 @@ class TestBase(unittest.TestCase):
             follow_redirects=True
     )
 
+    def register_shop_employee(self):
+        user1 = User("shop1", "shop1", "shop1@gmail.com", "shop1pass", "shop", 1, "8506667676")
+        new_shop = Shop("shop1", 'location')
+        db.session.add(new_shop)
+        new_shop.users.append(user1)
+        user2 = User("testuser2", "testuser2last", "testuser1@gmail.com", "shop1pass", "employee", 1, "8506667676")
+        new_shop.users.append(user2)
+        db.session.commit()
+        empl = User.query.filter_by(email="testuser1@gmail.com").first()
+
+        return empl
+
     def logout(self):
         return self.app.get(
             'auth/logout',
@@ -71,9 +85,9 @@ class TestBase(unittest.TestCase):
         )  
 
     def test_valid_user_registration(self):
-        response = self.register('test', 'User1','testUser1@gmail.com','FlaskRocks')
+        response = self.register('firstname', 'User1lastname', 'testUser1@gmail.com', 'FlaskRocks')
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'<h1>New user has been created!</h1>', response.data)
+
 
     """def test_login(self):
         expectedPath = "localhost:8080/dashboardcustomer"
@@ -115,28 +129,45 @@ class TestBase(unittest.TestCase):
         self.assertEqual(empl_count, 1)
 
     def test_add_schedule(self):
-        #manager rights
-        user1 = User("shop1", "shop1", "shop1@gmail.com", "shop1pass", "shop", 1, "8506667676")
-        new_shop = Shop("shop1", 'location')
-        db.session.add(new_shop)
-        new_shop.users.append(user1)
-        user2 = User("testuser2", "testuser2last",  "testuser1@gmail.com","shop1pass", "employee", 1, "8506667676")
-        new_shop.users.append(user2)
-        db.session.commit()
-        empl = User.query.filter_by(email="testuser1@gmail.com").first()
+
+        empl = self.register_shop_employee()
         #shop = Shop.query.filter_by(shop_id= empl.shop_id)
 
-        schedule = Schedule(starttime = "2018-02-22 11:00:00", endtime = "2018-02-22 6:00:00")
+        schedule = Schedule(start_time= datetime(2018, 4, 22, 11, 0,0), end_time=datetime(2018, 4, 22, 6, 0, 0))
         empl.schedules.append(schedule)
         db.session.commit()
 
         schedule_count = Schedule.query.filter_by(employee_id=empl.id).count()
         self.assertEqual(schedule_count, 1)
 
+    def test_add_many_schedules(self):
 
+        # register shop and employee
+        empl = self.register_shop_employee()
 
+        for i in range(1,10):
+            schedule = Schedule(start_time= datetime(2018, 4, 10, 11, 0, 0), end_time=datetime(2018, 4, 10, 18, 0, 0))
+            empl.schedules.append(schedule)
 
+        db.session.commit()
 
+        self.assertEqual(Schedule.query.filter_by(employee_id=empl.id).count(), 9)
+
+    def test_availability(self):
+
+        empl = self.register_shop_employee()
+
+        schedule = Schedule(start_time=datetime(2018, 4, 10, 11, 0, 0), end_time=datetime(2018, 4, 10, 18, 0, 0))
+
+        empl.schedules.append(schedule)
+        db.session.commit()
+
+        d = date(2018,4,10)
+        print("d ", d)
+        slots = [x.strftime("%H:%M") for x in
+                 api.check_availability_by_employee_id(empl.id, d, 40)]
+        print(slots)
+        self.assertEqual(len(slots), 10)
 
 
 if __name__ == "__main__":
