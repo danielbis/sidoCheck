@@ -194,7 +194,7 @@ def not_found(error):
 
     return render_template('404.html', role=role), 404
 
-@app.errorhandler(Exception)
+"""@app.errorhandler(Exception)
 def unhandled_exception(e):
 
     try:
@@ -202,7 +202,7 @@ def unhandled_exception(e):
     except AttributeError:
         role = None
 
-    return render_template('500.html', role=role), 500
+    return render_template('500.html', role=role), 500"""
 
 # Build the database:
 # This will create the database file using SQLAlchemy

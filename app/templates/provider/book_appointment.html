@@ -59,7 +59,7 @@ $(document).on("click", "#slot", function(){
             <li><a href="{{url_for('mod_provider.dashboardprovider')}}">Dashboard</a></li>
             <li> <a href="{{ url_for('mod_provider.add_schedule') }}">Add schedule</a></li>
             <li><a href="{{ url_for('mod_auth.signup_employee') }}">Add employee</a></li>
-            <li class="active"><a href="{{ url_for('mod_provider.addservice') }}">Add service</a></li>
+            <li><a href="{{ url_for('mod_provider.addservice') }}">Add service</a></li>
             <li class="active"><a href="{{ url_for('mod_provider.book_appointment_date') }}">Book Appointment</a></li>
 
             <li><a href="{{ url_for('mod_auth.logout') }}">Log Out</a></li>
@@ -68,16 +68,18 @@ $(document).on("click", "#slot", function(){
         </div>
       </div>
     </nav>
-    <div class="container" style="text-align: center;">	
+    <div class="container" style="text-align: center;">
     	
 		{% for s in slots %}
-    <div class="row"> {{s[0].first_name}} {{s[0].last_name}}</div>
+    <div class="row"> <h3>{{s[0].first_name}} {{s[0].last_name}}</h3></div>
     {% for slots_row in s[1] | batch(6, '&nbsp;') %}
     <div class="row">
       {% for slot in slots_row %}
-      <div class="col-md-2">
-      <button class="btn-primary btn-lg" value="{{s[0].id}}" id="slot">{{slot}}</button>
-      </div>
+        {% if slot|length == 5 %}
+          <div class="col-md-2">
+            <button class="btn-primary btn-lg btn-block" value="{{s[0].id}}" id="slot" style="margin-top: 5px;">{{slot}}</button>
+          </div>
+        {% endif %}
       {% endfor %}
     </div>
     {% endfor %}
