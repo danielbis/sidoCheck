@@ -39,3 +39,15 @@
 2018-04-01 20:57:01,242 - app - INFO - Appointment slot 1 scheduled for employee: 23
 2018-04-01 20:57:02,533 - app - INFO - dashboard, shop: Living in the Cut
 2018-04-01 20:58:56,364 - app - INFO - dashboard, shop: Living in the Cut
+2018-04-01 21:27:21,139 - app - INFO - dashboard, shop: Living in the Cut
+2018-04-02 16:53:47,036 - app - INFO - dashboard, shop: Living in the Cut
+2018-04-02 16:53:47,968 - app - INFO - dashboard, shop: Living in the Cut
+2018-04-02 16:55:20,901 - app - INFO - dashboard, shop: Living in the Cut
+2018-04-02 16:55:21,294 - app - INFO - dashboard, shop: Living in the Cut
+2018-04-02 16:55:40,793 - app - INFO - Attempting to book slot: 04-05-18 16:00, shop_id: 1
+2018-04-02 16:55:48,234 - app - INFO - Appointment slot 0 scheduled for employee: 22
+2018-04-02 18:05:11,547 - app - INFO - dashboard, shop: Living in the Cut
+2018-04-02 18:11:10,705 - app - INFO - dashboard, shop: Living in the Cut
+2018-04-02 19:13:44,235 - app - INFO - dashboard, shop: Living in the Cut
+2018-04-02 19:15:33,894 - app - INFO - dashboard, shop: Living in the Cut
+2018-04-02 19:36:32,550 - app - INFO - dashboard, shop: Living in the Cut

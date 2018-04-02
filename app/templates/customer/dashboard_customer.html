@@ -40,7 +40,7 @@ Dashboard Customer
        <div class="card" style="width:100%; margin-bottom: 20px; border: 1px solid rgba(0, 0, 0, 0.125);
           border-radius: 0.25rem;" >
         {% if shop.img_path|length > 1 %}
-        <img class="card-img-top" src="/static/img/{{shop.img_path}}"  alt="Card image cap" style="width:550px; height: 360px;;">
+        <img class="card-img-top" src="/static/img/{{shop.img_path}}"  alt="Card image cap" style="width:550px; height: 360px;">
         {% endif %}
         {% if shop.img_path |length < 1 %}
         <img class="card-img-top" src="{{ url_for('static', filename='barber.jpg') }}" alt="Card image cap" style="width:550px; height: 360px;">

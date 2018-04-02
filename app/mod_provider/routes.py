@@ -21,7 +21,7 @@ from app.mod_auth.routes import load_user
 
 from app.mod_provider.models import Schedule, Appointment, Service
 from app.mod_provider.api import check_availability_by_employee_id, is_slot_open, get_employees_appointments_by_date, \
-    check_availability_by_shop, get_next_available
+    check_availability_by_shop, get_next_available, get_schedules
 from datetime import *
 
 provider_mod = Blueprint("mod_provider", __name__, url_prefix="/provider")
@@ -76,8 +76,8 @@ def add_schedule():
             print(start_date, end_date, start_time, end_time)
             print(datetime.combine(start_date, start_time))
             while start_date <= end_date:
-                new_schedule = Schedule(starttime=datetime.combine(start_date, start_time),
-                                        endtime=datetime.combine(end_date, end_time))
+                new_schedule = Schedule(start_time=datetime.combine(start_date, start_time),
+                                        end_time=datetime.combine(end_date, end_time))
                 employee.schedules.append(new_schedule)
                 start_date += day
                 counter += 1
@@ -150,6 +150,29 @@ def addservice():
 
     return render_template('provider/addservice.html', form=form)
 
+@provider_mod.route('/schedules', methods=['GET', 'POST'])
+@login_required
+def schedules():
+
+    schedules_list = get_schedules(current_user.shop_id, date.today())
+
+    return render_template('provider/schedules.html', schedules=schedules_list)
+
+
+
+@provider_mod.route('/reload_schedules', methods=['GET', 'POST'])
+@login_required
+def reload_schedules():
+
+    date_string = request.args.get('date', 0, type=str)
+    print("rs: ", date_string)
+    date_string = date_string[:-4] + date_string[-2:]
+    d = datetime.strptime(date_string, '%m/%d/%y').date()
+
+    schedules_list = get_schedules(current_user.shop_id, d)
+
+    return jsonify(schedules_list)
+
 
 @provider_mod.route('/book_appointment_date', methods=['GET', 'POST'])
 @login_required
@@ -173,6 +196,9 @@ def book_appointment():
     form = BookTimeForm()
 
     date_string = session.pop("booking_date", None)
+    if date_string is None:
+        return redirect(url_for("mod_provider.book_appointment_date"))
+
     print("ds: ", date_string)
 
     d = datetime.strptime(date_string, '%Y-%m-%d').date()

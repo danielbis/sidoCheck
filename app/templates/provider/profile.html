@@ -9,19 +9,21 @@ my_profile.shop_name
 
 {% block styles %}
 {{super()}}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
 {% endblock %}
 
 {% block content %}
-<nav class="navbar navbar-inverse navbar-fixed-top .bg-secondary" >
+<nav class="navbar navbar-inverse navbar-fixed-top" >
   <div class="container-fluid">
      <div class="navbar-header">
       <a class="navbar-brand" href="{{url_for('mod_provider.dashboardprovider')}}">Sido</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav navbar-right">
-        <li class="active"><a href="#">Welcome to {{name}}</a></li>
+         <li><a href="{{url_for('mod_provider.dashboardprovider')}}">Dashboard</a></li>
+        <li ><a href="{{ url_for('mod_provider.schedules') }}">Schedules</a></li>
         <li><a href="{{ url_for('mod_provider.add_schedule') }}">Add schedule</a></li>
-
         <li><a href="{{ url_for('mod_auth.signup_employee') }}">Add employee</a></li>
         <li><a href="{{ url_for('mod_provider.addservice') }}">Add service</a></li>
         <li><a href="{{ url_for('mod_provider.book_appointment_date') }}">Book Appointment</a></li>
@@ -38,28 +40,31 @@ my_profile.shop_name
       {% if messages %}
         <ul class=flashes>
         {% for message in messages %}
-          <li>{{ message }}</li>
+          <li class="alert alert-success">{{ message }}</li>
         {% endfor %}
         </ul>
       {% endif %}
     {% endwith %}
-  <h1>{{ my_profile.shop_name }}</h1>
+<div class="card" style="width: 550px !important;">
+  <div class="card-body" style="border: 5px black !important;">
   {% if my_profile.img_path|length > 1 %}
-  <img class="card-img-top" src="/static/img/{{my_profile.img_path}}"  alt="Card image cap" style="width:50%;">
+  <img class="card-img-top" src="/static/img/{{my_profile.img_path}}"  alt="Card image cap" style="width:550px; height: 360px;">
   {% endif %}
   {% if my_profile.img_path |length < 1 %}
-  <img class="card-img-top" src="{{ url_for('static', filename='barber.jpg') }}" alt="Card image cap" style="width:50%;">
+  <img class="card-img-top" src="{{ url_for('static', filename='barber.jpg') }}" alt="Card image cap" style="width:550px; height: 360px;">
   {% endif %}
-<h1>Location: {{ my_profile.location }}</h1>
-<h1>Phone Number: {{ User_profile.phone_number }}</h1>
-<h1>Owner Name: {{ User_profile.last_name }} {{ User_profile.first_name }}</h1>
+  <h1 class="card-title" style="margin-top: 10px; margin-left: 2.5%;">{{ my_profile.shop_name }}</h1>
+<h4 style="margin-left: 2.5%;">Location: {{ my_profile.location }}</h4>
+<h4 style="margin-left: 2.5%;">Phone Number: {{ User_profile.phone_number }}</h4>
+<h4 style="margin-left: 2.5%;">Owner Name: {{ User_profile.last_name }} {{ User_profile.first_name }}</h4>
 
 
 {% if User_profile == current_user %}
-<a href="{{ url_for('mod_provider.edit_profile') }}" class="btn btn-primary btn-lg">Edit your profile</a>
-<a href="{{ url_for('mod_provider.update_password') }}"class="btn btn-primary btn-lg">Update Password</a>
+<a href="{{ url_for('mod_provider.edit_profile') }}" class="btn btn-primary btn-lg" style="margin-top: 10px; margin-left: 2.5%; margin-right: 2.5%; width: 45%; ">Edit your profile</a>
+<a href="{{ url_for('mod_provider.update_password') }}"class="btn btn-primary btn-lg" style="margin-top: 10px; margin-left: 2.5%; margin-right: 0%; width: 45%; ">Update Password</a>
 {% endif %}
-
+  </div>
+</div>
 
 
 

@@ -183,3 +183,25 @@ def filter_history(appointments):
                 del (appointments[idx])
             idx += 1
     return appointments
+
+
+"""
+    Query Database for a list of schedules for all employees for a given shop.
+    Return: [(User, Schedule)]
+"""
+
+
+def get_schedules(shop_id, d):
+
+    schedules_list = db.session.query(Schedule.start_time, Schedule.end_time, User.first_name, User.last_name, User.email).filter(User.id == Schedule.employee_id).filter(User.shop_id == shop_id).filter(
+        Schedule.start_time.between(
+            datetime.combine(d, datetime.min.time()),
+            datetime.combine(d, datetime.max.time()))).all()
+    sl = []
+    for row in schedules_list:
+        row_as_list = list(row)
+        row_as_list[0] = row_as_list[0].time().strftime('%H:%M')
+        row_as_list[1] = row_as_list[1].time().strftime('%H:%M')
+        sl.append(row_as_list)
+
+    return sl
