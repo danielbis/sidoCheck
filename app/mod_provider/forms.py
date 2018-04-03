@@ -72,3 +72,8 @@ class UpdateShopPassword(FlaskForm):
     new_password = StringField('New Password', validators=[InputRequired(), Length(min=8, max=80)])
     val_password = StringField('Retype Password', validators=[InputRequired(), Length(min=8, max=80)])
     submit = SubmitField('Update')
+
+class EditEmployeeProfile(FlaskForm):
+	email= StringField('Email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
+	phone_number= StringField('Phone Number', validators=[InputRequired(), Length(min=10, max=12)])
+	submit= SubmitField('Update')

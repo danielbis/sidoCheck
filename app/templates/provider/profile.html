@@ -4,7 +4,7 @@
 
 
 {% block title %}
-my_profile.shop_name
+{{ my_profile.shop_name }}
 {% endblock %}
 
 {% block styles %}
@@ -12,6 +12,43 @@ my_profile.shop_name
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 
 {% endblock %}
+
+{% block scripts %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+<script type="application/javascript">
+
+    $(document).on("click", "#slot", function(){
+    var r = confirm("Are you sure that you want to remove this employee?");
+    if (r === true){
+        console.log($(this).val())
+    	$.ajax({
+	      method:'post',
+	      url:'/provider/delete_employee',
+	      data: JSON.stringify({
+	              employee_id: $(this).val(),
+
+	      }),
+	      contentType: 'application/json',
+	      error: function(data){
+	        alert("Something went wrong. Try again please.")
+	      },
+	      success: function(data) {
+	        if (data == "success"){
+	          alert("Employee removed")
+              location.reload();
+	        }
+	        else{
+	          alert("Sorry, something went wrong. Try again please.")
+	        }
+	      }
+	    })
+    }
+
+  });
+    </script>
+{% endblock %}
+
 
 {% block content %}
 <nav class="navbar navbar-inverse navbar-fixed-top" >
@@ -65,10 +102,12 @@ my_profile.shop_name
 {% endif %}
   </div>
 </div>
-
-
-
-
+<h3 style="margin-top: 20px;">Employees</h3>
+<ul class="list-group">
+{% for e in employees %}
+    <li class="list-group-item">{{ e.first_name }} {{ e.last_name }} <button class="btn btn-danger" id="slot" value={{ e.id }} style=" float: right;">Remove Employee</button> <a href="{{ url_for('mod_provider.edit_employee', id=e.id )}}"><button class="btn btn-primary" value={{ e.id }} style=" float: right; margin-right: 5px;">Edit Employee </button> </a></li>
+{% endfor %}
+</ul>
 </div>
 
 

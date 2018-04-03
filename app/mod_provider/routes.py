@@ -6,7 +6,7 @@ from flask_wtf import FlaskForm
 from flask_login import login_user, login_required, logout_user, current_user
 import logging
 from app.mod_provider.forms import DateForm, ServiceForm, AddServiceForm, BookDateForm, BookTimeForm, EditShopProfile, \
-    UpdateShopPassword
+    UpdateShopPassword, EditEmployeeProfile
 
 # import database object and login manager from app module
 from app import db, login_manager
@@ -383,8 +383,10 @@ def cancel_appointment():
 def profile():
     my_profile = Shop.query.filter_by(shop_id=current_user.shop_id).first()
     User_profile = User.query.filter_by(id=current_user.id).first()
-
-    return render_template('provider/profile.html', my_profile=my_profile, User_profile=User_profile)
+    employees = db.session.query(User).filter(User.shop_id == current_user.shop_id).all()
+    employees.remove(employees[0])
+    print(employees[0].first_name)
+    return render_template('provider/profile.html', my_profile=my_profile, User_profile=User_profile, employees=employees)
 
 
 # Wrap commits into try/except blocks
@@ -442,3 +444,36 @@ def update_password():
 
     return render_template('provider/update_password.html', form=form, form_action=form_action, profile=profile,
                            title="Update Password")
+
+@provider_mod.route('/delete_employee', methods=['GET', 'POST'])
+@login_required
+def delete_employee():
+    request_json = request.get_json()
+    employee_id = request_json['employee_id']
+    print("ID: ", employee_id)
+    employee = User.query.filter_by(id=employee_id).first()
+
+    db.session.delete(employee)
+    db.session.commit()
+
+    return jsonify('success')
+
+@provider_mod.route('/edit_employee/<id>', methods=['GET', 'POST'])
+@login_required
+def edit_employee(id):
+    form = EditEmployeeProfile()
+    # form_action= url_for('mod_provider.edit_profile')
+    profile = User.query.filter_by(id=id).first()
+    if form.validate_on_submit():
+        print("validated")
+        profile.email = form.email.data
+        profile.phone_number = form.phone_number.data
+        db.session.commit()
+        flash('Profile Updated')
+        return redirect(url_for("mod_provider.profile"))
+
+    if request.method == 'GET':
+        form.email.data = profile.email
+        form.phone_number.data = profile.phone_number
+
+    return render_template('provider/edit_employee.html', form=form, profile=profile)
