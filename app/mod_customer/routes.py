@@ -125,7 +125,8 @@ def confirm():
                 "customer_id": current_user.id,
                 "customer_email": current_user.email,
                 "empl_id": parameters['empl_id'],
-                "shop_name": shop.shop_name
+                "shop_name": shop.shop_name,
+                "shop_id": shop.shop_id
             }
         if (is_slot_open(parameters['empl_id'], d, datetime_object, service.service_length)):
             # datescheduled, username, user_last_name, userphone, useremail, user_id, service_id)
@@ -166,10 +167,11 @@ def confirm():
         "service_length": service.service_length,
         "date_scheduled": datetime_object,
         "employee_name": employee.first_name + " " + employee.last_name,
-        "shop_name": shop.shop_name
+        "shop_name": shop.shop_name,
+        "shop_id": shop.shop_id
     }
 
-    return render_template("customer/confirm.html", confirmation=confirmation)
+    return render_template("customer/confirm.html", confirmation=confirmation, user=current_user)
 
 
 @customer_mod.route('/confirmation', methods=["GET", "POST"])
@@ -199,7 +201,7 @@ def confirmation():
         else:
             confirmation["message"] = "Congratulation! Your appointment was booked!"
 
-    return render_template("customer/confirmation.html", confirmation=confirmation)
+    return render_template("customer/confirmation.html", confirmation=confirmation, user=current_user)
 
 
 @customer_mod.route('/history', methods=["GET", "POST"])

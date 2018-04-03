@@ -59,8 +59,13 @@ Dashboard Customer
     <form method="POST" action="/confirm">
         <button class="btn btn-lg btn-success btn-block " type="submit">Confirm</button>
     </form>
+      {% if confirmation.shop_id == user.shop_id %}
+          <a href="{{ url_for('mod_provider.dashboardprovider') }}"><button class="btn btn-lg btn-danger btn-block " style="margin-top: 10px;">Cancel</button></a>
+      {% endif %}
+    {% if confirmation.shop_id != user.shop_id  %}
       <a href="{{ url_for('mod_customer.dashboardcustomer') }}"><button class="btn btn-lg btn-danger btn-block " style="margin-top: 10px;">Cancel</button></a>
-    </div>
+    {% endif %}
+  </div>
   </div>
   <div class="card-footer text-muted">
     Thank you for saving time with us!
