@@ -32,27 +32,43 @@ provider_mod = Blueprint("mod_provider", __name__, url_prefix="/provider")
 def dashboardprovider():
     employees = User.query.filter_by(shop_id=current_user.shop_id).all()
     empl_app = []
+    date_string = request.args.get('date', 0, type=str)
+    if date_string is not 0:
+        print("rs: ", date_string)
+        date_string = date_string[:-4] + date_string[-2:]
+        print("rs: ", date_string)
+        d = datetime.strptime(date_string, '%m/%d/%y').date()
+    else:
+        d = date.today()
+
+    print("d is", d)
     for e in employees:
         if e.id == current_user.id:
             del (e)
         else:
-            d = date.today()
             a = get_employees_appointments_by_date(e, d)
             empl_app += a
+
+    print("appoint before sort: ", empl_app)
+    empl_app.sort(key=lambda r: r["time"], reverse=False)
+    print("appoint after sort: ", empl_app)
+
+    if date_string is not 0:
+        return jsonify(empl_app)
 
     form = ServiceForm()
     shops_services = Service.query.filter(Service.providers.any(id=current_user.id)).all()
     form.service.choices = [(s.service_id, s.service_name) for s in shops_services]
     shop = Shop.query.filter_by(shop_id=current_user.shop_id).first()
-    print("appoint before sort: ", empl_app)
-    empl_app.sort(key=lambda r: r["time"], reverse=False)
-    print("appoint after sort: ", empl_app)
+
 
     app.logger.info('dashboard, shop: %s', shop.shop_name)
 
     if form.validate_on_submit():
         session["walkin_service_id"] = form.service.data
         return redirect(url_for("mod_provider.walkin"))
+
+
 
     return render_template('dashboardprovider.html', name=shop.shop_name, employees=employees, empl_app=empl_app,
                            form=form)
