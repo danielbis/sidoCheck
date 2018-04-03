@@ -30,7 +30,6 @@ provider_mod = Blueprint("mod_provider", __name__, url_prefix="/provider")
 @provider_mod.route('/dashboardprovider', methods=['GET', 'POST'])
 @login_required
 def dashboardprovider():
-
     employees = User.query.filter_by(shop_id=current_user.shop_id).all()
     empl_app = []
     for e in employees:
@@ -45,7 +44,9 @@ def dashboardprovider():
     shops_services = Service.query.filter(Service.providers.any(id=current_user.id)).all()
     form.service.choices = [(s.service_id, s.service_name) for s in shops_services]
     shop = Shop.query.filter_by(shop_id=current_user.shop_id).first()
-    empl_app.sort(key=lambda r: r["time"], reverse=True)
+    print("appoint before sort: ", empl_app)
+    empl_app.sort(key=lambda r: r["time"], reverse=False)
+    print("appoint after sort: ", empl_app)
 
     app.logger.info('dashboard, shop: %s', shop.shop_name)
 
@@ -76,14 +77,26 @@ def add_schedule():
             print(start_date, end_date, start_time, end_time)
             print(datetime.combine(start_date, start_time))
             while start_date <= end_date:
+                sanity_check = db.session.query(Schedule).filter(
+                    Schedule.employee_id == employee.id).filter(
+                    Schedule.start_time.between(
+                        datetime.combine(start_date, datetime.min.time()),
+                        datetime.combine(start_date, datetime.max.time()))).first()
+                if sanity_check is not None:
+                    print('deleting ', sanity_check)
+                    db.session.delete(sanity_check)
+                    db.session.commit()
+                    counter -= 1
+
                 new_schedule = Schedule(start_time=datetime.combine(start_date, start_time),
-                                        end_time=datetime.combine(end_date, end_time))
+                                        end_time=datetime.combine(start_date, end_time))
                 employee.schedules.append(new_schedule)
                 start_date += day
                 counter += 1
 
             db.session.commit()
             sa = Schedule.query.count()
+            print(sa, sb)
             if sa - sb == counter:
                 session["scheduled"] = True
             else:
@@ -150,20 +163,18 @@ def addservice():
 
     return render_template('provider/addservice.html', form=form)
 
+
 @provider_mod.route('/schedules', methods=['GET', 'POST'])
 @login_required
 def schedules():
-
     schedules_list = get_schedules(current_user.shop_id, date.today())
 
     return render_template('provider/schedules.html', schedules=schedules_list)
 
 
-
 @provider_mod.route('/reload_schedules', methods=['GET', 'POST'])
 @login_required
 def reload_schedules():
-
     date_string = request.args.get('date', 0, type=str)
     print("rs: ", date_string)
     date_string = date_string[:-4] + date_string[-2:]
@@ -255,7 +266,7 @@ def confirm_shop():
         d = datetime.strptime(parameters['date_string'].replace("-", "/"), '%m/%d/%y').date()
         datetime_object = datetime.strptime(parameters['date_time_string'].replace("-", "/"), '%m/%d/%y %H:%M')
         service = Service.query.filter_by(service_id=parameters['service_id']).first()
-        slots_required = int(service.service_length/20)
+        slots_required = int(service.service_length / 20)
 
         print("empl_id is ", parameters['empl_id'], " service id is: ", parameters['service_id'], " slots required ",
               slots_required, " d is ", d, " datetime_object is ", datetime_object)
@@ -265,20 +276,19 @@ def confirm_shop():
 
         shop = Shop.query.filter_by(shop_id=employee.shop_id).first()
 
-
         confirmation_obj = {
-                "open": None,
-                "service_name": service.service_name,
-                "price": service.service_price,
-                "service_length": service.service_length,
-                "date_scheduled": datetime_object,
-                "employee_name": employee.first_name + " " + employee.last_name,
-                "customer_name": guest_name,
-                "customer_id": current_user.id,
-                "customer_email": current_user.email,
-                "empl_id": parameters['empl_id'],
-                "shop_name": shop.shop_name
-            }
+            "open": None,
+            "service_name": service.service_name,
+            "price": service.service_price,
+            "service_length": service.service_length,
+            "date_scheduled": datetime_object,
+            "employee_name": employee.first_name + " " + employee.last_name,
+            "customer_name": guest_name,
+            "customer_id": current_user.id,
+            "customer_email": current_user.email,
+            "empl_id": parameters['empl_id'],
+            "shop_name": shop.shop_name
+        }
         if (is_slot_open(parameters['empl_id'], d, datetime_object, service.service_length)):
             try:
                 # datescheduled, username, user_last_name, userphone, useremail, user_id, service_id)
@@ -315,7 +325,8 @@ def confirmation_shop():
         confirmation["message"] = "Sorry, this time is already booked."
     else:
         a = Appointment.query.filter_by(date_scheduled=confirmation["date_scheduled"],
-                                        employee_id=confirmation["empl_id"], user_id=confirmation["customer_id"]).first()
+                                        employee_id=confirmation["empl_id"],
+                                        user_id=confirmation["customer_id"]).first()
 
         if (a == None):
             print("appointment didnt propagate to the db")
@@ -358,7 +369,6 @@ def profile():
     User_profile = User.query.filter_by(id=current_user.id).first()
 
     return render_template('provider/profile.html', my_profile=my_profile, User_profile=User_profile)
-
 
 
 # Wrap commits into try/except blocks
