@@ -210,14 +210,20 @@ def history():
     # mark upcoming appointemnts
     for a in my_appointments:
         employee = User.query.filter_by(id=a.employee_id).first()
-        shop = Shop.query.filter_by(shop_id=employee.shop_id).first()
+        if employee:
+            shop = Shop.query.filter_by(shop_id=employee.shop_id).first()
+            a.shop_name = shop.shop_name
+            a.employee = employee.first_name + employee.last_name
+        else:
+            a.shop_name = "Unavailable"
+            a.employee = "Unavailable"
+
         if a.date_scheduled > today:
             a.upcoming = True
         else:
             a.upcoming = False
 
-        a.shop_name = shop.shop_name
-        a.employee = employee.first_name + employee.last_name
+
     my_appointments.sort(key=lambda r: r.date_scheduled, reverse=True)
     my_appointments = filter_history(my_appointments)
 

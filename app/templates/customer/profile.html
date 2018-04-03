@@ -40,12 +40,13 @@ my_profile.first_name
       </ul>
     {% endif %}
   {% endwith %}
-  <h1>PROFILE</h1>
+  <h1>Your Information</h1>
+<hr>
 
-<h1>Name: {{ my_profile.first_name }} {{ my_profile.last_name }}</h1>
-<h1>Email: {{ my_profile.email }}</h1>
-<h1>Phone Number: {{ my_profile.phone_number }}</h1>
-
+<h3>Name: {{ my_profile.first_name }} {{ my_profile.last_name }}</h3>
+<h3>Email: {{ my_profile.email }}</h3>
+<h3>Phone Number: {{ my_profile.phone_number }}</h3>
+<hr>
 {% if my_profile == current_user %}
 <a href="{{ url_for('mod_customer.edit_profile') }}" class="btn btn-primary btn-lg">Edit your profile</a>
 <a href="{{ url_for('mod_customer.update_password') }}"class="btn btn-primary btn-lg">Update Password</a>

@@ -7,6 +7,8 @@ from wtforms import StringField, SelectField, SelectMultipleField, widgets, Date
 from wtforms.fields.html5 import DateTimeField, IntegerField
 from wtforms.validators import InputRequired, Length, Email
 from wtforms_components import TimeField
+from flask_wtf.file import FileField, FileAllowed, FileRequired
+
 
 
 class DateForm(FlaskForm):
@@ -64,6 +66,8 @@ class EditShopProfile(FlaskForm):
     email = StringField('Email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
     lastname = StringField('Last name', validators=[InputRequired(), Length(min=2, max=32)])
     firstname = StringField('First name', validators=[InputRequired(), Length(min=2, max=32)])
+    image = FileField(validators=[FileAllowed(['jpg', 'png'], 'Images only!')]) #validators=[FileRequired()]
+
     submit = SubmitField('Update')
 
 
@@ -74,6 +78,7 @@ class UpdateShopPassword(FlaskForm):
     submit = SubmitField('Update')
 
 class EditEmployeeProfile(FlaskForm):
-	email= StringField('Email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
-	phone_number= StringField('Phone Number', validators=[InputRequired(), Length(min=10, max=12)])
-	submit= SubmitField('Update')
+    email= StringField('Email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
+    phone_number= StringField('Phone Number', validators=[InputRequired(), Length(min=10, max=12)])
+    image = FileField(validators=[FileAllowed(['jpg', 'png'], 'Images only!')]) #validators=[FileRequired()]
+    submit= SubmitField('Update')

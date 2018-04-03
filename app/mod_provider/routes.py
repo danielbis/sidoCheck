@@ -1,7 +1,11 @@
 # Author: DANIEL BIS
 from flask import Flask, render_template, redirect, url_for, Blueprint, session, request, jsonify, flash
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import IntegrityError
+
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
+import os
 from flask_wtf import FlaskForm
 from flask_login import login_user, login_required, logout_user, current_user
 import logging
@@ -399,14 +403,30 @@ def edit_profile():
     profile = Shop.query.filter_by(shop_id=current_user.shop_id).first()
     if form.validate_on_submit():
         print("validated")
-        profile.shop_name = form.shop_name.data
-        profile.location = form.location.data
-        User_profile.email = form.email.data
-        User_profile.last_name = form.lastname.data
-        User_profile.first_name = form.firstname.data
-        User_profile.phone_number = form.phone_number.data
-        db.session.commit()
-        flash('Profile Updated')
+        try:
+            profile.shop_name = form.shop_name.data
+            profile.location = form.location.data
+            User_profile.email = form.email.data
+            User_profile.last_name = form.lastname.data
+            User_profile.first_name = form.firstname.data
+            User_profile.phone_number = form.phone_number.data
+
+            f = form.image.data
+            if f is not None:
+                filename = secure_filename(f.filename)
+                print(filename)
+                path = os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)
+                f.save(path)
+            else:
+                filename = 'city.jpg'
+
+            profile.img_path = filename
+            db.session.commit()
+            flash('Profile Updated')
+        except IntegrityError as IE:
+            db.session.rollback()
+            app.logger.error('Error editing shop: %s', IE)
+
         return redirect(url_for("mod_provider.profile"))
 
     if request.method == 'GET':
@@ -416,6 +436,7 @@ def edit_profile():
         form.lastname.data = User_profile.last_name
         form.firstname.data = User_profile.first_name
         form.phone_number.data = User_profile.phone_number
+        form.image.data = profile.img_path
 
     return render_template('provider/edit_profile.html', form=form, profile=profile, User_profile=User_profile,
                            title="Update Profile")
@@ -466,10 +487,24 @@ def edit_employee(id):
     profile = User.query.filter_by(id=id).first()
     if form.validate_on_submit():
         print("validated")
-        profile.email = form.email.data
-        profile.phone_number = form.phone_number.data
-        db.session.commit()
-        flash('Profile Updated')
+        try:
+            profile.email = form.email.data
+            profile.phone_number = form.phone_number.data
+            f = form.image.data
+            if f is not None:
+                filename = secure_filename(f.filename)
+                print(filename)
+                path = os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)
+                f.save(path)
+            else:
+                filename = 'city.jpg'
+
+            profile.img_path = filename
+            db.session.commit()
+            flash('Profile Updated')
+        except IntegrityError as IE:
+            db.session.rollback()
+            app.logger.error('Error editing employee: %s', IE)
         return redirect(url_for("mod_provider.profile"))
 
     if request.method == 'GET':

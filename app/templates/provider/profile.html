@@ -9,7 +9,6 @@
 
 {% block styles %}
 {{super()}}
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 
 {% endblock %}
 
@@ -90,11 +89,13 @@
   {% if my_profile.img_path |length < 1 %}
   <img class="card-img-top" src="{{ url_for('static', filename='barber.jpg') }}" alt="Card image cap" style="width:550px; height: 360px;">
   {% endif %}
+  <hr>
   <h1 class="card-title" style="margin-top: 10px; margin-left: 2.5%;">{{ my_profile.shop_name }}</h1>
+  <hr>
 <h4 style="margin-left: 2.5%;">Location: {{ my_profile.location }}</h4>
 <h4 style="margin-left: 2.5%;">Phone Number: {{ User_profile.phone_number }}</h4>
 <h4 style="margin-left: 2.5%;">Owner Name: {{ User_profile.last_name }} {{ User_profile.first_name }}</h4>
-
+<hr>
 
 {% if User_profile == current_user %}
 <a href="{{ url_for('mod_provider.edit_profile') }}" class="btn btn-primary btn-lg" style="margin-top: 10px; margin-left: 2.5%; margin-right: 2.5%; width: 45%; ">Edit your profile</a>
@@ -102,7 +103,9 @@
 {% endif %}
   </div>
 </div>
+<hr>
 <h3 style="margin-top: 20px;">Employees</h3>
+<hr>
 <ul class="list-group">
 {% for e in employees %}
     <li class="list-group-item">{{ e.first_name }} {{ e.last_name }} <button class="btn btn-danger" id="slot" value={{ e.id }} style=" float: right;">Remove Employee</button> <a href="{{ url_for('mod_provider.edit_employee', id=e.id )}}"><button class="btn btn-primary" value={{ e.id }} style=" float: right; margin-right: 5px;">Edit Employee </button> </a></li>
