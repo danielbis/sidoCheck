@@ -48,9 +48,8 @@ Dashboard Customer
         <div class="card-body">
           <h5 class="card-title">{{shop.shop_name}}</h5>
           <p class="card-text"> We are located on {{shop.location}}</p>
-          <p class="card-text"><small class="text-muted">Next available spot at 5:20 PM</small></p>
 
-          <a href="{{ url_for('mod_customer.employee_list', shop_name = shop.shop_name) }}"" class="btn btn-primary btn-block">Page</a>
+          <a href="{{ url_for('mod_customer.employee_list', shop_name = shop.shop_name) }}"" class="btn btn-primary btn-block">Visit</a>
         </div>
       </div>
     </div>

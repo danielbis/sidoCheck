@@ -3,38 +3,82 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_wtf import FlaskForm
 from flask_login import login_user, login_required, logout_user, current_user
-from app.mod_customer.forms import DateForm, DateForm_v2, EditProfile, UpdatePassword
+from app.mod_customer.forms import DateForm, DateForm_v2, EditProfile, UpdatePassword, ServiceForm
 
 # import database object and login manager from app module
-from app import app, db, login_manager
+from app import app, db, login_manager, login_required
 
 # Import module models containing User
 from app.mod_auth.models import User, Shop
 from app.mod_provider.models import Schedule, Appointment, Service
-from app.mod_provider.api import check_availability_by_employee_id, is_slot_open, filter_history
+from app.mod_provider.api import check_availability_by_employee_id, is_slot_open, filter_history, get_next_available
 from datetime import *
 
 customer_mod = Blueprint("mod_customer", __name__)
 
 
 @customer_mod.route('/dashboardcustomer')
-@login_required
+@login_required('customer')
 def dashboardcustomer():
     shops = Shop.query.all()
+
     return render_template('customer/dashboard_customer.html', name=current_user.first_name, shops=shops)
 
 
 @customer_mod.route('/<shop_name>/employee_list')
-@login_required
+@login_required('customer')
 def employee_list(shop_name):
     shop = Shop.query.filter_by(shop_name=shop_name).first()
     employees = shop.users[1:]  # delete shop user from employees
 
-    return render_template('customer/employee_list.html', employees=employees, shop_name=shop_name)
+    form = ServiceForm()
+    shops_services = Service.query.filter(Service.providers.any(id=shop.users[0].id)).all()
+    form.service.choices = [(s.service_id, s.service_name) for s in shops_services]
+
+    if form.validate_on_submit():
+        session["service_id"] = form.service.data
+        session["shop_id"] = shop_id
+        return redirect(url_for("mod_customer.book_next_available"))
+
+    return render_template('customer/employee_list.html', employees=employees, shop_name=shop_name, shop_id=shop.shop_id, form=form)
+
+@customer_mod.route('/next_available/<shop_id>', methods=["GET", "POST"])
+@login_required('customer')
+def next_available(shop_id):
+
+    form = ServiceForm()
+    shop = Shop.query.filter_by(shop_id=shop_id).first()
+    shops_services = Service.query.filter(Service.providers.any(id=shop.users[0].id)).all()
+    form.service.choices = [(s.service_id, s.service_name) for s in shops_services]
+
+    if form.validate_on_submit():
+        session["service_id"] = form.service.data
+        session["shop_id"] = shop_id
+        return redirect(url_for("mod_customer.book_next_available"))
+
+    return render_template('customer/next_available.html', form=form, shop_id=shop_id)
+
+@customer_mod.route('/book_next_available', methods=["GET", "POST"])
+@login_required('customer')
+def book_next_available():
+
+    service_id = session.pop('service_id', None)
+    shop_id = session.pop('shop_id', None)
+    service = Service.query.filter_by(service_id=service_id).first()
+
+    d = date.today()
+    slots_shop = get_next_available(shop_id, d, service.service_length)
+
+    for s in slots_shop:
+        print(s)
+        s["availability"] = [x.strftime("%H:%M") for x in s["availability"]]
+
+    return render_template('customer/book_next_available.html', slots_shop=slots_shop, service_id=service_id,
+                           date_today=str(d.strftime("%m/%d/%Y")))
 
 
 @customer_mod.route('/<shop_name>/availability/<empl_id>', methods=["GET", "POST"])
-@login_required
+@login_required('customer')
 def availability(shop_name, empl_id):
     form = DateForm()
     services = Service.query.filter(Service.providers.any(id=empl_id)).all()
@@ -47,7 +91,7 @@ def availability(shop_name, empl_id):
 
 
 @customer_mod.route('/timeslots', methods=["GET", "POST"])
-@login_required
+@login_required('ANY')
 def timeslots():
     date_string = request.args.get('date', 0, type=str)
     date_string = date_string[:-4] + date_string[-2:]
@@ -68,7 +112,7 @@ def timeslots():
 
 
 @customer_mod.route('/bookslot', methods=["GET", "POST"])
-@login_required
+@login_required('ANY')
 def bookslot():
     # retrieve data from ajax request
     request_json = request.get_json()
@@ -94,7 +138,7 @@ def bookslot():
 
 
 @customer_mod.route('/confirm', methods=["GET", "POST"])
-@login_required
+@login_required('ANY')
 def confirm():
 
     if request.method == 'POST':
@@ -175,7 +219,7 @@ def confirm():
 
 
 @customer_mod.route('/confirmation', methods=["GET", "POST"])
-@login_required
+@login_required('ANY')
 def confirmation():
     confirmation = session.pop("confirmation", None)
 
@@ -205,7 +249,7 @@ def confirmation():
 
 
 @customer_mod.route('/history', methods=["GET", "POST"])
-@login_required
+@login_required('customer')
 def history():
     my_appointments = Appointment.query.filter_by(user_id=current_user.id).all()
     today = datetime.now()
@@ -233,7 +277,7 @@ def history():
 
 
 @customer_mod.route('/profile', methods=['GET', 'POST'])
-@login_required
+@login_required('customer')
 def profile():
     my_profile = User.query.filter_by(id=current_user.id).first()
 
@@ -241,7 +285,7 @@ def profile():
 
 
 @customer_mod.route('/edit_profile', methods=['GET', 'POST'])
-@login_required
+@login_required('customer')
 def edit_profile():
     form = EditProfile()
     form_action = url_for('mod_customer.edit_profile')
@@ -264,7 +308,7 @@ def edit_profile():
 
 
 @customer_mod.route('/update_password', methods=['GET', 'POST'])
-@login_required
+@login_required('customer')
 def update_password():
     form = UpdatePassword()
     form_action = url_for('mod_customer.update_password')

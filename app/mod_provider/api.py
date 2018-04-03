@@ -100,7 +100,7 @@ def check_availability_by_shop(shop_id, date, service_length):
     shop_slots = []
     for empl in employees:
         empl_slots = check_availability_by_employee_id(empl.id, date, service_length)
-        e = {'id': empl.id, 'name': empl.first_name + empl.last_name, 'availability': empl_slots}
+        e = {'id': empl.id, 'name': empl.first_name + " " + empl.last_name, 'availability': empl_slots}
         shop_slots.append(e)
 
     return shop_slots

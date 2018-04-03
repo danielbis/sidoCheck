@@ -7,13 +7,13 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
 from flask_wtf import FlaskForm
-from flask_login import login_user, login_required, logout_user, current_user
+from flask_login import login_user, logout_user, current_user
 import logging
 from app.mod_provider.forms import DateForm, ServiceForm, AddServiceForm, BookDateForm, BookTimeForm, EditShopProfile, \
     UpdateShopPassword, EditEmployeeProfile
 
 # import database object and login manager from app module
-from app import db, login_manager
+from app import db, login_manager, login_required
 # import the app object itself
 from app import app
 import logging
@@ -32,7 +32,7 @@ provider_mod = Blueprint("mod_provider", __name__, url_prefix="/provider")
 
 
 @provider_mod.route('/dashboardprovider', methods=['GET', 'POST'])
-@login_required
+@login_required('shop')
 def dashboardprovider():
     employees = User.query.filter_by(shop_id=current_user.shop_id).all()
     empl_app = []
@@ -72,14 +72,12 @@ def dashboardprovider():
         session["walkin_service_id"] = form.service.data
         return redirect(url_for("mod_provider.walkin"))
 
-
-
     return render_template('dashboardprovider.html', name=shop.shop_name, employees=employees, empl_app=empl_app,
                            form=form)
 
 
 @provider_mod.route('/addschedule', methods=['GET', 'POST'])
-@login_required
+@login_required('shop')
 def add_schedule():
     form = DateForm()
     sb = Schedule.query.count()
@@ -127,7 +125,7 @@ def add_schedule():
 
 
 @provider_mod.route('/scheduled', methods=['GET', 'POST'])
-@login_required
+@login_required('shop')
 def scheduled():
     success = session.pop("scheduled", None)
 
@@ -138,28 +136,25 @@ def scheduled():
 
 
 @provider_mod.route('/walkin', methods=['GET', 'POST'])
-@login_required
+@login_required('shop')
 def walkin():
-    shop = Shop.query.filter_by(shop_id=current_user.shop_id).first()
-    print("shop is ", shop)
+
+    # shop = Shop.query.filter_by(shop_id=current_user.shop_id).first()
     service_id = session.pop("walkin_service_id", None)
-    print("s_id ", service_id)
     service = Service.query.filter_by(service_id=service_id).first()
-    print("service ", service)
     d = date.today()
     slots_shop = get_next_available(current_user.shop_id, d, service.service_length)
+
     for s in slots_shop:
         print(s)
         s["availability"] = [x.strftime("%H:%M") for x in s["availability"]]
-
-    print("date_today is ", d.strftime("%m/%d/%Y"))
 
     return render_template('provider/walkin.html', slots_shop=slots_shop, service_id=service_id,
                            date_today=str(d.strftime("%m/%d/%Y")))
 
 
 @provider_mod.route('/addservice', methods=['GET', 'POST'])
-@login_required
+@login_required('shop')
 def addservice():
     shop = Shop.query.filter_by(shop_id=current_user.shop_id).first()
     employees = shop.users[1:]
@@ -185,7 +180,7 @@ def addservice():
 
 
 @provider_mod.route('/schedules', methods=['GET', 'POST'])
-@login_required
+@login_required('shop')
 def schedules():
     schedules_list = get_schedules(current_user.shop_id, date.today())
 
@@ -193,7 +188,7 @@ def schedules():
 
 
 @provider_mod.route('/reload_schedules', methods=['GET', 'POST'])
-@login_required
+@login_required('shop')
 def reload_schedules():
     date_string = request.args.get('date', 0, type=str)
     print("rs: ", date_string)
@@ -206,7 +201,7 @@ def reload_schedules():
 
 
 @provider_mod.route('/book_appointment_date', methods=['GET', 'POST'])
-@login_required
+@login_required('shop')
 def book_appointment_date():
     form = BookDateForm()
     shops_services = Service.query.filter(Service.providers.any(id=current_user.id)).all()
@@ -222,7 +217,7 @@ def book_appointment_date():
 
 
 @provider_mod.route('/book_appointment', methods=['GET', 'POST'])
-@login_required
+@login_required('shop')
 def book_appointment():
     form = BookTimeForm()
 
@@ -249,7 +244,7 @@ def book_appointment():
 
 
 @provider_mod.route('/confirm_shop', methods=["GET", "POST"])
-@login_required
+@login_required('shop')
 def confirm_shop():
     parameters = session.pop("parameters", None)
     guest_name = session.pop("guest_name", None)
@@ -336,7 +331,7 @@ def confirm_shop():
 
 
 @provider_mod.route('/confirmation_shop', methods=["GET", "POST"])
-@login_required
+@login_required('shop')
 def confirmation_shop():
     confirmation = session.pop("confirmation", None)
     session['confirmation'] = confirmation
@@ -364,7 +359,7 @@ def confirmation_shop():
 
 
 @provider_mod.route('/cancel_appointment', methods=["GET", "POST"])
-@login_required
+@login_required('shop')
 def cancel_appointment():
     request_json = request.get_json()
     print("aid ", request_json["appointment_id"])
@@ -383,7 +378,7 @@ def cancel_appointment():
 
 
 @provider_mod.route('/profile', methods=['GET', 'POST'])
-@login_required
+@login_required('shop')
 def profile():
     my_profile = Shop.query.filter_by(shop_id=current_user.shop_id).first()
     User_profile = User.query.filter_by(id=current_user.id).first()
@@ -395,7 +390,7 @@ def profile():
 
 # Wrap commits into try/except blocks
 @provider_mod.route('/edit_profile', methods=['GET', 'POST'])
-@login_required
+@login_required('shop')
 def edit_profile():
     form = EditShopProfile()
     # form_action= url_for('mod_provider.edit_profile')
@@ -443,7 +438,7 @@ def edit_profile():
 
 
 @provider_mod.route('/update_password', methods=['GET', 'POST'])
-@login_required
+@login_required('shop')
 def update_password():
     form = UpdateShopPassword()
     form_action = url_for('mod_provider.update_password')
@@ -467,7 +462,7 @@ def update_password():
                            title="Update Password")
 
 @provider_mod.route('/delete_employee', methods=['GET', 'POST'])
-@login_required
+@login_required('shop')
 def delete_employee():
     request_json = request.get_json()
     employee_id = request_json['employee_id']
@@ -480,7 +475,7 @@ def delete_employee():
     return jsonify('success')
 
 @provider_mod.route('/edit_employee/<id>', methods=['GET', 'POST'])
-@login_required
+@login_required('shop')
 def edit_employee(id):
     form = EditEmployeeProfile()
     # form_action= url_for('mod_provider.edit_profile')

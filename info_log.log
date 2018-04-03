@@ -7,3 +7,15 @@
 2018-04-03 00:21:01,201 - app - INFO - dashboard, shop: Living in the Cut
 2018-04-03 00:21:04,490 - app - INFO - Attempting to book slot: 04/03/18  12:00, shop_id: 1
 2018-04-03 00:21:18,785 - app - INFO - dashboard, shop: Living in the Cut
+2018-04-03 00:21:46,803 - app - INFO - dashboard, shop: Living in the Cut
+2018-04-03 00:21:49,121 - app - INFO - Attempting to book slot: 04/03/18  13:00, shop_id: 1
+2018-04-03 00:21:51,085 - app - INFO - dashboard, shop: Living in the Cut
+2018-04-03 00:23:50,848 - app - INFO - dashboard, shop: Living in the Cut
+2018-04-03 00:24:04,416 - app - INFO - dashboard, shop: Living in the Cut
+2018-04-03 09:01:05,181 - app - INFO - dashboard, shop: Living in the Cut
+2018-04-03 09:01:45,856 - app - INFO - dashboard, shop: Living in the Cut
+2018-04-03 09:01:48,225 - app - INFO - Attempting to book slot: 04/03/18  11:40, shop_id: 1
+2018-04-03 09:01:50,886 - app - INFO - dashboard, shop: Living in the Cut
+2018-04-03 09:02:08,602 - app - INFO - Attempting to book slot: 04/04/18 11:40, shop_id: None
+2018-04-03 10:36:38,061 - app - INFO - Attempting to book slot: 04/03/18  11:00, shop_id: None
+2018-04-03 10:40:39,666 - app - INFO - Attempting to book slot: 04/03/18  11:20, shop_id: None

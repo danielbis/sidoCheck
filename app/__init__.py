@@ -1,16 +1,16 @@
-#Author: DANIEL BIS
+# Author: DANIEL BIS
 
 # Import flask and template operators
 from flask import Flask, render_template, redirect, url_for, flash
 from flask_bootstrap import Bootstrap
 # Import SQLAlchemy
 from flask_sqlalchemy import SQLAlchemy
-#import login manager 
-from flask_login import LoginManager, current_user, login_required
+# import login manager
+from flask_login import LoginManager, current_user, login_user, logout_user
 from flask.ext.uploads import UploadSet, configure_uploads, IMAGES
 import logging
 from logging.handlers import RotatingFileHandler
-
+from functools import wraps
 
 # Define the WSGI application object
 app = Flask(__name__)
@@ -22,11 +22,9 @@ app.config['UPLOADED_IMAGES_DEST'] = 'app/static/img'
 images = UploadSet('images', IMAGES)
 configure_uploads(app, images)
 
-
 # Define the database object which is imported
 # by modules and controllers
 db = SQLAlchemy(app)
-
 
 # Logging
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -46,12 +44,25 @@ error_handler.setLevel(logging.ERROR)
 error_handler.setFormatter(formatter)
 app.logger.addHandler(error_handler)
 
-
-
-
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
+
+def login_required(role="ANY"):
+    def wrapper(fn):
+        @wraps(fn)
+        def decorated_view(*args, **kwargs):
+            if not current_user.is_authenticated:
+                return login_manager.unauthorized()
+            if (current_user.role != role) and (role != "ANY"):
+                return login_manager.unauthorized()
+            return fn(*args, **kwargs)
+
+        return decorated_view
+
+    return wrapper
+
 
 # Import a module / component using its blueprint handler variable (mod_auth)
 from app.mod_auth.routes import mod
@@ -67,15 +78,12 @@ app.register_blueprint(mod_customer.routes.customer_mod)
 
 
 from flask_dance.contrib.google import make_google_blueprint, google
-from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 import os
 import sys
 from sqlalchemy.orm.exc import NoResultFound
 
-
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 app.secret_key = "supersekrit"
-
 
 blueprint = make_google_blueprint(
     client_id="91401939367-hau5et1aki5vdnf243cbug7fv28ub4l4.apps.googleusercontent.com",
@@ -84,16 +92,18 @@ blueprint = make_google_blueprint(
 )
 app.register_blueprint(blueprint, url_prefix="/login")
 
-
 from flask_dance.consumer.backend.sqla import OAuthConsumerMixin, SQLAlchemyBackend
 from app.mod_auth.models import OAuth, User
 from flask_dance.consumer import oauth_authorized, oauth_error
+
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+
 blueprint.backend = SQLAlchemyBackend(OAuth, db.session, user=current_user)
+
 
 @oauth_authorized.connect_via(blueprint)
 def google_logged_in(blueprint, token):
@@ -178,21 +188,22 @@ def google_error(blueprint, error, error_description=None, error_uri=None):
     flash(msg, category="error")
 
 
-#Home page
+# Home page
 @app.route('/')
 def index():
     return redirect(url_for("mod_auth.login"))
 
+
 # Sample HTTP error handling
 @app.errorhandler(404)
 def not_found(error):
-
     try:
         role = current_user.role
     except AttributeError:
         role = None
 
     return render_template('404.html', role=role), 404
+
 
 """@app.errorhandler(Exception)
 def unhandled_exception(e):
@@ -206,7 +217,7 @@ def unhandled_exception(e):
 
 # Build the database:
 # This will create the database file using SQLAlchemy
-#db.drop_all()
+# db.drop_all()
 
 
 db.create_all()

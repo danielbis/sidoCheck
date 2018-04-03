@@ -9,10 +9,10 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
-from flask_login import login_user, login_required, logout_user, current_user
+from flask_login import login_user, logout_user, current_user
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
-from app import db, login_manager
+from app import db, login_manager, login_required
 from app import app
 # Import module models containing User
 from app.mod_auth.models import User, Shop
@@ -153,7 +153,7 @@ def dashboard():
 
 
 @mod.route('/logout')
-@login_required
+@login_required('ANY')
 def logout():
     logout_user()
     return redirect(url_for('index'))
