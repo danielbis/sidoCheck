@@ -5,18 +5,32 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from flask_dance.consumer.backend.sqla import OAuthConsumerMixin, SQLAlchemyBackend
 
-#   Author: DANIEL BIS
+"""
+    Below database models are implemented. 
+    Models are implemented using sqlalchemy and flask-sqlalchemy wrappers for SQL database. 
+    Models defined in this file define the user classes of the platform.
+    
+    Relations:
+    User to Employee = One to One
+    User to Shop = One to One
+    Shop to User = Many to One
+    Shop to Employe = One to Many
 
 """
-User to Employee = One to One
-User to Shop = One to One
-Shop to User = Many to One
-Shop to Employe = One to Many
 
 """
-
-"""
-    Define user model
+    Implementation: Daniel Bis
+    
+    User model (table)
+    Stores basic profile information. 
+    
+    role specifies the type of user ['customer', 'shop', 'employee']
+    img_path is reality a name of the .jpg file stored in the ./static/img directory
+    img_path is a file that will be used as a profile picture (assuming that the user is of type employee)
+    shop_id is a foreign key bonding user with his/her employee
+    schedules is a list of schedules for the given user (assuming that the user is of type employee)
+    appointments is a list of appointments booked for the given user (assuming that the user is of type employee)
+    
 """
 
 
@@ -56,6 +70,18 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return '<Name %r, Email %r>' % (self.first_name, self.email)
 
+"""
+    Implementation: Daniel Bis
+
+    If a user is of type shop, he/she has a relationship with a shop.
+    Shop HAS a list of users (employees), the very first user on that list is an owner (person who created the account).
+    This user has the highest privileges and permissions. 
+    This user is not treated as an employee anywhere in the later code.
+    This user is a global/main user whose credentials are used in shop to perform all of the management type of operations.
+    img_path is reality a name of the .jpg file stored in the ./static/img directory
+    This file is going to be used as shops profile picture
+    
+"""
 
 class Shop(db.Model):
 
@@ -75,6 +101,14 @@ class Shop(db.Model):
     def __repr__(self):
         return '<Name %r>' %self.shop_name
 
+
+"""
+    Implementation: Abraham D’mitri Joseph
+    
+    This class is responsible for storing id of users who register with social authentication methods.
+    like Facebook or Google Gmail.
+
+"""
 
 class OAuth(OAuthConsumerMixin, db.Model):
     provider_user_id = db.Column(db.String(256), unique=True)

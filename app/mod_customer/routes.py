@@ -16,6 +16,18 @@ from datetime import *
 
 customer_mod = Blueprint("mod_customer", __name__)
 
+"""
+    Implementation: Daniel Bis
+    
+    Permissions: customer
+    
+    Renders the main page for the customer.
+    Presents the list of registered service providers (shops).
+    
+    : returns render_template('dashboard_customer.html')
+    
+"""
+
 
 @customer_mod.route('/dashboardcustomer')
 @login_required('customer')
@@ -23,6 +35,24 @@ def dashboardcustomer():
     shops = Shop.query.all()
 
     return render_template('customer/dashboard_customer.html', name=current_user.first_name, shops=shops)
+
+
+"""
+    Implementation: Daniel Bis
+
+    Permissions: customer
+
+
+    Renders the page for the given shop, querying by the shop name.
+    Presents the list of the shops employees.
+    ServiceForm is a form that enables customers to choose a service that they
+    can potentially book the next available appointment for. 
+    If the form validates:
+        :returns redirect('book_next_available')
+    else:
+        :returns render_template('employee_list')
+
+"""
 
 
 @customer_mod.route('/<shop_name>/employee_list')
@@ -42,6 +72,7 @@ def employee_list(shop_name):
 
     return render_template('customer/employee_list.html', employees=employees, shop_name=shop_name, shop_id=shop.shop_id, form=form)
 
+
 @customer_mod.route('/next_available/<shop_id>', methods=["GET", "POST"])
 @login_required('customer')
 def next_available(shop_id):
@@ -57,6 +88,20 @@ def next_available(shop_id):
         return redirect(url_for("mod_customer.book_next_available"))
 
     return render_template('customer/next_available.html', form=form, shop_id=shop_id)
+
+
+"""
+    Implementation: Daniel Bis
+
+    Permissions: customer
+
+
+    Renders the list of next available appointment for chosen service, grouped by employee's names.
+    User can book the appointment in that view making an ajax request to the bookslot endpoint.
+    
+    :returns render_template('book_next_available.html')
+
+"""
 
 @customer_mod.route('/book_next_available', methods=["GET", "POST"])
 @login_required('customer')
@@ -77,6 +122,23 @@ def book_next_available():
                            date_today=str(d.strftime("%m/%d/%Y")))
 
 
+"""
+    Implementation: Daniel Bis
+
+    Permissions: customer
+
+
+    Renders a template with a calendar widget.
+    When user selects a date in the calendar an ajax request is made to 
+    the 'timeslots' endpoint, which returns a list of slots available 
+    for the specified service, employee and date.
+    After the slot is chosen, 'Book it' button appears which takes user to a page
+    where he/she can confirm his/her choice.
+
+    :returns render_template('availability.html')
+
+"""
+
 @customer_mod.route('/<shop_name>/availability/<empl_id>', methods=["GET", "POST"])
 @login_required('customer')
 def availability(shop_name, empl_id):
@@ -88,6 +150,20 @@ def availability(shop_name, empl_id):
         return render_template('<h1> Booked </h1>')
     return render_template('customer/availability.html', shop_name=shop_name, form=form, empl_id=empl_id,
                            employee=employee, services=services)
+
+
+"""
+    Implementation: Daniel Bis
+    
+    Permissions: customer, shop
+
+
+    AJAX endpoint that returns a list of available timeslots for a given employee, date and service.
+    It calls the check_availability_by_employee_id() function from the mod_provider/api.py 
+
+    :returns list of slots, JSON format
+
+"""
 
 
 @customer_mod.route('/timeslots', methods=["GET", "POST"])
@@ -110,6 +186,21 @@ def timeslots():
 
     return jsonify(slots)
 
+
+"""
+    Implementation: Daniel Bis
+
+    Permissions: customer, shop
+
+    AJAX endpoint that stores the information about the service being booked in the parameters object.
+    That object is stored in the session.
+    
+    If '/confirm' is returned, jQuery in the template will redirect the user to the page where he/she 
+    can confirm the reservation. 
+
+    :returns '/confirm' string on success, JSON format
+
+"""
 
 @customer_mod.route('/bookslot', methods=["GET", "POST"])
 @login_required('ANY')
@@ -135,6 +226,32 @@ def bookslot():
     session["parameters"] = parameters
 
     return jsonify("/confirm")
+
+
+"""
+    Implementation: Daniel Bis
+
+    Permissions: customer, shop
+
+    Parameters are restored from the session, and immediately stored back for backup in case of a refresh event.
+    Parameters are used to show the details of appointment to the user.
+    
+    On POST request an appointment is created and saved to the database. 
+    Appointments are created in form of intervals. For example a service that takes an hour, with a shop whose 
+    service intervals are 20 minutes long will need three appointment entries to the database. 
+    This is resolved in a loop over the slots_required. 
+    
+    is_slot_open function from mod_provider/api.py ensures that the slots are still available. 
+    
+    confirmation object stores the information about the booked appointment. It is saved in the session. 
+    It is restored in next view for the booking summary. 
+    
+    if GET:
+        :returns render_template('confirm.html')
+    if POST:
+        returns render_template('confirmation.html')
+
+"""
 
 
 @customer_mod.route('/confirm', methods=["GET", "POST"])
@@ -218,6 +335,18 @@ def confirm():
     return render_template("customer/confirm.html", confirmation=confirmation, user=current_user)
 
 
+"""
+    Implementation: Daniel Bis
+
+    Permissions: customer, shop
+
+    Renders a confirmation for the appointment booked in the confirm view.
+
+    :returns render_template('confirmation.html')
+
+"""
+
+
 @customer_mod.route('/confirmation', methods=["GET", "POST"])
 @login_required('ANY')
 def confirmation():
@@ -248,6 +377,16 @@ def confirmation():
     return render_template("customer/confirmation.html", confirmation=confirmation, user=current_user)
 
 
+"""
+    Implementation: Daniel Bis
+
+    Permissions: customer, shop
+
+    Renders a list of appointments booked by a the current_user.
+
+    :returns render_template('history.html')
+
+"""
 @customer_mod.route('/history', methods=["GET", "POST"])
 @login_required('customer')
 def history():
@@ -276,12 +415,36 @@ def history():
     return render_template("customer/history.html", my_appointments=my_appointments)
 
 
+"""
+    Implementation: Oluwatobi Ajayi
+
+    Permissions: customer
+
+    Renders users profile details.
+
+    :returns render_template('profile.html')
+
+"""
+
+
 @customer_mod.route('/profile', methods=['GET', 'POST'])
 @login_required('customer')
 def profile():
     my_profile = User.query.filter_by(id=current_user.id).first()
 
     return render_template('customer/profile.html', my_profile=my_profile)
+
+"""
+    Implementation: Oluwatobi Ajayi
+
+    Permissions: customer
+
+    Renders a an edit profile form for the customer.
+    EditProfile form from /form.py is passed to the template.
+    
+    :returns render_template('edit_profile.html')
+
+"""
 
 
 @customer_mod.route('/edit_profile', methods=['GET', 'POST'])
@@ -306,6 +469,20 @@ def edit_profile():
     return render_template('customer/edit_profile.html', form=form, form_action=form_action, profile=profile,
                            title="Update Profile")
 
+
+"""
+    Implementation: Oluwatobi Ajayi
+
+    Permissions: customer
+
+    Renders a an edit password form for the customer.
+    UpdatePassword form from /form.py is passed to the template.
+    
+    on form.validate_on_submit update the password entry in the table
+    
+    :returns render_template('update_password.html')
+
+"""
 
 @customer_mod.route('/update_password', methods=['GET', 'POST'])
 @login_required('customer')

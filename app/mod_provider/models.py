@@ -1,5 +1,3 @@
-# Author: DANIEL BIS
-
 from app import db
 from app.mod_auth.models import User, Shop
 from flask_login import UserMixin
@@ -7,6 +5,28 @@ from sqlalchemy import *
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 
+"""
+    Implementation: Daniel Bis
+    
+    Below database models are implemented. 
+    Models are implemented using sqlalchemy and flask-sqlalchemy wrappers for SQL database. 
+    Models defined in this file define the user classes of the platform.
+
+    Relations:
+    Appointment to User = Many to One
+    Schedule to User = Many to One
+    Service to User = Many to Many
+
+"""
+
+"""
+
+    Appointments store basic information about the appointment object.
+    employee_id corresponds to Employee (provider) (foreign key)
+    user_id is clients id 
+    service_id is an id of a service being reserved
+    
+"""
 
 class Appointment(db.Model):
 
@@ -41,10 +61,13 @@ class Appointment(db.Model):
                % (self.client_first, self.client_email, self.date_scheduled, self.employee_id)
 
 
-"""Schedule class representing a daily availability for each of the employees.
+"""
+
+   Schedule class representing a daily availability for each of the employees.
    It stores the WeekDay (0-6), ServiceLength (intervals),
    start_time (Employess start), end_time(Emplouees End Time)
-                                                                """
+
+"""
 class Schedule(db.Model):
 
     __tablename__ = "Schedules"
@@ -58,7 +81,7 @@ class Schedule(db.Model):
 
     employee_id = db.Column(db.Integer, ForeignKey("Users.id"))
 
-    def __init__(self, start_time, end_time, weekday = -1, interval_len = 20):
+    def __init__(self, start_time, end_time, weekday=-1, interval_len = 20):
         self.weekDay = weekday
         self.interval_length = interval_len
         self.start_time = start_time
@@ -79,6 +102,15 @@ service_identifier = db.Table('service_identifier',
     db.Column('user_id', db.Integer, db.ForeignKey('Users.id'))
 )
 
+
+"""
+
+    Service class represents a table storing information about the services
+    provided for shops and employees. 
+    
+    providers is a list of employees (users) who provide the service
+
+"""
 class Service(db.Model):
     __tablename__ = 'Services'
     service_id = db.Column(db.Integer, primary_key=True)

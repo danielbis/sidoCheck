@@ -19,3 +19,5 @@
 2018-04-03 09:02:08,602 - app - INFO - Attempting to book slot: 04/04/18 11:40, shop_id: None
 2018-04-03 10:36:38,061 - app - INFO - Attempting to book slot: 04/03/18  11:00, shop_id: None
 2018-04-03 10:40:39,666 - app - INFO - Attempting to book slot: 04/03/18  11:20, shop_id: None
+2018-04-04 20:14:01,686 - app - INFO - Attempting to book slot: 04/18/18 11:40, shop_id: None
+2018-04-04 20:14:48,761 - app - INFO - Attempting to book slot: 04/18/18 13:40, shop_id: None

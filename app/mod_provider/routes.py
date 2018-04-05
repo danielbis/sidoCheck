@@ -30,10 +30,27 @@ from datetime import *
 
 provider_mod = Blueprint("mod_provider", __name__, url_prefix="/provider")
 
+"""
+    Implementation: Daniel Bis
+
+    Permissions: shop
+
+    Renders the main page for the shop.
+    Queries for all of the appointments for the day (today).
+    ServiceForm is a form that enables the shop to choose a service that they
+    can potentially book the next available appointment for. 
+    If the form validates:
+        :returns redirect('walkin.html')
+        
+    :returns render_template('dashboard_customer.html')
+
+"""
+
 
 @provider_mod.route('/dashboardprovider', methods=['GET', 'POST'])
 @login_required('shop')
 def dashboardprovider():
+
     employees = User.query.filter_by(shop_id=current_user.shop_id).all()
     empl_app = []
     date_string = request.args.get('date', 0, type=str)
@@ -65,7 +82,6 @@ def dashboardprovider():
     form.service.choices = [(s.service_id, s.service_name) for s in shops_services]
     shop = Shop.query.filter_by(shop_id=current_user.shop_id).first()
 
-
     app.logger.info('dashboard, shop: %s', shop.shop_name)
 
     if form.validate_on_submit():
@@ -74,6 +90,18 @@ def dashboardprovider():
 
     return render_template('dashboardprovider.html', name=shop.shop_name, employees=employees, empl_app=empl_app,
                            form=form)
+
+
+"""
+    Implementation: Daniel Bis
+    
+    DateForm is responsible for gathering information about the schedule.
+    On POST save the schedule or schedules to the database
+        :returns redirect('scheduled')
+    on GET
+        :returns render_template('add_schedule')
+
+"""
 
 
 @provider_mod.route('/addschedule', methods=['GET', 'POST'])
@@ -124,6 +152,15 @@ def add_schedule():
     return render_template('provider/add_schedule.html', form=form)
 
 
+"""
+    Implementation: Daniel Bis
+    
+    renders a confirmation page after adding the schedule by the shop.
+    Checks if the operation  was successful.
+    
+"""
+
+
 @provider_mod.route('/scheduled', methods=['GET', 'POST'])
 @login_required('shop')
 def scheduled():
@@ -135,10 +172,20 @@ def scheduled():
         return render_template('provider/scheduled.html', message="Adding the schedule failed.")
 
 
+"""
+    Implementation: Daniel Bis
+    
+    Renders a list of the next available time slots for each employee, 
+    given the date and service id
+    
+    :returns render_template('walkin.html)
+     
+"""
+
+
 @provider_mod.route('/walkin', methods=['GET', 'POST'])
 @login_required('shop')
 def walkin():
-
     # shop = Shop.query.filter_by(shop_id=current_user.shop_id).first()
     service_id = session.pop("walkin_service_id", None)
     service = Service.query.filter_by(service_id=service_id).first()
@@ -151,6 +198,19 @@ def walkin():
 
     return render_template('provider/walkin.html', slots_shop=slots_shop, service_id=service_id,
                            date_today=str(d.strftime("%m/%d/%Y")))
+
+
+"""
+    Implementation: Daniel Bis
+
+    Permissions: shop
+    
+    Enables shop to add services and assign them to employees. 
+    
+    Query for the shop and its employees and append new service object to them.
+    
+    :returns render_template('addservice.html')
+"""
 
 
 @provider_mod.route('/addservice', methods=['GET', 'POST'])
@@ -179,12 +239,39 @@ def addservice():
     return render_template('provider/addservice.html', form=form)
 
 
+"""
+    Implementation: Daniel Bis
+
+    Permissions: shop
+
+    Renders list of schedules of employees for a given date (today) for the shop that is logged in.
+    Calls get_schedules function from /api.py
+
+    :returns render_template('schedules.html', schedules=[(User, Schedule)])
+    
+"""
+
+
 @provider_mod.route('/schedules', methods=['GET', 'POST'])
 @login_required('shop')
 def schedules():
     schedules_list = get_schedules(current_user.shop_id, date.today())
 
     return render_template('provider/schedules.html', schedules=schedules_list)
+
+
+"""
+    Implementation: Daniel Bis
+
+    Permissions: shop
+
+    AJAX endpoint used to reload the schedules of employees 
+    of a given shop for a different date.
+    
+    Calls get_schedules function from /api.py
+    
+    :returns [(User, Schedule)] list of schedules (JSON)
+"""
 
 
 @provider_mod.route('/reload_schedules', methods=['GET', 'POST'])
@@ -198,6 +285,22 @@ def reload_schedules():
     schedules_list = get_schedules(current_user.shop_id, d)
 
     return jsonify(schedules_list)
+
+
+"""
+    Implementation: Daniel Bis
+
+    Permissions: shop
+    
+    Enables shops to choose a date and service for 
+    in store appointment reservation. 
+    
+    on POST: 
+     :returns redirect('book_appointment')
+    on GET:
+     :returns render_template('book_appointment_date.html')
+
+"""
 
 
 @provider_mod.route('/book_appointment_date', methods=['GET', 'POST'])
@@ -214,6 +317,20 @@ def book_appointment_date():
         print("guest_name: ", form.guest_name.data)
         return redirect(url_for('mod_provider.book_appointment'))
     return render_template('provider/book_appointment_date.html', form=form)
+
+
+"""
+    Implementation: Daniel Bis
+
+    Permissions: shop
+
+    Enables shops to browse available time slots for the given service and date.
+    On selection an ajax request to the bookslot endpoint is made. 
+
+   
+     :returns render_template('book_appointment.html')
+
+"""
 
 
 @provider_mod.route('/book_appointment', methods=['GET', 'POST'])
@@ -241,6 +358,33 @@ def book_appointment():
 
     return render_template('provider/book_appointment.html', slots=slots, form=form, date_string=date_string,
                            service_id=service_id)
+
+
+"""
+    Implementation: Daniel Bis
+
+    Permissions: shop
+
+    Parameters are restored from the session, and immediately stored back for backup in case of a refresh event.
+    Parameters are used to show the details of appointment to the user.
+
+    On POST request an appointment is created and saved to the database.
+    Appointment is booked for a guest user. 
+    Appointments are created in form of intervals. For example a service that takes an hour, with a shop whose 
+    service intervals are 20 minutes long will need three appointment entries to the database. 
+    This is resolved in a loop over the slots_required. 
+
+    is_slot_open function from mod_provider/api.py ensures that the slots are still available. 
+
+    confirmation object stores the information about the booked appointment. It is saved in the session. 
+    It is restored in next view for the booking summary. 
+
+    if GET:
+        :returns render_template('confirm_shop.html')
+    if POST:
+        returns render_template('confirmation.html')
+
+"""
 
 
 @provider_mod.route('/confirm_shop', methods=["GET", "POST"])
@@ -330,6 +474,18 @@ def confirm_shop():
     return render_template("provider/confirm_shop.html", confirmation=confirmation)
 
 
+"""
+    Implementation: Daniel Bis
+
+    Permissions: customer, shop
+
+    Renders a confirmation for the appointment booked in the confirm view.
+
+    :returns render_template('confirmation.html')
+
+"""
+
+
 @provider_mod.route('/confirmation_shop', methods=["GET", "POST"])
 @login_required('shop')
 def confirmation_shop():
@@ -358,6 +514,18 @@ def confirmation_shop():
     return render_template("provider/confirmation_shop.html", confirmation=confirmation)
 
 
+"""
+    Implementation: Daniel Bis
+
+    Permissions: shop
+
+    Ajax endpoint for canceling appointments from the dashboard view.
+
+    :returns "success"/"failed" (JSON)
+
+"""
+
+
 @provider_mod.route('/cancel_appointment', methods=["GET", "POST"])
 @login_required('shop')
 def cancel_appointment():
@@ -377,6 +545,18 @@ def cancel_appointment():
     return jsonify("failed")
 
 
+"""
+    Implementation: Oluwatobi Ajayi
+
+    Permissions: shop
+
+    Renders shops profile details and a list of shops employees.
+
+    :returns render_template('profile.html')
+
+"""
+
+
 @provider_mod.route('/profile', methods=['GET', 'POST'])
 @login_required('shop')
 def profile():
@@ -385,7 +565,21 @@ def profile():
     employees = db.session.query(User).filter(User.shop_id == current_user.shop_id).all()
     employees.remove(employees[0])
     print(employees[0].first_name)
-    return render_template('provider/profile.html', my_profile=my_profile, User_profile=User_profile, employees=employees)
+    return render_template('provider/profile.html', my_profile=my_profile, User_profile=User_profile,
+                           employees=employees)
+
+
+"""
+    Implementation: Oluwatobi Ajayi, Daniel Bis
+
+    Permissions: shop
+
+    Renders a an edit profile form for the shop.
+    EditShopProfile form from /form.py is passed to the template.
+    
+    :returns render_template('edit_profile.html')
+
+"""
 
 
 # Wrap commits into try/except blocks
@@ -437,6 +631,21 @@ def edit_profile():
                            title="Update Profile")
 
 
+"""
+    Implementation: Oluwatobi Ajayi
+
+    Permissions: shop
+
+    Renders a an edit password form for the shop.
+    UpdateShopPassword form from /form.py is passed to the template.
+
+    on form.validate_on_submit update the password entry in the table
+
+    :returns render_template('update_password.html')
+
+"""
+
+
 @provider_mod.route('/update_password', methods=['GET', 'POST'])
 @login_required('shop')
 def update_password():
@@ -461,6 +670,19 @@ def update_password():
     return render_template('provider/update_password.html', form=form, form_action=form_action, profile=profile,
                            title="Update Password")
 
+
+"""
+    Implementation: Daniel Bis
+
+    Permissions: shop
+    
+    Ajax endpoint that enables the shop to remove an employee.
+    
+    :returns "success" on success 
+
+"""
+
+
 @provider_mod.route('/delete_employee', methods=['GET', 'POST'])
 @login_required('shop')
 def delete_employee():
@@ -473,6 +695,20 @@ def delete_employee():
     db.session.commit()
 
     return jsonify('success')
+
+
+"""
+    Implementation: Daniel Bis
+
+    Permissions: shop
+
+    Renders a an edit profile form for the employee.
+    EditEmployeeProfile form from /form.py is passed to the template.
+
+    :returns render_template('edit_employee.html')
+
+"""
+
 
 @provider_mod.route('/edit_employee/<id>', methods=['GET', 'POST'])
 @login_required('shop')

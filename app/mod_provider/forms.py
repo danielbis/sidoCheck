@@ -9,7 +9,14 @@ from wtforms.validators import InputRequired, Length, Email
 from wtforms_components import TimeField
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 
+"""
+    Implementation: Daniel Bis
 
+    Below definitions of the forms used in the mod_customer (customer side) module.
+    Forms are implemented using wtforms library for Flask. 
+    Forms are initialized in the routes.py file and passed into respective templates.
+
+"""
 
 class DateForm(FlaskForm):
     email = StringField('email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
@@ -53,12 +60,9 @@ class AddServiceForm(FlaskForm):
     service_price = IntegerField('Service Price', validators=[InputRequired()])
     service_name = StringField('Service Name', validators=[InputRequired()])
     employees = MultiCheckboxField(coerce=int)
-    """employees = SelectField(
-	        'Please choose providers', coerce=int
-
-	)"""
 
 
+# Implementation: Oluwatobi Ajayi
 class EditShopProfile(FlaskForm):
     shop_name = StringField('shop_name', validators=[InputRequired(), Length(min=2, max=64)])
     location = StringField('Address', validators=[InputRequired(), Length(min=8, max=128)])
@@ -71,12 +75,15 @@ class EditShopProfile(FlaskForm):
     submit = SubmitField('Update')
 
 
+# Implementation: Oluwatobi Ajayi
 class UpdateShopPassword(FlaskForm):
     old_password = StringField('Current Password', validators=[InputRequired(), Length(min=8, max=80)])
     new_password = StringField('New Password', validators=[InputRequired(), Length(min=8, max=80)])
     val_password = StringField('Retype Password', validators=[InputRequired(), Length(min=8, max=80)])
     submit = SubmitField('Update')
 
+
+# Implementation: Oluwatobi Ajayi
 class EditEmployeeProfile(FlaskForm):
     email= StringField('Email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
     phone_number= StringField('Phone Number', validators=[InputRequired(), Length(min=10, max=12)])

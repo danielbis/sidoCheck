@@ -9,9 +9,16 @@ from datetime import *
 from itertools import cycle
 
 """
+    Parameters: 
+     @employee_id (integer)
+     @date (datetime.date object)
+     @service_length (integer)
+     
     Finds employees schedule (daily_hours) for a day (@date) 
     Finds employees appointments (appointments) for a day (@date)
     Returns a list of time slots (python datetime.datetime format) that are available.
+    
+    :returns a list of datetime objects representing employees available time slots for that given service_length
 """
 
 
@@ -26,7 +33,7 @@ def check_availability_by_employee_id(employee_id, date, service_length):
 
     print("daily hours", daily_hours)
     if (daily_hours):
-        slots_required = int(service_length/daily_hours.interval_length)
+        slots_required = int(service_length / daily_hours.interval_length)
         booked = [a.date_scheduled for a in appointments]
         start_time = daily_hours.start_time
         end_time = daily_hours.end_time
@@ -38,7 +45,7 @@ def check_availability_by_employee_id(employee_id, date, service_length):
             if start_time not in booked:
                 switch = True
                 for i in range(1, slots_required):
-                    if start_time + i*interval in booked:
+                    if start_time + i * interval in booked:
                         switch = False
                 if switch:
                     time_slots.append(start_time)
@@ -48,31 +55,25 @@ def check_availability_by_employee_id(employee_id, date, service_length):
             else:
                 start_time += interval
 
-        """if len(time_slots) < slots_required:
-            return []
-        print("sr: ", slots_required)
-        #bound = len(time_slots) - (slots_required)
-        short = []
-        i = 0
-        print("tsss: ", time_slots[i+slots_required])
-        for time_slot in time_slots:
-            print(time_slots[i+slots_required])
-            if time_slots[i+slots_required] - time_slot >= slots_required * interval:
-                for j in range(1,slots_required):
-                    print("j is: ", j, " " ,time_slots[i+j])
-                    time_slots.remove(time_slots[i+1])
-                i += 1
-            else:
-                time_slots.remove(time_slot)
-            if i == len(time_slots) - slots_required-1:
-                break
-            for j in range(1, slots_required):
-                if time_slots[i + j] == time_slots[i] + (j * interval):
-                        short.append(time_slots[i+j])"""
-
         return time_slots
     else:
         return []
+
+
+"""
+    Parameters: 
+    @empl_id (integer)
+    @date (datetime.date object)
+    @datetime_object (datetime.datetime object)
+    @service_length (integer)
+    
+    Calls the check_availability_by_employee_id().
+    If given datetime_object in the returned list:
+        :returns True
+    else 
+        :returns False
+
+"""
 
 
 def is_slot_open(empl_id, date, datetime_object, service_length):
@@ -87,9 +88,16 @@ def is_slot_open(empl_id, date, datetime_object, service_length):
 
 
 """
-	Find all available time slots for shop - @shop_id, for a date - @date
-	Calls check_availability_by_employee_id for every employee and appends to 
-	a global list
+    Parameters:
+    @shop_id (integer)
+    @date (datetime.date object)
+    @service_length (integer)
+   
+    Find all available time slots for shop - @shop_id, for a date - @date
+    Calls check_availability_by_employee_id for every employee and appends to 
+    a global list
+    
+    :returnsa list of datetime objects representing shops available time slots for that given service_length
 """
 
 
@@ -106,6 +114,20 @@ def check_availability_by_shop(shop_id, date, service_length):
     return shop_slots
 
 
+"""
+    Parameters:
+    @shop_id (integer)
+    @date (datetime.date object)
+    @service_length (integer)
+
+    Finds the first available time slot for shop - @shop_id, for a date - @date
+    Calls check_availability_by_employee_id for every employee and appends to 
+    a global list
+
+    :returns list of datetime objects representing shops available time slots for that given service_length
+"""
+
+
 def get_next_available(shop_id, date, service_length):
     slots = check_availability_by_shop(shop_id, date, service_length)
     print('slots before filter ', slots)
@@ -120,23 +142,29 @@ def get_next_available(shop_id, date, service_length):
 
 
 """
-	Finds Employees Appointments for a day (@date)
-	and returns a list of dictionaries in format:
+    :parameter:
+    @empl (object of user class)
+    @date (datetime.date object)
 
-	{
-		time: datetime.datetime
-		clients_first: str 
-		clients_last: str
-		clients_phone: str
-		clients_email: str
-		service_type: str
-		service_price: int
-		employee_id: int
-		empl_first: str
-		empl_last: str
-		empl_phone: string
-		empl_email: str 
-	}
+    Finds Employees Appointments for a day (@date)
+    and returns a list of dictionaries in format:
+
+    {
+        time: datetime.datetime,
+        clients_first: str,
+        clients_last: str,
+        clients_phone: str,
+        clients_email: str,
+        service_type: str,
+        service_price: int,
+        employee_id: int,
+        empl_first: str,
+        empl_last: str,
+        empl_phone: string,
+        empl_email: str
+    }
+    
+    :returns list of employee's appointments for the given date
 
 """
 
@@ -170,6 +198,17 @@ def get_employees_appointments_by_date(empl, date):
     return a_list
 
 
+"""
+        :parameter:
+        @appointments (list of appointments)
+        
+        Functions filter the appointments making sure that slots in the table that correspond to one 
+        appointment but take more then one entry in the table are represented as a single object in the list.
+        
+        :returns list of appointments 
+"""
+
+
 def filter_history(appointments):
     time_diff = timedelta(minutes=20)
     idx = 0
@@ -186,14 +225,19 @@ def filter_history(appointments):
 
 
 """
+    :parameter:
+    @shop_id (integer)
+    @d (datetime.date object)
+    
     Query Database for a list of schedules for all employees for a given shop.
-    Return: [(User, Schedule)]
+    :returns  [(User, Schedule)]
 """
 
 
 def get_schedules(shop_id, d):
-
-    schedules_list = db.session.query(Schedule.start_time, Schedule.end_time, User.first_name, User.last_name, User.email).filter(User.id == Schedule.employee_id).filter(User.shop_id == shop_id).filter(
+    schedules_list = db.session.query(Schedule.start_time, Schedule.end_time, User.first_name, User.last_name,
+                                      User.email).filter(User.id == Schedule.employee_id).filter(
+        User.shop_id == shop_id).filter(
         Schedule.start_time.between(
             datetime.combine(d, datetime.min.time()),
             datetime.combine(d, datetime.max.time()))).all()

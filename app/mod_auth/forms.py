@@ -3,7 +3,14 @@ from wtforms import StringField, PasswordField, BooleanField
 from wtforms.validators import InputRequired, Email, Length
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 
-# Define the login form (WTForms)
+"""
+    Implementation: Daniel Bis
+     
+    Below definitions of the forms used in the mod_auth (authentication) module.
+    Forms are implemented using wtforms library for Flask. 
+    Forms are initialized in the routes.py file and passed into respective templates.
+    
+"""
 
 class LoginForm(FlaskForm):
     email = StringField('email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])

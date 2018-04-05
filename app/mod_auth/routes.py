@@ -20,10 +20,29 @@ from app.mod_auth.models import User, Shop
 # Define the blueprint: 'auth', sets its url prefix: app.url/auth
 mod = Blueprint('mod_auth', __name__, url_prefix="/auth")
 
+"""
+    
+    load_user function enables us to use a current_user object globally. 
+    Because of that we can access user that is currently authenticated.
+    
+"""
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+
+"""
+    Implementation: Daniel Bis
+    
+    Authenticates the user given his/her credentials. 
+    If credentials are correct, renders appropriate template depending if user is a customer 
+    or shop (provider).
+    
+    :returns render_template()
+    
+"""
+
 
 @mod.route('/login', methods=['GET', 'POST'])
 def login():
@@ -39,20 +58,30 @@ def login():
                 else:
                     return redirect(url_for('mod_provider.dashboardprovider'))
 
-        return '<h1>Invalid username or password</h1>'
+        return render_template('auth/invalid_login.html')
 
     return render_template('auth/login.html', form=form)
 
 
-# Daniel Bis and Christian Pileggi
+"""
+    Implementation: Daniel Bis, Christian Pileggi
+
+    Registers the user of type customer. 
+    If registration is successful:
+        :returns render_template()
+    else:
+        :returns an html with a message notifying user about the problem. 
+
+"""
+
 @mod.route('/signup', methods=['GET', 'POST'])
 def signup():
     form = RegisterForm()
 
     if form.validate_on_submit():
-        hashed_password = generate_password_hash(form.password.data, method='sha256')
         try:
-            new_user = User(firstname=form.firstname.data, lastname=form.lastname.data, email=form.email.data,
+            hashed_password = generate_password_hash(form.password.data, method='sha256')
+            new_user = User(first_name=form.firstname.data, last_name=form.lastname.data, email=form.email.data,
                             password=hashed_password, role="customer")
             # check if email is taken
             # user = User.query.filter_by(email=form.email.data).first()
@@ -61,13 +90,22 @@ def signup():
 
         except IntegrityError:
             db.session.rollback()
-            return '<h1>This email address is already taken.</h1>'
+            return render_template('auth/email_taken.html')
         return redirect(url_for("mod_auth.login"))
     return render_template('auth/signup.html', form=form)
 
+"""
+    Implementation: Daniel Bis, Christian Pileggi
 
-# Daniel Bis and Christian Pileggi
-# Register a service provider aka shop
+    Registers the user of type shop. 
+    If registration is successful:
+        :returns render_template()
+    else:
+        :returns an html with a message notifying user about the problem. 
+
+"""
+
+
 @mod.route('/signupshop', methods=['GET', 'POST'])
 def signup_shop():
     form = RegisterFormShop()
@@ -96,13 +134,23 @@ def signup_shop():
         except IntegrityError:
             db.session.rollback()
             return '<h1>This email address is already taken.</h1>'
-        return render_template('auth/login.html', form = LoginForm())
+        return render_template('auth/login.html', form=LoginForm())
 
     return render_template('auth/signup_shop.html', form=form)
 
-#write a function that not only ensures that login is required
-#but also checks if employee and if manager
-#@login_required
+"""
+    Implementation: Daniel Bis, Christian Pileggi
+
+    Registers the user of type employee. 
+    If registration is successful:
+        :returns render_template()
+    else:
+        :returns an html with a message notifying user about the problem. 
+
+"""
+
+
+@login_required('shop')
 @mod.route('/signupemployee', methods=['GET', 'POST'])
 def signup_employee():
     form = RegisterFormEmployee()
@@ -137,7 +185,7 @@ def signup_employee():
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
-            return '<h1> This email is already taken </h1>'
+            return render_template('auth/email_taken.html')
         return redirect(url_for("mod_provider.dashboardprovider"))
         # return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
 
@@ -145,10 +193,15 @@ def signup_employee():
 
 
 """
-@mod.route('/dashboard')
-@login_required
-def dashboard():
-    return render_template('auth/dashboard.html', name=current_user.first_name)
+    Implementation: Daniel Bis, Christian Pileggi
+
+    Logs out a user of any type.
+    Removes credentials from the session. 
+    If successful:
+        :returns redirect('index')
+    else:
+        :returns an html with a message notifying user about the problem. 
+
 """
 
 
