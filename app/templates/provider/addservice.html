@@ -4,7 +4,7 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}
-Login
+Add Service
 {% endblock %}
 
 {% block styles %}
@@ -17,6 +17,9 @@ Login
       <div class="container-fluid">
          <div class="navbar-header">
           <a class="navbar-brand" href="{{url_for('mod_provider.dashboardprovider')}}">Sido</a>
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" style="color: white;">
+                Menu
+            </button>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">

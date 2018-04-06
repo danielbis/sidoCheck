@@ -1,6 +1,0 @@
-form.email.data= User_profile.email
-		form.phone_number.data= User_profile.phone_number
-		form.lastname.data= User_profile.last_name
-		form.firstname.data= User_profile.first_name
-
-        

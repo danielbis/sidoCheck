@@ -27,8 +27,13 @@ from app.mod_provider.models import Schedule, Appointment, Service
 from app.mod_provider.api import check_availability_by_employee_id, is_slot_open, get_employees_appointments_by_date, \
     check_availability_by_shop, get_next_available, get_schedules
 from datetime import *
+import cloudinary as Cloud
+from cloudinary.uploader import upload
+from cloudinary.utils import cloudinary_url
 
 provider_mod = Blueprint("mod_provider", __name__, url_prefix="/provider")
+
+
 
 """
     Implementation: Daniel Bis
@@ -120,6 +125,8 @@ def add_schedule():
             end_date = form.end_date.data
             start_time = form.start_time.data
             end_time = form.end_time.data
+            start_time = datetime.strptime(start_time, '%H:%M').time()
+            end_time = datetime.strptime(end_time, '%H:%M').time()
             print(start_date, end_date, start_time, end_time)
             print(datetime.combine(start_date, start_time))
             while start_date <= end_date:
@@ -561,12 +568,15 @@ def cancel_appointment():
 @login_required('shop')
 def profile():
     my_profile = Shop.query.filter_by(shop_id=current_user.shop_id).first()
+    img = Cloud.CloudinaryImage(my_profile.img_path).image()
+    print("/////////////// *********** img  is  : " , img)
+
     User_profile = User.query.filter_by(id=current_user.id).first()
     employees = db.session.query(User).filter(User.shop_id == current_user.shop_id).all()
     employees.remove(employees[0])
     print(employees[0].first_name)
     return render_template('provider/profile.html', my_profile=my_profile, User_profile=User_profile,
-                           employees=employees)
+                           employees=employees, profile_img=img)
 
 
 """
@@ -590,6 +600,7 @@ def edit_profile():
     # form_action= url_for('mod_provider.edit_profile')
     User_profile = User.query.filter_by(id=current_user.id).first()
     profile = Shop.query.filter_by(shop_id=current_user.shop_id).first()
+    img = Cloud.CloudinaryImage(profile.img_path).image()
     if form.validate_on_submit():
         print("validated")
         try:
@@ -602,14 +613,13 @@ def edit_profile():
 
             f = form.image.data
             if f is not None:
-                filename = secure_filename(f.filename)
-                print(filename)
-                path = os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)
-                f.save(path)
+                uploaded = upload(f)
+                print(uploaded['public_id'])
             else:
-                filename = 'city.jpg'
+                uploaded = upload(f)
+                print(uploaded['public_id'])
 
-            profile.img_path = filename
+            profile.img_path = uploaded['public_id']
             db.session.commit()
             flash('Profile Updated')
         except IntegrityError as IE:
@@ -628,7 +638,7 @@ def edit_profile():
         form.image.data = profile.img_path
 
     return render_template('provider/edit_profile.html', form=form, profile=profile, User_profile=User_profile,
-                           title="Update Profile")
+                           profile_img=img)
 
 
 """
@@ -723,14 +733,13 @@ def edit_employee(id):
             profile.phone_number = form.phone_number.data
             f = form.image.data
             if f is not None:
-                filename = secure_filename(f.filename)
-                print(filename)
-                path = os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)
-                f.save(path)
+                uploaded = upload(f)
+                print(uploaded['public_id'])
             else:
-                filename = 'city.jpg'
+                uploaded = upload(f)
+                print(uploaded['public_id'])
 
-            profile.img_path = filename
+            profile.img_path = uploaded['public_id']
             db.session.commit()
             flash('Profile Updated')
         except IntegrityError as IE:

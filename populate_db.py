@@ -7,6 +7,9 @@ from app.mod_provider.models import Appointment, Schedule, Service
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
 import random
+import cloudinary as Cloud
+from cloudinary.uploader import upload
+from cloudinary.utils import cloudinary_url
 
 """
 	Create sample users to populate db
@@ -42,9 +45,13 @@ for i in range(1, 7):
     new_user = User(first_name=name, last_name=lastname, phone_number=phone_number, email=email, password=password,
                     role="shop")
     if i % 2 == 0:
-        new_shop = Shop(shop_name=name, location="location", img="barber_whiskey.jpg")
+        uploaded = upload('./app/static/img/barber_whiskey.jpg')
+        print(uploaded['public_id'])
+        new_shop = Shop(shop_name=name, location="location", img=uploaded['public_id'])
     else:
-        new_shop = Shop(shop_name=name, location="location", img="barber.jpg")
+        uploaded = upload('./app/static/img/barber.jpg')
+        print(uploaded['public_id'])
+        new_shop = Shop(shop_name=name, location="location", img=uploaded['public_id'])
 
     # db.session.add(new_shop)
     new_shop.users.append(new_user)
@@ -70,8 +77,10 @@ for i in range(1, 7):
         empl_role = "employee"
         empl_manager = 0
         empl_phone_number = "123456000" + str(i) + str(e)
+        uploaded = upload('./app/static/img/default_profile.jpg')
+        print(uploaded['public_id'])
         empl = User(first_name=empl_name, last_name=empl_lastname, email=empl_email, phone_number=empl_phone_number,
-                    password=empl_password, role=empl_role, manager=empl_manager, img='default_profile.jpg')
+                    password=empl_password, role=empl_role, manager=empl_manager, img=uploaded['public_id'])
 
         #    Append some services
         s1.providers.append(empl)

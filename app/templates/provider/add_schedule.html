@@ -2,7 +2,7 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}
-Sign Up
+Add Schedule
 {% endblock %}
 
 {% block styles %}
@@ -57,6 +57,9 @@ Sign Up
       <div class="container-fluid">
          <div class="navbar-header">
           <a class="navbar-brand" href="{{url_for('mod_provider.dashboardprovider')}}">Sido</a>
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" style="color: white;">
+                Menu
+            </button>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
@@ -97,11 +100,11 @@ Sign Up
 	    <div class="form-group row">
 	    <div class="col-md-6">
 	    <label for="s_time">Select Start Time </label>
-	    {{ form.start_time(class_="form-control form-control-lg", id="s_time") }}
+	    {{ form.start_time(class_="form-control form-control-lg", id="s_time", type="time") }}
 	    </div>
 	   	<div class="col-md-6">
 	   	<label for="e_time">Select End Time </label>
-	    {{ form.end_time(class_="form-control form-control-lg", id="e_time") }}
+	    {{ form.end_time(class_="form-control form-control-lg", id="e_time", type="time") }}
 	    </div>
 	    </div>
 	    

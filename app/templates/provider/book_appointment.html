@@ -4,7 +4,7 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}
-Login
+Book
 {% endblock %}
 
 {% block styles %}
@@ -52,6 +52,9 @@ $(document).on("click", "#slot", function(){
       <div class="container-fluid">
          <div class="navbar-header">
           <a class="navbar-brand" href="{{url_for('mod_provider.dashboardprovider')}}">Sido</a>
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" style="color: white;">
+                Menu
+            </button>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">

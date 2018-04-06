@@ -16,10 +16,18 @@ from app import db, login_manager, login_required
 from app import app
 # Import module models containing User
 from app.mod_auth.models import User, Shop
+import cloudinary as Cloud
+from cloudinary.uploader import upload
+from cloudinary.utils import cloudinary_url
 
 # Define the blueprint: 'auth', sets its url prefix: app.url/auth
 mod = Blueprint('mod_auth', __name__, url_prefix="/auth")
 
+Cloud.config.update = ({
+    'cloud_name': 'sidoproject',
+    'api_key': '848925646618136',
+    'api_secret': 'HelekvosM3FQEAPsY6gAlJhiedk'
+})
 """
     
     load_user function enables us to use a current_user object globally. 
@@ -116,16 +124,18 @@ def signup_shop():
             f = form.image.data
             if f is not None:
                 filename = secure_filename(f.filename)
-                path = os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)
-                f.save(path)
+                #path = os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)
+                uploaded = upload(f)
+                print(uploaded['public_id'])
             else:
-                filename = 'city.jpg'
+                uploaded = upload('./static/img/city.jpg')
+                print('else ', uploaded['public_id'])
 
-            new_user = User(firstname=form.shop_name.data, lastname=form.shop_name.data,
+            new_user = User(first_name=form.shop_name.data, last_name=form.shop_name.data,
                             phone_number=form.phone_number.data, email=form.email.data, password=hashed_password,
                             role="shop")
             new_shop = Shop(shop_name=form.shop_name.data, location=form.address.data,
-                            img=filename)  # storing only the filename since all of the images are in the same directory
+                            img=uploaded['public_id'])  # storing only the filename since all of the images are in the same directory
             # db.session.add(new_shop)
             db.session.add(new_shop)
             new_shop.users.append(new_user)
@@ -157,7 +167,6 @@ def signup_employee():
 
     if form.validate_on_submit():
         hashed_password = generate_password_hash(form.password.data, method='sha256')
-
         try:
             managerCheck = 0
             if form.manager.data:
@@ -165,14 +174,16 @@ def signup_employee():
             f = form.image.data
             if f is not None:
                 filename = secure_filename(f.filename)
-                path = os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)
-                f.save(path)
+                #path = os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)
+                uploaded = upload(f)
+                print(uploaded['public_id'])
             else:
-                filename = 'city.jpg'
+                uploaded = upload('./static/img/city.jpg')
+                print('else ', uploaded['public_id'])
 
-            new_user = User(firstname=form.firstname.data, lastname=form.lastname.data, email=form.email.data,
+            new_user = User(first_name=form.firstname.data, last_name=form.lastname.data, email=form.email.data,
                             phone_number=form.phone_number.data, password=hashed_password, role="employee",
-                            manager=managerCheck, img=filename)
+                            manager=managerCheck, img=uploaded['public_id'])
 
             # quering for shop where the current user is a manager
             temp_user = User.query.filter_by(id=current_user.id).first()

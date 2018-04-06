@@ -4,11 +4,13 @@
 {% extends "bootstrap/base.html" %}
 
 {% block title %}
-Dashboard Customer
+History
 {% endblock %}
 
 {% block styles %}
 {{super()}}
+
+
 {% endblock %}
 
 {% block content %}
@@ -16,6 +18,9 @@ Dashboard Customer
       <div class="container-fluid">
         <div class="navbar-header">
           <a class="navbar-brand" href="{{url_for('mod_customer.dashboardcustomer')}}">Sido</a>
+             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" style="color: white;">
+                Menu
+            </button>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
@@ -34,7 +39,7 @@ Dashboard Customer
   
   
   
-<ul class="list-group" style="margin-top: 5%">
+<ul class="list-group">
 {% for a in my_appointments %}
 
 {% if a.upcoming %}

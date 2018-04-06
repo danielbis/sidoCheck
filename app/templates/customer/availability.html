@@ -6,7 +6,9 @@
 {% block head %}
   {{super()}}
 {% endblock %}
-
+{% block title %}
+Booking
+{% endblock %}
 {% block styles %}
 {{super()}}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -83,6 +85,7 @@
 
   $(document).on("click", "#slot", function(){
     time_slot = $(this).val();
+    $('#book-it').empty();
     $('#book-it').append('<button type="button" class="btn btn-success btn-lg btn-block" onclick = "book()">Book it</button>')
   });
 
@@ -99,6 +102,9 @@ Schedule Appointment
       <div class="container-fluid">
         <div class="navbar-header">
           <a class="navbar-brand" href="#">Sido</a>
+             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" style="color: white;">
+                Menu
+            </button>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">

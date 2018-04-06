@@ -7,10 +7,12 @@ from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 # import login manager
 from flask_login import LoginManager, current_user, login_user, logout_user
-from flask.ext.uploads import UploadSet, configure_uploads, IMAGES
+#from flask.ext.uploads import UploadSet, configure_uploads, IMAGES
 import logging
 from logging.handlers import RotatingFileHandler
 from functools import wraps
+import cloudinary as Cloud
+
 
 # Define the WSGI application object
 app = Flask(__name__)
@@ -19,8 +21,8 @@ Bootstrap(app)
 app.config.from_object('config')
 app.config['UPLOADED_IMAGES_DEST'] = 'app/static/img'
 
-images = UploadSet('images', IMAGES)
-configure_uploads(app, images)
+#images = UploadSet('images', IMAGES)
+#configure_uploads(app, images)
 
 # Define the database object which is imported
 # by modules and controllers
@@ -204,7 +206,7 @@ def not_found(error):
 
     return render_template('404.html', role=role), 404
 
-
+"""
 @app.errorhandler(Exception)
 def unhandled_exception(e):
 
@@ -213,7 +215,7 @@ def unhandled_exception(e):
     except AttributeError:
         role = None
 
-    return render_template('500.html', role=role), 500
+    return render_template('500.html', role=role), 500 """
 
 # Build the database:
 # This will create the database file using SQLAlchemy

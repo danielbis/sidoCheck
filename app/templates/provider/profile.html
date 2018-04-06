@@ -54,6 +54,9 @@
   <div class="container-fluid">
      <div class="navbar-header">
       <a class="navbar-brand" href="{{url_for('mod_provider.dashboardprovider')}}">Sido</a>
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" style="color: white;">
+                Menu
+            </button>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav navbar-right">
@@ -71,7 +74,7 @@
     </div>
   </div>
 </nav>
-<div class="container" style="margin-top: 5%;">
+<div class="container" style=" ">
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         <ul class=flashes>
@@ -84,10 +87,10 @@
 <div class="card" style="width: 550px !important;">
   <div class="card-body" style="border: 5px black !important;">
   {% if my_profile.img_path|length > 1 %}
-  <img class="card-img-top" src="/static/img/{{my_profile.img_path}}"  alt="Card image cap" style="width:550px; height: 360px;">
+  <img class="card-img-top" src="http://res.cloudinary.com/sidoproject/{{ my_profile.img_path }}" alt="Card image cap" style="width:550px; height: 360px;">
   {% endif %}
   {% if my_profile.img_path |length < 1 %}
-  <img class="card-img-top" src="{{ url_for('static', filename='barber.jpg') }}" alt="Card image cap" style="width:550px; height: 360px;">
+  <img class="card-img-top" src="{{ url_for('static', filename='http://res.cloudinary.com/sidoproject/image/upload/v1522981283/fr/barber.jpg') }}" alt="Card image cap" style="width:550px; height: 360px;">
   {% endif %}
   <hr>
   <h1 class="card-title" style="margin-top: 10px; margin-left: 2.5%;">{{ my_profile.shop_name }}</h1>

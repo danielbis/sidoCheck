@@ -6,7 +6,6 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, SelectMultipleField, widgets, DateField, SubmitField
 from wtforms.fields.html5 import DateTimeField, IntegerField
 from wtforms.validators import InputRequired, Length, Email
-from wtforms_components import TimeField
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 
 """
@@ -22,8 +21,8 @@ class DateForm(FlaskForm):
     email = StringField('email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
     start_date = DateField('start_date', format="%m/%d/%Y")
     end_date = DateField('end_date', format="%m/%d/%Y")
-    start_time = TimeField('start_time', format="%H:%M")
-    end_time = TimeField('end_time', format="%H:%M")
+    start_time = StringField('start_time')
+    end_time = StringField('end_time')
 
 
 class BookDateForm(FlaskForm):

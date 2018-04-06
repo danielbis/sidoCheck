@@ -1,7 +1,7 @@
 {% extends "bootstrap/base.html" %}
 
 {% block title %}
-Dashboard Customer
+Confirm Booking
 {% endblock %}
 
 {% block styles %}
@@ -15,6 +15,9 @@ Dashboard Customer
       <div class="container-fluid">
          <div class="navbar-header">
           <a class="navbar-brand" href="{{url_for('mod_provider.dashboardprovider')}}">Sido</a>
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" style="color: white;">
+                Menu
+            </button>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
@@ -33,7 +36,7 @@ Dashboard Customer
     </nav>
 </nav>
 
-<div class="container" style="margin-top: 5%; ">
+<div class="container" style="  ">
 <div class="card border-dark text-center">
   <div class="card-header">
     Is below information correct?
