@@ -2,9 +2,9 @@
 
 #flask dependencies
 import os
-from flask import Flask, render_template, redirect, url_for, Blueprint
+from flask import Flask, render_template, redirect, url_for, Blueprint, flash
 from flask_wtf import FlaskForm 
-from app.mod_auth.forms import RegisterForm, RegisterFormShop, RegisterFormEmployee, LoginForm
+from app.mod_auth.forms import RegisterForm, RegisterFormShop, RegisterFormEmployee, LoginForm, ResetPasswordRequestForm, ResetPasswordForm
 from flask_sqlalchemy  import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -16,17 +16,19 @@ from datetime import datetime
 from app import db, login_manager
 
 from app import app
-#Import module models containing User
+# Import module models containing User
 from app.mod_auth.models import User, Shop
 from app.mod_customer.routes import dashboardcustomer
+from app.email import send_password_reset_email
 
-#Define the blueprint: 'auth', sets its url prefix: app.url/auth
+# Define the blueprint: 'auth', sets its url prefix: app.url/auth
 mod = Blueprint('mod_auth', __name__, url_prefix = "/auth")
 
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
 
 #set route and accepted methods
 @mod.route('/login', methods=['GET', 'POST']) 
@@ -46,6 +48,7 @@ def login():
         return '<h1>Invalid username or password</h1>'
 
     return render_template('auth/login.html', form=form)
+
 
 #Daniel Bis and Christian Pileggi
 @mod.route('/signup', methods=['GET', 'POST'])
@@ -101,9 +104,9 @@ def signup_shop():
 
     return render_template('auth/signup_shop.html', form=form)
 
-#write a function that not only ensures that login is required
-#but also checks if employee and if manager
-#@login_required 
+
+# write a function that not only ensures that login is required
+# but also checks if employee and if manager
 @mod.route('/signupemployee', methods=['GET', 'POST'])
 def signup_employee():
     form = RegisterFormEmployee()
@@ -139,12 +142,48 @@ def signup_employee():
 
     return render_template('auth/signup_employee.html', form=form)
 
-"""
-@mod.route('/dashboard')
-@login_required
-def dashboard():
-    return render_template('auth/dashboard.html', name=current_user.first_name)
-"""
+
+@mod.route('/reset_password_request', methods=['GET', 'POST'])
+def reset_password_request():
+    if current_user.is_authenticated:
+        user = current_user
+        if user.role == "customer":  # check if customer or provider
+            return redirect(url_for('mod_customer.dashboardcustomer'))
+        else:
+            return redirect(url_for('mod_provider.dashboardprovider'))
+    form = ResetPasswordRequestForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            send_password_reset_email(user)
+        flash('Check your email for the instructions to reset your password')
+        return redirect(url_for('mod_auth.login'))
+    return render_template('auth/reset_password_request.html', title='Reset Password', form=form)
+
+
+@mod.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+
+    if current_user.is_authenticated:
+        user = current_user
+        if user.role == "customer":  # check if customer or provider
+            return redirect(url_for('mod_customer.dashboardcustomer'))
+        else:
+            return redirect(url_for('mod_provider.dashboardprovider'))
+
+    user = User.verify_reset_password_token(token)
+    if not user:
+        return redirect(url_for('mod_auth.login'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        hashed_password = generate_password_hash(form.password.data, method='sha256')
+        user.password = hashed_password
+        db.session.commit()
+        flash('Your password has been reset.')
+        return redirect(url_for('mod_auth.login'))
+    return render_template('auth/reset_password.html', user=user, form=form)
+
+
 @mod.route('/logout')
 @login_required
 def logout():

@@ -3,11 +3,12 @@
 # Import flask and template operators
 from flask import Flask, render_template, redirect, url_for, flash
 from flask_bootstrap import Bootstrap
+from flask_mail import Mail
 # Import SQLAlchemy
 from flask_sqlalchemy import SQLAlchemy
 #import login manager 
 from flask_login import LoginManager, current_user, login_required
-from flask.ext.uploads import UploadSet, configure_uploads, IMAGES
+from flask_uploads import UploadSet, configure_uploads, IMAGES
 # Define the WSGI application object
 app = Flask(__name__)
 Bootstrap(app)
@@ -17,6 +18,8 @@ app.config['UPLOADED_IMAGES_DEST'] = 'app/static/img'
 
 images = UploadSet('images', IMAGES)
 configure_uploads(app, images)
+
+mail = Mail(app)
 
 
 # Define the database object which is imported
@@ -46,6 +49,7 @@ app.register_blueprint(mod_customer.routes.customer_mod)
 
 
 from flask_dance.contrib.google import make_google_blueprint, google
+from flask_dance.contrib.facebook import make_facebook_blueprint, facebook
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 import os
 import sys
@@ -55,10 +59,15 @@ from sqlalchemy.orm.exc import NoResultFound
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 app.secret_key = "supersekrit"
 
-
+fb = make_facebook_blueprint(
+    client_id="1773504522710335",
+    client_secret="82244d40c4a784af3190863c92023fc7",
+    scope=["public_profile", "email"]
+)
+app.register_blueprint(fb, url_prefix="/login")
 blueprint = make_google_blueprint(
-    client_id="91401939367-hau5et1aki5vdnf243cbug7fv28ub4l4.apps.googleusercontent.com",
-    client_secret="spVfLRtr9dR7n3Y5NGcEMJ0B",
+    client_id="571663913479-2usshes587kh6epbje5vv6b3rmmt4apo.apps.googleusercontent.com",
+    client_secret="NU4Qo7OzMLQcpd70oyaMu2zg",
     scope=["profile", "email"]
 )
 app.register_blueprint(blueprint, url_prefix="/login")
@@ -68,11 +77,21 @@ from flask_dance.consumer.backend.sqla import OAuthConsumerMixin, SQLAlchemyBack
 from app.mod_auth.models import OAuth, User
 from flask_dance.consumer import oauth_authorized, oauth_error
 
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
 blueprint.backend = SQLAlchemyBackend(OAuth, db.session, user=current_user)
+fb.backend = SQLAlchemyBackend(OAuth, db.session, user=current_user)
+
+
+@oauth_authorized.connect_via(fb)
+def facebook_logged_in(fb,token):
+    if not token:
+        flash("Failed to log in with Google.", category="error")
+        return False
+    resp = blueprint.session.get()
 
 @oauth_authorized.connect_via(blueprint)
 def google_logged_in(blueprint, token):
@@ -85,8 +104,6 @@ def google_logged_in(blueprint, token):
         msg = "Failed to fetch user info from Google."
         flash(msg, category="error")
         return False
-
-    print(resp, file=sys.stdout)
 
     google_info = resp.json()
     google_user_id = str(google_info["id"])
@@ -135,10 +152,9 @@ def google_logged_in(blueprint, token):
         db.session.commit()
         # Log in the new local user account
         login_user(user)
-        flash("Successfully signed in with GitHub.")
+        flash("Successfully signed in with Google.")
         return redirect(url_for('mod_customer.dashboardcustomer'))
     # Disable Flask-Dance's default behavior for saving the OAuth token
-    print("end", file=sys.stdout)
     return False
 
 
@@ -174,6 +190,4 @@ def not_found(error):
 # Build the database:
 # This will create the database file using SQLAlchemy
 #db.drop_all()
-
-
 db.create_all()

@@ -1,4 +1,4 @@
-<!-- Author Daniel Bis -->
+<!-- Author Daniel Bis, Abraham D'mitri Joseph -->
 
 {% extends "bootstrap/base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
@@ -62,16 +62,28 @@ Login
 				</form>
 
 				<div class= "center-block" style="width: 300px; text-align:center;">
-                    <a href="{{ url_for("google.login") }}" class="btn btn-lg btn-success btn-block" style="display: block; margin: 0 auto;" type="button"> Google </button><a/><br>
-
+                    <a href="{{ url_for("google.login") }}"><button class="btn btn-lg btn-success btn-block" style="display: block; margin: 0 auto;" type="button"> Login with Google </button></a><br>
+                    <a href="{{ url_for("facebook.login") }}"><button class="btn btn-lg btn-success btn-block" style="display: block; margin: 0 auto;" type="button"> Login with Google </button></a><br>
 					<a href="{{ url_for('mod_auth.signup') }}"><button class="btn btn-lg btn-success btn-block" style="display: block; margin: 0 auto;" type="button">Create Account</button></a> <br>
 					<a href="{{ url_for('mod_auth.signup_shop') }}">
-					<button class="btn btn-lg btn-success btn-block" style="display: block; margin: 0 auto; type="submit" name= "guest" value="guest"> Register your Shop!</button> </a>
+					<button class="btn btn-lg btn-success btn-block" style="display: block; margin: 0 auto; type="submit" name= "guest" value="guest"> Register your Shop!</button> </a><br>
+                    <p>
+                        Forgot Your Password?
+                        <a href="{{ url_for('mod_auth.reset_password_request') }}">Click to Reset It</a>
+                    </p>
 				</div>
 
 		</div>
 		</div>
-
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class=flashes>
+        {% for category, message in messages %}
+          <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
 		 <hr>
 
 

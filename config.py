@@ -9,9 +9,9 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 # Define the database - we are working with
 # SQLite for this example
 SQLALCHEMY_TRACK_MODIFICATIONS = False
-SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:    @localhost/postgres'
+#SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:    @localhost/postgres'
 
-#SQLALCHEMY_DATABASE_URI = os.environ["SIDOCHECK_DB"]
+SQLALCHEMY_DATABASE_URI = os.environ["SIDOCHECK_DB"]
 # DANIEL YOUR PATH IS 'postgresql://localhost/cutcheck' SET ENV VARS ASAP
 DATABASE_CONNECT_OPTIONS = {}
 
@@ -31,3 +31,9 @@ CSRF_SESSION_KEY = "secret"
 # Secret key for signing cookies
 SECRET_KEY = "secret"
 
+MAIL_SERVER = os.environ.get('MAIL_SERVER')
+MAIL_PORT = int(os.environ.get('MAIL_PORT') or 25)
+MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS') is not None
+MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+ADMINS = ['sidocheckdev@gmail.com']

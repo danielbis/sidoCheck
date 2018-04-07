@@ -17,4 +17,6 @@ app.config.from_object('config')
 # Define the database object which is imported
 # by modules and controllers
 db = SQLAlchemy(app)
+db.reflect()
 db.drop_all()
+print("Migrations Complete")

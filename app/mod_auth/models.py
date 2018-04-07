@@ -4,8 +4,10 @@ from sqlalchemy import *
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from flask_dance.consumer.backend.sqla import OAuthConsumerMixin, SQLAlchemyBackend
+from time import time
+import jwt
+from app import app
 
-#Author: DANIEL BIS
 
 """
 User to Employee = One to One 
@@ -15,7 +17,8 @@ Shop to Employe = One to Many
 
 """
 
-#define user model
+
+# define user model
 class User(UserMixin, db.Model):
 
     __tablename__ = "Users"
@@ -31,7 +34,6 @@ class User(UserMixin, db.Model):
     date_created = db.Column(db.DateTime, default = db.func.current_timestamp())
     date_modified = db.Column(db.DateTime, default = db.func.current_timestamp(), onupdate = db.func.current_timestamp())
     img_path = db.Column(db.String(120), nullable=True)
-
 
     shopId = db.Column(db.Integer, ForeignKey("Shops.shopId"))
     schedules = relationship("Schedule", backref="Users")
@@ -52,6 +54,20 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return '<Name %r, Email %r>' % (self.first_name, self.email)
+
+    def get_reset_password_token(self, expires_in=600):
+        return jwt.encode(
+            {'reset_password': self.id, 'exp': time() + expires_in},
+            app.config['SECRET_KEY'], algorithm='HS256').decode('utf-8')
+
+    @staticmethod
+    def verify_reset_password_token(token):
+        try:
+            id = jwt.decode(token, app.config['SECRET_KEY'],
+                            algorithms=['HS256'])['reset_password']
+        except:
+            return
+        return User.query.get(id)
 
 
 class Shop(db.Model):
