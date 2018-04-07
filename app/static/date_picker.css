@@ -22,8 +22,8 @@ body {
 }
 
 .ui-datepicker-header {
-  background-color: #1D1F30 ;
-  color: #E35343;
+  background-color: hsl(0, 13%, 2%) !important; ;
+  color: white;
   font-size: 26pt;
   font-weight: bold;
   -webkit-box-shadow: inset 0px 1px 1px 0px rgba(250, 250, 250, 2);
@@ -34,7 +34,7 @@ body {
   line-height: 60px;
   border-width: 1px 0 0 0;
   border-style: solid;
-  border-color: #111;
+  border-color:  #050404 #050404 hsl(0, 13%, -2.5%);
 }
 .ui-datepicker-prev, .ui-datepicker-next {
   display: inline-block;
@@ -50,12 +50,12 @@ body {
 .ui-datepicker-prev {
   float: left;
   background-position: center;
-  background-image: url('arrow_left64.png');
+  background-image: url('arrow_left64.jpeg');
 }
 .ui-datepicker-next {
   float: right;
-  background-position: center 0px;
-  background-image: url('arrow_right64.png');
+  background-position: center 7px;
+  background-image: url('arrow_right64.jpeg');
 
 }
 .ui-datepicker-title {
@@ -134,24 +134,22 @@ body {
 }
 
 .ui-datepicker-calendar .ui-state-active {
-  background: #4B9CDB;
+  background: #66c880;
   -webkit-box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, .1);
   -moz-box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, .1);
   box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, .1);
   color: #e0e0e0;
   text-shadow: 0px 1px 0px #4d7a85;
   filter: dropshadow(color=#4d7a85, offx=0, offy=1);
-  border: 1px solid #55838f;
+  border: 1px solid #6baa7c;
   position: relative;
   margin: -1px;
 }
 
 .ui-datepicker-calendar td:first-child .ui-state-active {
-  width: 29px;
   margin-left: 0;
 }
 .ui-datepicker-calendar td:last-child .ui-state-active {
-  width: 29px;
   margin-right: 0;
 }
 
@@ -166,21 +164,22 @@ body {
 }
 
 .btn-custom {
-  background-color: hsl(234, 25%, 9%) !important;
+  background-color: hsl(0, 13%, 2%) !important;
   background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#565b8f", endColorstr="#11121c");
-  background-image: -khtml-gradient(linear, left top, left bottom, from(#565b8f), to(#11121c));
-  background-image: -moz-linear-gradient(top, #565b8f, #11121c);
-  background-image: -ms-linear-gradient(top, #565b8f, #11121c);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #565b8f), color-stop(100%, #11121c));
-  background-image: -webkit-linear-gradient(top, #565b8f, #11121c);
-  background-image: -o-linear-gradient(top, #565b8f, #11121c);
-  background-image: linear-gradient(#565b8f, #11121c);
-  border-color: #11121c #11121c hsl(234, 25%, 0%);
-  color: #E35343 !important;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.59);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#392c2c", endColorstr="#050404");
+  background-image: -khtml-gradient(linear, left top, left bottom, from(#392c2c), to(#050404));
+  background-image: -moz-linear-gradient(top, #392c2c, #050404);
+  background-image: -ms-linear-gradient(top, #392c2c, #050404);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #392c2c), color-stop(100%, #050404));
+  background-image: -webkit-linear-gradient(top, #392c2c, #050404);
+  background-image: -o-linear-gradient(top, #392c2c, #050404);
+  background-image: linear-gradient(#392c2c, #050404);
+  border-color: #050404 #050404 hsl(0, 13%, -2.5%);
+  color: #fff !important;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.29);
   -webkit-font-smoothing: antialiased;
+  margin-right: 5px;
+  margin-bottom: 10px;
 }
-
 
 

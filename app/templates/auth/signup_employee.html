@@ -17,10 +17,14 @@ Sign Up
       <div class="container-fluid">
          <div class="navbar-header">
           <a class="navbar-brand" href="{{url_for('mod_provider.dashboardprovider')}}">Sido</a>
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" style="color: white;">
+                Menu
+            </button>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li><a href="{{url_for('mod_provider.dashboardprovider')}}">Dashboard</a></li>
+            <li ><a href="{{ url_for('mod_provider.schedules') }}">Schedules</a></li>
             <li><a href="{{ url_for('mod_provider.add_schedule') }}">Add schedule</a></li>
             <li class="active"><a href="{{ url_for('mod_auth.signup_employee') }}">Add employee</a></li>
             <li><a href="{{ url_for('mod_provider.addservice') }}">Add service</a></li>
@@ -32,6 +36,7 @@ Sign Up
         </div>
       </div>
 </nav>
+
 <div class="container">
 
   <form class="form-signin" method="POST" enctype="multipart/form-data" action="/auth/signupemployee">
@@ -40,7 +45,7 @@ Sign Up
     {{ wtf.form_field(form.firstname) }}
     {{ wtf.form_field(form.lastname) }}
     {{ wtf.form_field(form.email) }}
-    {{ wtf.form_field(form.phonenumber) }}
+    {{ wtf.form_field(form.phone_number) }}
     {{ wtf.form_field(form.password) }}
     {{ wtf.form_field(form.image) }}
     {{ wtf.form_field(form.manager) }}

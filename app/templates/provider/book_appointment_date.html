@@ -2,13 +2,19 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}
-Sign Up
+Booking
 {% endblock %}
 
 {% block styles %}
 {{super()}}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="../../static/date_picker.css">
+    <style>
+          body { padding-top: 70px;
+          }
+
+    </style>
+
 {% endblock %}
 
 {% block scripts %}
@@ -17,7 +23,7 @@ Sign Up
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
 
   <script type="text/javascript">
-    
+
     
     $( function() {
 
@@ -28,7 +34,7 @@ Sign Up
             dayNamesMin: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
           })
           .on( "change", function() {
-            from.datepicker( "option", "minDate", getDate( this ) );
+            from.datepicker( "option", getDate( this ) );
           });
         
       function getDate( element ) {
@@ -51,11 +57,15 @@ Sign Up
       <div class="container-fluid">
          <div class="navbar-header">
           <a class="navbar-brand" href="{{url_for('mod_provider.dashboardprovider')}}">Sido</a>
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" style="color: white;">
+                Menu
+            </button>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li><a href="{{url_for('mod_provider.dashboardprovider')}}">Dashboard</a></li>
-            <li class="active"><a href="{{ url_for('mod_provider.add_schedule') }}">Add schedule</a></li>
+            <li ><a href="{{ url_for('mod_provider.schedules') }}">Schedules</a></li>
+            <li><a href="{{ url_for('mod_provider.add_schedule') }}">Add schedule</a></li>
             <li><a href="{{ url_for('mod_auth.signup_employee') }}">Add employee</a></li>
             <li><a href="{{ url_for('mod_provider.addservice') }}">Add service</a></li>
             <li class="active"><a href="{{ url_for('mod_provider.book_appointment_date') }}">Book Appointment</a></li>

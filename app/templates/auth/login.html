@@ -9,8 +9,16 @@ Login
 
 {% block styles %}
 {{super()}}
-<link rel="stylesheet" href="../../static/signin.css" xmlns="http://www.w3.org/1999/html">
+
+    <link rel="stylesheet" href="../../static/signin.css" xmlns="http://www.w3.org/1999/html">
+    <link rel="stylesheet" href="../../static/bootstrap-social.css" xmlns="http://www.w3.org/1999/html">
+
 {% endblock %}
+{% block scripts %}
+  {{super()}}
+<script defer src="https://use.fontawesome.com/releases/v5.0.9/js/all.js" integrity="sha384-8iPTk2s/jMVj81dnzb/iFR2sdA7u06vHJyyLlAd4snFpCl/SnyUjRrbdJsw1pGIl" crossorigin="anonymous"></script>
+{% endblock %}
+
 
 {% block content %}
 <style type="text/css">
@@ -50,7 +58,7 @@ Login
     <div class="container module darken" style="text-align: center;">	
     	<div class="row"> 
     		<div class="col-lg-4">
-    			<h1> welcome to Sido </h1>
+    			<h1> Welcome to Sido </h1>
     		</div>
     		<div class="col-lg-8">
 				<form class="form-signin" method="POST" action="/auth/login">
@@ -58,53 +66,40 @@ Login
 					{{ form.hidden_tag() }}
 					{{ wtf.form_field(form.email) }}
 					{{ wtf.form_field(form.password) }}
-					<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+					<button class="btn btn-lg btn-success btn-block" type="submit">Sign in</button>
 				</form>
 
 				<div class= "center-block" style="width: 300px; text-align:center;">
                     <a href="{{ url_for("google.login") }}"><button class="btn btn-lg btn-success btn-block" style="display: block; margin: 0 auto;" type="button"> Login with Google </button></a><br>
-                    <a href="{{ url_for("facebook.login") }}"><button class="btn btn-lg btn-success btn-block" style="display: block; margin: 0 auto;" type="button"> Login with Google </button></a><br>
 					<a href="{{ url_for('mod_auth.signup') }}"><button class="btn btn-lg btn-success btn-block" style="display: block; margin: 0 auto;" type="button">Create Account</button></a> <br>
-					<a href="{{ url_for('mod_auth.signup_shop') }}">
-					<button class="btn btn-lg btn-success btn-block" style="display: block; margin: 0 auto; type="submit" name= "guest" value="guest"> Register your Shop!</button> </a><br>
-                    <p>
-                        Forgot Your Password?
-                        <a href="{{ url_for('mod_auth.reset_password_request') }}">Click to Reset It</a>
-                    </p>
+					<a href="{{ url_for('mod_auth.signup_shop') }}"><button class="btn btn-lg btn-success btn-block" style="display: block; margin: 0 auto; type=">Register your Shop!</button> </a><br>
+                    <a href="{{ url_for('mod_auth.reset_password_request') }}"><button class="btn btn-lg btn-success btn-block" style="display: block; margin: 0 auto; type=">Forgot your password</button> </a><br>
 				</div>
-
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <H1 class="{{ category }}">{{ message }}</H1>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 		</div>
 		</div>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <ul class=flashes>
-        {% for category, message in messages %}
-          <li class="{{ category }}">{{ message }}</li>
-        {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
 		 <hr>
-
-
     </div> 
     <div class="container" >
         <!-- Example row of columns -->
         <div class="row">
           <div class="col-md-4">
-            <h2>Heading</h2>
-            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-            <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+            <h2>Find your favorite shops</h2>
+              <p><b>Connect with all of your favorite shops at one place and book appointments effortlessly. </b></p>
           </div>
           <div class="col-md-4">
-            <h2>Heading</h2>
-            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-            <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+            <h2>Save time</h2>
+              <p><b>Find a time that fits in your calendar with just few clicks and skip the waiting room. </b></p>
           </div>
           <div class="col-md-4">
-            <h2>Heading</h2>
-            <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-            <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+            <h2>Reach further</h2>
+              <p><b>Are you a shop owner? Join our community and reach new customers in no time.</b></p>
           </div>
         </div>
 

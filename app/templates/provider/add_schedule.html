@@ -2,13 +2,19 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}
-Sign Up
+Add Schedule
 {% endblock %}
 
 {% block styles %}
 {{super()}}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="../../static/date_picker.css">
+    <style>
+          body { padding-top: 70px;
+          }
+
+    </style>
+
 {% endblock %}
 
 {% block scripts %}
@@ -23,7 +29,7 @@ Sign Up
 	        .datepicker({
 	          defaultDate: "+1w",
 	          changeMonth: true,
-	          numberOfMonths: 2
+	          numberOfMonths: 1
 	        })
 	        .on( "change", function() {
 	          to.datepicker( "option", "minDate", getDate( this ) );
@@ -31,7 +37,7 @@ Sign Up
 	      to = $( "#to" ).datepicker({
 	        defaultDate: "+1w",
 	        changeMonth: true,
-	        numberOfMonths: 2
+	        numberOfMonths: 1
 	      })
 	      .on( "change", function() {
 	        from.datepicker( "option", "maxDate", getDate( this ) );
@@ -57,10 +63,14 @@ Sign Up
       <div class="container-fluid">
          <div class="navbar-header">
           <a class="navbar-brand" href="{{url_for('mod_provider.dashboardprovider')}}">Sido</a>
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" style="color: white;">
+                Menu
+            </button>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li><a href="{{url_for('mod_provider.dashboardprovider')}}">Dashboard</a></li>
+            <li ><a href="{{ url_for('mod_provider.schedules') }}">Schedules</a></li>
             <li class="active"><a href="{{ url_for('mod_provider.add_schedule') }}">Add schedule</a></li>
             <li><a href="{{ url_for('mod_auth.signup_employee') }}">Add employee</a></li>
             <li><a href="{{ url_for('mod_provider.addservice') }}">Add service</a></li>
@@ -95,12 +105,12 @@ Sign Up
 	   
 	    <div class="form-group row">
 	    <div class="col-md-6">
-	    <label for="s_time">Select Start and End Time </label>
-	    {{ form.start_time(class_="form-control form-control-lg", id="s_time") }}
+	    <label for="s_time">Select Start Time </label>
+	    {{ form.start_time(class_="form-control form-control-lg", id="s_time", type="time") }}
 	    </div>
 	   	<div class="col-md-6">
-	   	<label for="e_time">Select Starting Date </label>
-	    {{ form.end_time(class_="form-control form-control-lg", id="e_time") }}
+	   	<label for="e_time">Select End Time </label>
+	    {{ form.end_time(class_="form-control form-control-lg", id="e_time", type="time") }}
 	    </div>
 	    </div>
 	    

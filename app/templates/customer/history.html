@@ -4,11 +4,17 @@
 {% extends "bootstrap/base.html" %}
 
 {% block title %}
-Dashboard Customer
+History
 {% endblock %}
 
 {% block styles %}
 {{super()}}
+    <style>
+          body { padding-top: 70px;
+          }
+
+    </style>
+
 {% endblock %}
 
 {% block content %}
@@ -16,11 +22,15 @@ Dashboard Customer
       <div class="container-fluid">
         <div class="navbar-header">
           <a class="navbar-brand" href="{{url_for('mod_customer.dashboardcustomer')}}">Sido</a>
+             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" style="color: white;">
+                Menu
+            </button>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="{{url_for('mod_customer.dashboardcustomer')}}">Dashboard </a></li>
+            <li><a href="{{ url_for('mod_customer.dashboardcustomer') }}">Home</a></li>
             <li class="active"><a href="{{ url_for('mod_customer.history') }}">Your Appointments</a></li>
+            <li><a href="{{ url_for('mod_customer.profile') }}">Profile</a></li>
 
             <li><a href="{{ url_for('mod_auth.logout') }}">Log Out</a></li>
            
@@ -33,14 +43,14 @@ Dashboard Customer
   
   
   
-<ul class="list-group" style="margin-top: 5%">
+<ul class="list-group">
 {% for a in my_appointments %}
 
 {% if a.upcoming %}
-  <li class="list-group-item list-group-item-success"> You have an appointment with {{a.employee}} at {{a.shopname}} starts at {{a.date_scheduled}} </li> 
+  <li class="list-group-item list-group-item-success"> You have an appointment with {{a.employee}} at {{a.shop_name}} starts at {{a.date_scheduled}} </li>
 {% endif %}
 {% if a.upcoming != True %}
-  <li class="list-group-item list-group-item-dark"> You saw {{a.employee}} at {{a.shopname}} on the {{a.date_scheduled}} </li> 
+  <li class="list-group-item list-group-item-dark"> You saw {{a.employee}} at {{a.shop_name}} on the {{a.date_scheduled}} </li>
 {% endif %}
   
 {% endfor %} 

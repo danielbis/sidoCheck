@@ -4,12 +4,18 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}
-Login
+Add Service
 {% endblock %}
 
 {% block styles %}
 {{super()}}
 <link rel="stylesheet" href="../../static/signin.css" xmlns="http://www.w3.org/1999/html">
+    <style>
+          body { padding-top: 70px;
+          }
+
+    </style>
+
 {% endblock %}
 
 {% block content %}
@@ -17,10 +23,14 @@ Login
       <div class="container-fluid">
          <div class="navbar-header">
           <a class="navbar-brand" href="{{url_for('mod_provider.dashboardprovider')}}">Sido</a>
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" style="color: white;">
+                Menu
+            </button>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li><a href="{{url_for('mod_provider.dashboardprovider')}}">Dashboard</a></li>
+            <li ><a href="{{ url_for('mod_provider.schedules') }}">Schedules</a></li>
             <li> <a href="{{ url_for('mod_provider.add_schedule') }}">Add schedule</a></li>
             <li><a href="{{ url_for('mod_auth.signup_employee') }}">Add employee</a></li>
             <li class="active"><a href="{{ url_for('mod_provider.addservice') }}">Add service</a></li>

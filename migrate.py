@@ -4,6 +4,7 @@ from sqlalchemy.ext.compiler import compiles
 from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap
 
+
 @compiles(DropTable, "postgresql")
 def _compile_drop_table(element, compiler, **kwargs):
     return compiler.visit_drop_table(element) + " CASCADE"

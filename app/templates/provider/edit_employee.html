@@ -1,0 +1,73 @@
+
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block title %}
+{{ profile.first_name }} {{ profile.last_name }}
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+    <style>
+          body { padding-top: 70px;
+          }
+
+    </style>
+
+{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-inverse navbar-fixed-top" >
+  <div class="container-fluid">
+     <div class="navbar-header">
+      <a class="navbar-brand" href="{{url_for('mod_provider.dashboardprovider')}}">Sido</a>
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" style="color: white;">
+                Menu
+            </button>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="{{url_for('mod_provider.dashboardprovider')}}">Dashboard</a></li>
+        <li ><a href="{{ url_for('mod_provider.schedules') }}">Schedules</a></li>
+        <li><a href="{{ url_for('mod_provider.add_schedule') }}">Add schedule</a></li>
+        <li><a href="{{ url_for('mod_auth.signup_employee') }}">Add employee</a></li>
+        <li><a href="{{ url_for('mod_provider.addservice') }}">Add service</a></li>
+        <li><a href="{{ url_for('mod_provider.book_appointment_date') }}">Book Appointment</a></li>
+        <li class="active"><a href="{{ url_for('mod_provider.profile') }}">Profile</a></li>
+
+        <li><a href="{{ url_for('mod_auth.logout') }}">Log Out</a></li>
+
+      </ul>
+    </div>
+  </div>
+</nav>
+<div class="container" style=" ">
+  <h1>Edit Profile</h1>
+  <form action="/provider/edit_employee/{{profile.id}}" enctype="multipart/form-data" method="post">
+      {{ form.hidden_tag() }}
+      <p>
+          {{ form.email.label }}<br>
+          {{ form.email(size=32) }}<br>
+          {% for error in form.email.errors %}
+          <span style="color: red;">[{{ error }}]</span>
+          {% endfor %}
+      </p>
+      <p>
+        {{ form.phone_number.label }}<br>
+        {{ form.phone_number(size=32) }}<br>
+        {% for error in form.phone_number.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ wtf.form_field(form.image) }}
+
+    </p>
+
+      <button class="btn btn-lg btn-primary" type="submit">Update</button>
+  </form>
+</div>
+
+
+{% endblock %}

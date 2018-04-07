@@ -4,11 +4,17 @@
 
 
 {% block title %}
-my_profile.first_name
+Profile: {{my_profile.first_name}}
 {% endblock %}
 
 {% block styles %}
 {{super()}}
+    <style>
+          body { padding-top: 70px;
+          }
+
+    </style>
+
 {% endblock %}
 
 {% block content %}
@@ -16,36 +22,44 @@ my_profile.first_name
   <div class="container-fluid">
     <div class="navbar-header">
       <a class="navbar-brand" href="#">Sido</a>
+         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" style="color: white;">
+                Menu
+         </button>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav navbar-right">
-        <li class="active"><a href="#">Welcome to Dashboard Customer<span class="sr-only">{{name}}</span></a></li>
+        <li><a href="{{ url_for('mod_customer.dashboardcustomer') }}">Home</a></li>
         <li><a href="{{ url_for('mod_customer.history') }}">Your Appointments</a></li>
+        <li class="active"><a href="{{ url_for('mod_customer.profile') }}">Profile</a></li>
 
         <li><a href="{{ url_for('mod_auth.logout') }}">Log Out</a></li>
-          <li><a href="{{ url_for('mod_customer.profile') }}">Profile</a></li>
 
 
       </ul>
     </div>
   </div>
 </nav>
-<div class="container" style="margin-top: 5%;">
-  <h1>PROFILE</h1>
+<div class="container">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class=flashes>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+  <h1>Your Information</h1>
+<hr>
 
-<h1>Name: {{ my_profile.first_name }} {{ my_profile.last_name }}</h1>
-<h1>Email: {{ my_profile.email }}</h1>
-<h1>Phone Number: {{ my_profile.phonenumber }}</h1>
-
+<h3>Name: {{ my_profile.first_name }} {{ my_profile.last_name }}</h3>
+<h3>Email: {{ my_profile.email }}</h3>
+<h3>Phone Number: {{ my_profile.phone_number }}</h3>
+<hr>
 {% if my_profile == current_user %}
-<p><a href="{{ url_for('mod_customer.edit_profile') }}">Edit your profile</a></p>
-<p><a href="{{ url_for('mod_customer.update_password') }}">Update Password</a></p>
-
+<a href="{{ url_for('mod_customer.edit_profile') }}" class="btn btn-primary btn-lg">Edit your profile</a>
+<a href="{{ url_for('mod_customer.update_password') }}"class="btn btn-primary btn-lg">Update Password</a>
 {% endif %}
-
-
-
-
 
 </div>
 

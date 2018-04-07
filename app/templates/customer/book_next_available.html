@@ -1,0 +1,111 @@
+<!-- Author Daniel Bis -->
+
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block head %}
+  {{super()}}
+
+{% endblock %}
+
+{% block scripts %}
+  {{super()}}
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+
+  <script type="text/javascript">
+  var employee_id;
+  var time_slot;
+  console.log("date_string " + "{{date_today}}")
+    $(document).on("click", "#slot", function(){
+      employee_id = $(this).val();
+      time_slot = $(this).text();
+
+      $.ajax({
+        method:'post',
+        url:'/bookslot',
+        data: JSON.stringify({ date_string: "{{date_today}}",
+                empl_id: employee_id,
+                service_id: {{service_id}},
+                time_slot: time_slot
+        }),
+        contentType: 'application/json',
+        error: function(data){
+          alert("Somethong went wrong. Try again please.")
+        },
+        success: function(data) {
+          if (data == "/confirm"){
+            window.location.href = "/confirm";
+          }
+          else{
+            alert("Sorry, this time slot is no longer available.")
+          }
+        }
+      })
+    });
+
+
+  </script>
+
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+          body { padding-top: 70px;
+          }
+
+    </style>
+
+{% endblock %}
+
+{% block title %}
+Next available appointment
+{% endblock %}
+
+
+{% block content %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="{{url_for('mod_customer.dashboardcustomer')}}">Sido</a>
+             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" style="color: white;">
+                Menu
+            </button>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li class="active"><a href="#">Hello {{name}}, welcome to Sido </a></li>
+            <li><a href="{{ url_for('mod_customer.history') }}">Your Appointments</a></li>
+            <li><a href="{{ url_for('mod_customer.profile') }}">Profile</a></li>
+            <li><a href="{{ url_for('mod_auth.logout') }}">Log Out</a></li>
+
+
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+<div class="container">
+{% if slots_shop|length < 1 %}
+<div class="alert alert-danger"><h3> No appointments available today </h3></div>
+{% endif %}
+  {% for s in slots_shop %}
+  <div class="row">
+    <div class="col-sm-4">
+    <h4> {{s.name}}</h4>
+    </div>
+    <div class="col-sm-4">
+    <button type="button" class="btn btn-primary btn-lg btn-block" id="slot" value="{{s.id}}"> {{s.availability[0]}}</button>
+    </div>
+  </div>
+  {% endfor %}
+
+</div>
+<div class="container" id="book-it">
+
+</div>
+
+
+{% endblock %}

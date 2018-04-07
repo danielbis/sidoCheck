@@ -6,11 +6,19 @@
 {% block head %}
   {{super()}}
 {% endblock %}
-
+{% block title %}
+Booking
+{% endblock %}
 {% block styles %}
 {{super()}}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="../../static/date_picker.css">
+
+    <style>
+      body { padding-top: 70px;
+      }
+
+    </style>
 {% endblock %}
 
 {% block scripts %}
@@ -44,15 +52,10 @@
                           var len = data.length;
                           var i;
                           for (i = 0; i < len; i++){
-                            if (i == 0 || i % 4 == 0){
-                              $slots.append("<div class='row justify-content-md-center'>" );
-                            }
                               $slots.append(
                                 "<div class='col-sm-2'> <button type='button' class='btn-custom btn-lg btn-block' value='"+data[i]+"' id = 'slot'>" + data[i] +"</button> </div>"
                                 );
-                              if (i == len -1 || i % 4 == 3){
-                                $slots.append("</div>");
-                              }
+
                             }
                           }
                     });
@@ -88,22 +91,21 @@
 
   $(document).on("click", "#slot", function(){
     time_slot = $(this).val();
-    $('#book-it').append('<button type="button" class="btn btn-primary btn-lg btn-block" onclick = "book()">Book it</button>')
+    $('#book-it').empty();
+    $('#book-it').append('<button type="button" class="btn btn-success btn-lg btn-block" onclick = "book()">Book it</button>')
   });
 
   </script>
 {% endblock %}
-
-{% block title %}
-Schedule Appointment
-{% endblock %}
-
 
 {% block content %}
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
         <div class="navbar-header">
           <a class="navbar-brand" href="#">Sido</a>
+             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" style="color: white;">
+                Menu
+            </button>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
@@ -141,11 +143,11 @@ Schedule Appointment
 </div>
   
 
-<div class = "container" style = "text-align: center;" id="ts">
+<div class = "container" style = "text-align: center; margin-top: 20px;" id="ts">
   
 </div>
   
-<div class="container" id="book-it">
+<div class="container" style="margin-top: 20px;" id="book-it">
 
 </div>
 
