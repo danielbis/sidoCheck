@@ -15,6 +15,7 @@ SQLALCHEMY_DATABASE_URI = os.environ["SIDOCHECK_DB"]
 #SQLALCHEMY_DATABASE_URI = os.environ["SIDOCHECK_DB"]
 # DANIEL YOUR PATH IS 'postgresql://localhost/cutcheck' SET ENV VARS ASAP
 DATABASE_CONNECT_OPTIONS = {}
+PREFERRED_URL_SCHEME = 'https'
 
 # Application threads. A common general assumption is
 # using 2 per available processor cores - to handle
@@ -27,8 +28,7 @@ CSRF_ENABLED = False
 
 # Use a secure, unique and absolutely secret key for
 # signing the data. 
-CSRF_SESSION_KEY = "secret"
+CSRF_SESSION_KEY = os.environ["SECRET"]
 
 # Secret key for signing cookies
-SECRET_KEY = "secret"
-
+SECRET_KEY = os.environ["SECRET"]

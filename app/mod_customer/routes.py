@@ -179,7 +179,7 @@ def timeslots():
     print("date object is: ", d)
     print("empl_id is: ", empl_id)
     print("service_id is: ", service_id)
-    slots = [x.strftime("%H:%M") for x in
+    slots = [x.strftime("%I:%M%p") for x in
              check_availability_by_employee_id(empl_id, d, service.service_length)]
 
     print("slots: ", slots)
@@ -265,7 +265,7 @@ def confirm():
         session["parameters"] = parameters
 
         d = datetime.strptime(parameters['date_string'], '%m/%d/%y').date()
-        datetime_object = datetime.strptime(parameters['date_time_string'], '%m/%d/%y %H:%M')
+        datetime_object = datetime.strptime(parameters['date_time_string'], '%m/%d/%y %I:%M%p')
         service = Service.query.filter_by(service_id=parameters['service_id']).first()
         slots_required = int(int(service.service_length) / 20)
 
@@ -313,7 +313,7 @@ def confirm():
 
     # format dates
     d = datetime.strptime(parameters['date_string'].replace("-", "/"), '%m/%d/%y').date()
-    datetime_object = datetime.strptime(parameters['date_time_string'], '%m/%d/%y %H:%M')
+    datetime_object = datetime.strptime(parameters['date_time_string'], '%m/%d/%y %I:%M%p')
 
     service = Service.query.filter_by(service_id=parameters['service_id']).first()
     slots_required = int(int(service.service_length) / 20)
