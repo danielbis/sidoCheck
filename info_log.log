@@ -75,3 +75,9 @@
 2018-04-06 20:13:28,769 - app - INFO - Attempting to book slot: 04/20/18 12:00PM, shop_id: None
 2018-04-06 20:14:48,002 - app - INFO - dashboard, shop: Living in the Cut
 2018-04-06 20:14:57,604 - app - INFO - dashboard, shop: Living in the Cut
+2018-04-06 20:18:32,810 - app - INFO - dashboard, shop: Living in the Cut
+2018-04-06 20:19:17,108 - app - INFO - dashboard, shop: Living in the Cut
+2018-04-06 20:19:33,073 - app - INFO - Attempting to book slot: 04/06/18  20:20, shop_id: None
+2018-04-06 20:22:22,803 - app - INFO - Attempting to book slot: 04/18/18 11:00AM, shop_id: None
+2018-04-06 20:24:34,332 - app - INFO - Attempting to book slot: 04/26/18 13:00, shop_id: None
+2018-04-06 20:24:42,209 - app - INFO - Attempting to book slot: 04/06/18  20:40, shop_id: None

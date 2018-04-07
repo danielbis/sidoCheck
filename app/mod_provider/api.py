@@ -244,8 +244,8 @@ def get_schedules(shop_id, d):
     sl = []
     for row in schedules_list:
         row_as_list = list(row)
-        row_as_list[0] = row_as_list[0].time().strftime('%I:%M%p')
-        row_as_list[1] = row_as_list[1].time().strftime('%I:%M%p')
+        row_as_list[0] = row_as_list[0].time().strftime('%H:%M')
+        row_as_list[1] = row_as_list[1].time().strftime('%H:%M')
         sl.append(row_as_list)
 
     return sl
