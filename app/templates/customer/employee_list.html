@@ -65,7 +65,7 @@
                   <img class="img-responsive" src="https://res.cloudinary.com/sidoproject/{{employee.img_path}}" alt="Card image cap" style="width:100%; height: 360px;";/>
                 {% endif %}
                 {% if employee.img_path|length < 1 %}
-                  <img src="{{url_for('static', filename='city.jpg')}}" style="width:550px; height: 360px;"; class="img-responsive"/>
+                  <img src="{{url_for('static', filename='img/default_profile.jpg')}}" style="width:550px; height: 360px;"; class="img-responsive"/>
                 {% endif %}
 
                 <div class="card-body">

@@ -128,7 +128,7 @@ def signup_shop():
                 uploaded = upload(f)
                 print(uploaded['public_id'])
             else:
-                uploaded = upload('./static/img/city.jpg')
+                uploaded = upload('../static/img/city.jpg')
                 print('else ', uploaded['public_id'])
 
             new_user = User(first_name=form.shop_name.data, last_name=form.shop_name.data,
@@ -178,7 +178,8 @@ def signup_employee():
                 uploaded = upload(f)
                 print(uploaded['public_id'])
             else:
-                uploaded = upload('./static/img/city.jpg')
+                uploaded = {}
+                uploaded['public_id'] = ""
                 print('else ', uploaded['public_id'])
 
             new_user = User(first_name=form.firstname.data, last_name=form.lastname.data, email=form.email.data,
