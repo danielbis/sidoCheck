@@ -1,4 +1,4 @@
-<h2> 1. Introduction </h2>
+1. Introduction
 
 There are two ways of accessing Sido:
 
