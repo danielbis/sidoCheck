@@ -4,12 +4,11 @@
 {% extends "bootstrap/base.html" %}
 {% block head %}
   {{super()}}
-  <meta property="og:url"           content="https://sido-dev.herokuapp.com/auth/login" />
-  <meta property="og:type"          content="website" />
+  <meta property="og:url"           content="https://sido-dev.herokuapp.com" />
+  <meta property="og:type"          content="text" />
   <meta property="og:title"         content="Sido" />
   <meta property="og:description"   content="I just booked a service with Sido. It's your turn to save time."/>
   <meta property="og:image"         content="https://media.npr.org/assets/img/2015/06/18/trh_shifting_time_artwork_wide-91d5152cb5d06bd73f2c08dcae1a3f3dbdd235f4.jpg?s=1400" />
-
 {% endblock %}
 {% block title %}
 Confirmation
@@ -17,7 +16,12 @@ Confirmation
 
 {% block styles %}
 {{super()}}
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
+    <style>
+          body { padding-top: 70px;
+          }
+
+    </style>
 
 {% endblock %}
 
@@ -25,16 +29,18 @@ Confirmation
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
         <div class="navbar-header">
-          <a class="navbar-brand" href="#">Sido</a>
+          <a class="navbar-brand" href="{{url_for('mod_customer.dashboardcustomer')}}">Sido</a>
              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" style="color: white;">
                 Menu
             </button>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li class="active"><a href="#">Welcome to <span class="sr-only">{{shop_name}}</span></a></li>
+            <li class="active"><a href="#">Hello {{name}}, welcome to Sido </a></li>
+            <li><a href="{{ url_for('mod_customer.history') }}">Your Appointments</a></li>
+            <li><a href="{{ url_for('mod_customer.profile') }}">Profile</a></li>
             <li><a href="{{ url_for('mod_auth.logout') }}">Log Out</a></li>
-           
+
 
           </ul>
         </div>

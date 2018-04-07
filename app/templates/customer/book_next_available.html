@@ -5,6 +5,7 @@
 
 {% block head %}
   {{super()}}
+
 {% endblock %}
 
 {% block scripts %}
@@ -51,6 +52,12 @@
 {% block styles %}
 {{super()}}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+          body { padding-top: 70px;
+          }
+
+    </style>
+
 {% endblock %}
 
 {% block title %}
@@ -80,7 +87,7 @@ Next available appointment
       </div>
     </nav>
 
-<div class="container" style=" ">
+<div class="container">
 {% if slots_shop|length < 1 %}
 <div class="alert alert-danger"><h3> No appointments available today </h3></div>
 {% endif %}

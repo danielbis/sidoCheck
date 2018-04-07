@@ -9,6 +9,12 @@ Profile: {{my_profile.first_name}}
 
 {% block styles %}
 {{super()}}
+    <style>
+          body { padding-top: 70px;
+          }
+
+    </style>
+
 {% endblock %}
 
 {% block content %}
@@ -24,9 +30,9 @@ Profile: {{my_profile.first_name}}
       <ul class="nav navbar-nav navbar-right">
         <li><a href="{{ url_for('mod_customer.dashboardcustomer') }}">Home</a></li>
         <li><a href="{{ url_for('mod_customer.history') }}">Your Appointments</a></li>
+        <li class="active"><a href="{{ url_for('mod_customer.profile') }}">Profile</a></li>
 
         <li><a href="{{ url_for('mod_auth.logout') }}">Log Out</a></li>
-          <li class="active"><a href="{{ url_for('mod_customer.profile') }}">Profile</a></li>
 
 
       </ul>
