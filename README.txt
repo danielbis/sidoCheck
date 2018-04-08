@@ -4,6 +4,8 @@ There are two ways of accessing Sido:
 
 	1. Version hosted online: http://sido-dev.herokuapp.com/auth/login
 	2. Running website locally - cloning respiratory/downloading zip: https://github.com/danielbis/sidoCheck/archive/master.zip
+	or: 
+	https://drive.google.com/open?id=17OhliGQQuM0hCZ512VNfmbXt1J9mo4wU
 
 The online version has populated database and is ready for testing and usage. All you need to do is follow the url. 
 
