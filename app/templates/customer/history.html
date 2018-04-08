@@ -1,0 +1,58 @@
+<!-- Author Daniel Bis -->
+
+
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+History
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+    <style>
+          body { padding-top: 70px;
+          }
+
+    </style>
+
+{% endblock %}
+
+{% block content %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="{{url_for('mod_customer.dashboardcustomer')}}">Sido</a>
+             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" style="color: white;">
+                Menu
+            </button>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="{{ url_for('mod_customer.dashboardcustomer') }}">Home</a></li>
+            <li class="active"><a href="{{ url_for('mod_customer.history') }}">Your Appointments</a></li>
+            <li><a href="{{ url_for('mod_customer.profile') }}">Profile</a></li>
+
+            <li><a href="{{ url_for('mod_auth.logout') }}">Log Out</a></li>
+           
+
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+  
+  
+  
+<ul class="list-group">
+{% for a in my_appointments %}
+
+{% if a.upcoming %}
+  <li class="list-group-item list-group-item-success"> You have an appointment with {{a.employee}} at {{a.shop_name}} starts at {{a.date_scheduled}} </li>
+{% endif %}
+{% if a.upcoming != True %}
+  <li class="list-group-item list-group-item-dark"> You saw {{a.employee}} at {{a.shop_name}} on the {{a.date_scheduled}} </li>
+{% endif %}
+  
+{% endfor %} 
+</ul>
+{% endblock %}

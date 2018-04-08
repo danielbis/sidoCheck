@@ -1,0 +1,188 @@
+<!-- Author Daniel Bis -->
+
+
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block styles %}
+{{super()}}
+  <link rel="stylesheet" href="../../static/date_picker.css">
+  <style>
+          body { padding-top: 70px;
+          }
+
+    </style>
+{% endblock %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+
+<script type="text/javascript">
+
+var $t_body = $('#schedule_body');
+
+
+$(document).on("click", "#slot", function(){
+    var r = confirm("Are you sure that you want to cancel this appointment?");
+    if (r === true){
+    	$.ajax({
+	      method:'post',
+	      url:'/provider/cancel_appointment',
+	      data: JSON.stringify({
+	              appointment_id: $(this).val(),
+
+	      }),
+	      contentType: 'application/json',
+	      error: function(data){
+	        alert("Somethong went wrong. Try again please.")
+	      },
+	      success: function(data) {
+	        if (data == "success"){
+	          window.location.href = "/provider/dashboardprovider";
+	        }
+	        else{
+	          alert("Sorry, this time slot is no longer available.")
+	        }
+	      }
+	    })
+    }
+
+  });
+
+    $( function() {
+
+      var dateFormat = "mm/dd/yy";
+        from = $( "#from" )
+          .datepicker({
+            showOtherMonths: true,
+            dayNamesMin: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+          })
+          .on( "change", function() {
+            from.datepicker( "option", getDate( this ) );
+          });
+
+      function getDate( element ) {
+        var date;
+        try {
+          date = element.value;
+        } catch( error ) {
+          date = null;
+        }
+        console.log("date is: ", date)
+        if (date !== null){
+            $.ajax({
+               method: 'get',
+               url: '/provider/dashboardprovider',
+               data: { date : date
+                     },
+               success: function(data) {
+                   data = data;
+                   console.log(data);
+                   $t_body.empty();
+                   var len = data.length;
+                   var i;
+                   for (i = 0; i < len; i++){
+                       $t_body.append(
+                            "<tr>" +
+                            "<td>" +data[i]['empl_first']+ " " + data[i]['empl_last'] + "</td>"+
+                            "<td>" + data[i]['time'] + "</td>"+
+                            "<td>" + data[i]['service_type'] + "</td>"+
+                            "<td>" +data[i]['client_first']+ " " + data[i]['client_last'] + "</td>"+
+                            "<td> <button id = 'slot' class='btn btn-danger' value=" + data[i]['appointment_id'] + " type='submit'>Cancel</button></td>" +
+                            "</tr>"
+                       );
+                     }
+
+                   }
+            });
+            return date;
+        }
+
+
+      }
+    });
+
+</script>
+{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+         <div class="navbar-header">
+          <a class="navbar-brand" href="{{url_for('mod_provider.dashboardprovider')}}">Sido</a>
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" style="color: white;">
+                Menu
+            </button>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li class="active"><a href="#">Welcome to {{name}}</a></li>
+            <li ><a href="{{ url_for('mod_provider.schedules') }}">Schedules</a></li>
+            <li><a href="{{ url_for('mod_provider.add_schedule') }}">Add schedule</a></li>
+            <li><a href="{{ url_for('mod_auth.signup_employee') }}">Add employee</a></li>
+            <li><a href="{{ url_for('mod_provider.addservice') }}">Add service</a></li>
+            <li><a href="{{ url_for('mod_provider.book_appointment_date') }}">Book Appointment</a></li>
+            <li><a href="{{ url_for('mod_provider.profile') }}">Profile</a></li>
+            <li><a href="{{ url_for('mod_auth.logout') }}">Log Out</a></li>
+
+          </ul>
+        </div>
+      </div>
+</nav>
+
+
+<div class="container">
+	<div class="row">
+	<form method="POST", action="/provider/dashboardprovider">
+	<div class="col-sm-6">
+		{{ form.hidden_tag() }}
+	    {{ wtf.form_field(form.service) }}
+    </div>
+    <div class="col-sm-6" style="text-align: right;">
+     	<button class="btn btn-primary btn-block btn-lg align-text-bottom" type="submit" style="margin-top: 3%;">Walk-in</button>
+    </div>
+	</form>
+	</div>
+    <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+        <div class="col-sm-6">
+         <label for="from">Select other Date</label>
+        <input style="width: 100%; height: 33px;" id="from">
+        </div>
+    </div>
+
+	<style>
+	table,th,td {
+		border: 1px solid black;
+	}
+	</style>
+	<table class="table table-striped table-dark">
+	  <thead class="thead-dark">
+	    <tr>
+	      <th scope="col">Employee Name</th>
+	      <th scope="col">Time</th>
+	      <th scope="col">Service</th>
+	      <th scope="col">Client Name</th>
+	      <th scope="col">Cancel</th>
+	    </tr>
+	  </thead>
+	  <tbody id="schedule_body">
+	    {% for a in empl_app %}
+            <tr>
+	      <td scope="row">{{a["empl_first"]}} {{a["empl_last"]}}</td>
+	      <td>{{a["time"]}}</td>
+	      <td>{{a["service_type"]}}</td>
+	      <td>{{a["clien_first"]}} {{a["client_last"]}}</td>
+	      <td> <button id = "slot" class="btn btn-danger" value= '{{ a["appointment_id"] }}' type="submit">Cancel</button></td>
+	    </tr>
+	    {% endfor %}
+	  </tbody>
+	</table>
+</div>
+
+{% endblock %}

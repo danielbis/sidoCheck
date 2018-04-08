@@ -1,0 +1,64 @@
+
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block title %}
+Edit Profile
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+    <style>
+          body { padding-top: 70px;
+          }
+
+    </style>
+
+{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Sido</a>
+         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" style="color: white;">
+                Menu
+         </button>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav navbar-right">
+        <li class="active"><a href="#">Welcome to Dashboard Customer<span class="sr-only">{{name}}</span></a></li>
+        <li><a href="{{ url_for('mod_customer.history') }}">Your Appointments</a></li>
+        <li><a href="{{ url_for('mod_customer.profile') }}">Profile</a></li>
+
+        <li><a href="{{ url_for('mod_auth.logout') }}">Log Out</a></li>
+
+
+      </ul>
+    </div>
+  </div>
+</nav>
+<div class="container" style=" ">
+  <h1>Edit Profile</h1>
+  <form action="" method="post">
+      {{ form.hidden_tag() }}
+      <p>
+          {{ form.email.label }}<br>
+          {{ form.email(size=32) }}<br>
+          {% for error in form.email.errors %}
+          <span style="color: red;">[{{ error }}]</span>
+          {% endfor %}
+      </p>
+      <p>
+          {{ form.phone_number.label }}<br>
+          {{ form.phone_number(size=32) }}<br>
+          {% for error in form.phone_number.errors %}
+          <span style="color: red;">[{{ error }}]</span>
+          {% endfor %}
+      </p>
+      <button class="btn btn-lg btn-primary" type="submit">Update</button>  </form>
+</div>
+
+
+{% endblock %}

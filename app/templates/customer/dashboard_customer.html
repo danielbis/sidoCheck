@@ -1,0 +1,75 @@
+<!-- Author Daniel Bis -->
+
+
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+Sido
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+    <style>
+          body { padding-top: 70px;
+          }
+
+    </style>
+{% endblock %}
+
+{% block content %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="{{url_for('mod_customer.dashboardcustomer')}}">Sido</a>
+
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" style="color: white;">
+                Menu
+            </button>
+
+        </div>
+
+        <div id="navbar" class="navbar-collapse collapse">
+
+          <ul class="nav navbar-nav navbar-right">
+            <li class="active"><a href="#">Hello {{name}}, welcome to Sido </a></li>
+            <li><a href="{{ url_for('mod_customer.history') }}">Your Appointments</a></li>
+            <li><a href="{{ url_for('mod_customer.profile') }}">Profile</a></li>
+            <li><a href="{{ url_for('mod_auth.logout') }}">Log Out</a></li>
+           
+
+          </ul>
+
+        </div>
+      </div>
+    </nav>
+
+<div class="container">
+  
+  {% for shop_row in shops | batch(2, '&nbsp;') %}
+  <div class="row">
+  {% for shop in shop_row %}
+  {% if shop.shop_id %}
+   <div class="col-md-6">
+       <div class="card" style="width:100%; margin-bottom: 20px; border: 1px solid rgba(0, 0, 0, 0.125);
+          border-radius: 0.25rem;" >
+        {% if shop.img_path|length > 1 %}
+        <img class="card-img-top" src="https://res.cloudinary.com/sidoproject/{{shop.img_path}}"  alt="Card image cap" style="width:100%; height: 360px;">
+        {% endif %}
+        {% if shop.img_path |length < 1 %}
+        <img class="card-img-top" src="{{ url_for('static', filename='barber.jpg') }}" alt="Card image cap" style="width:550px; height: 360px;">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title">{{shop.shop_name}}</h5>
+          <p class="card-text"> We are located on {{shop.location}}</p>
+
+          <a href="{{ url_for('mod_customer.employee_list', shop_name = shop.shop_name) }}"" class="btn btn-primary btn-block">Visit</a>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+      {% endfor %}
+    
+  </div>
+{% endfor %}
+</div>
+{% endblock %}

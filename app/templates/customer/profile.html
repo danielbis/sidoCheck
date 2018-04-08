@@ -1,0 +1,67 @@
+
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block title %}
+Profile: {{my_profile.first_name}}
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+    <style>
+          body { padding-top: 70px;
+          }
+
+    </style>
+
+{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Sido</a>
+         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" style="color: white;">
+                Menu
+         </button>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="{{ url_for('mod_customer.dashboardcustomer') }}">Home</a></li>
+        <li><a href="{{ url_for('mod_customer.history') }}">Your Appointments</a></li>
+        <li class="active"><a href="{{ url_for('mod_customer.profile') }}">Profile</a></li>
+
+        <li><a href="{{ url_for('mod_auth.logout') }}">Log Out</a></li>
+
+
+      </ul>
+    </div>
+  </div>
+</nav>
+<div class="container">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class=flashes>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+  <h1>Your Information</h1>
+<hr>
+
+<h3>Name: {{ my_profile.first_name }} {{ my_profile.last_name }}</h3>
+<h3>Email: {{ my_profile.email }}</h3>
+<h3>Phone Number: {{ my_profile.phone_number }}</h3>
+<hr>
+{% if my_profile == current_user %}
+<a href="{{ url_for('mod_customer.edit_profile') }}" class="btn btn-primary btn-lg">Edit your profile</a>
+<a href="{{ url_for('mod_customer.update_password') }}"class="btn btn-primary btn-lg">Update Password</a>
+{% endif %}
+
+</div>
+
+
+{% endblock %}

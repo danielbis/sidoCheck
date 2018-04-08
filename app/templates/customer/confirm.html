@@ -1,0 +1,92 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+Confirm booking
+{% endblock %}
+
+{% block head %}
+  {{super()}}
+
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+    <style>
+          body { padding-top: 70px;
+          }
+
+    </style>
+
+{% endblock %}
+
+{% block content %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="{{url_for('mod_customer.dashboardcustomer')}}">Sido</a>
+             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" style="color: white;">
+                Menu
+            </button>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li class="active"><a href="#">Hello {{name}}, welcome to Sido </a></li>
+            <li><a href="{{ url_for('mod_customer.history') }}">Your Appointments</a></li>
+            <li><a href="{{ url_for('mod_customer.profile') }}">Profile</a></li>
+            <li><a href="{{ url_for('mod_auth.logout') }}">Log Out</a></li>
+
+
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+<div class="container" style="margin-top: 10%; ">
+
+
+    <div class="card border-dark text-center">
+  <div class="card-header">
+    Is below information correct?
+  </div>
+  <div class="card-body">
+    <h5 class="card-title"> Please, confirm if you would like to book this appointment with {{confirmation.employee_name}}.
+</h5>
+      <div class="row">
+          <div class="col col-md-6" style="text-align: right;">
+              <p><b>Service: </b> {{confirmation.service_name}}</p>
+          </div>
+          <div class="col col-md-6" style="text-align: left;">
+              <p><b>Time: </b> {{confirmation.date_scheduled}}</p>
+
+          </div>
+      </div>
+      <div class="row">
+          <div class="col col-md-6" style="text-align: right;">
+            <p> <b>Shop:</b> {{confirmation.shop_name}}</p>
+
+          </div>
+          <div class="col col-md-6" style="text-align: left;">
+              <p><b>Price: </b> ${{confirmation.price}}</p>
+
+          </div>
+      </div>
+    <form method="POST" action="/confirm">
+        <button class="btn btn-lg btn-success btn-block " type="submit">Confirm</button>
+    </form>
+      {% if confirmation.shop_id == user.shop_id %}
+          <a href="{{ url_for('mod_provider.dashboardprovider') }}"><button class="btn btn-lg btn-danger btn-block " style="margin-top: 10px;">Cancel</button></a>
+      {% endif %}
+    {% if confirmation.shop_id != user.shop_id  %}
+      <a href="{{ url_for('mod_customer.dashboardcustomer') }}"><button class="btn btn-lg btn-danger btn-block " style="margin-top: 10px;">Cancel</button></a>
+    {% endif %}
+  </div>
+  </div>
+  <div class="card-footer text-muted">
+    Thank you for saving time with us!
+  </div>
+</div>
+
+
+
+{% endblock %}

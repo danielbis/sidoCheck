@@ -1,0 +1,96 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+Booking
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="../../static/date_picker.css">
+    <style>
+          body { padding-top: 70px;
+          }
+
+    </style>
+
+{% endblock %}
+
+{% block scripts %}
+  {{super()}}
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+
+  <script type="text/javascript">
+
+    
+    $( function() {
+
+      var dateFormat = "mm/dd/yy",
+        from = $( "#from" )
+          .datepicker({
+            showOtherMonths: true,
+            dayNamesMin: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+          })
+          .on( "change", function() {
+            from.datepicker( "option", getDate( this ) );
+          });
+        
+      function getDate( element ) {
+        var date;
+        try {
+          date = $.datepicker.parseDate( dateFormat, element.value );
+        } catch( error ) {
+          date = null;
+        }
+   
+        return date;
+      }
+    });
+
+  </script>
+ {% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+         <div class="navbar-header">
+          <a class="navbar-brand" href="{{url_for('mod_provider.dashboardprovider')}}">Sido</a>
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" style="color: white;">
+                Menu
+            </button>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="{{url_for('mod_provider.dashboardprovider')}}">Dashboard</a></li>
+            <li ><a href="{{ url_for('mod_provider.schedules') }}">Schedules</a></li>
+            <li><a href="{{ url_for('mod_provider.add_schedule') }}">Add schedule</a></li>
+            <li><a href="{{ url_for('mod_auth.signup_employee') }}">Add employee</a></li>
+            <li><a href="{{ url_for('mod_provider.addservice') }}">Add service</a></li>
+            <li class="active"><a href="{{ url_for('mod_provider.book_appointment_date') }}">Book Appointment</a></li>
+
+            <li><a href="{{ url_for('mod_auth.logout') }}">Log Out</a></li>
+
+          </ul>
+        </div>
+      </div>
+</nav>
+<div class="container" style="margin-top: 10%; text-align:center;">
+
+  <form method="POST" class="form-group" action="/provider/book_appointment_date">
+    
+      
+      <div class="row" style="width: 100%;">
+      <h5> Select the Date </h5>
+      {{ form.hidden_tag() }}
+      {{ form.start_date(id="from", class_="form-control") }}
+      {{ wtf.form_field(form.service) }}
+      {{ wtf.form_field(form.guest_name)}}
+      </div>
+      <input class="btn-success btn-lg" type="submit" value="Add">
+  </form>
+
+</div> <!-- /container -->
+
+{% endblock %}
