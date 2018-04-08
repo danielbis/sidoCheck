@@ -8,7 +8,9 @@ There are two ways of accessing Sido:
 The online version has populated database and is ready for testing and usage. All you need to do is follow the url. 
 
 Running the website Locally requires installing dependencies and following the steps listed below.
+
 The website requires multiple python packages. We included a link to our database hosted online so you do not have to actually install postgres. However, if you want maximum freedom of access, you can follow the postgres installation steps and change SQLALCHEMY_DATABASE_URI in config.py to your local db. It is easier to just follow the link. The description below is as specific as we can make it. We included outside tutorials and guides to make following these steps easy. On the bottom is a contact information under which further assistance can be provided. 
+
 
 
 2. Dependencies:
@@ -30,7 +32,9 @@ The website requires multiple python packages. We included a link to our databas
  
  V. [! ONLY IF YOU ARE USING LOCAL POSTGRESQL DB !] Now you can populate database by running: CLOUDINARY_URL=cloudinary://848925646618136:HelekvosM3FQEAPsY6gAlJhiedk@sidoproject  python populate_db.py
 (yes, it is one long command)
+
  VI. Now you can run the website locally using: CLOUDINARY_URL=cloudinary://848925646618136:HelekvosM3FQEAPsY6gAlJhiedk@sidoproject python run.py
+     Website should be available at:  http://127.0.0.1:8080/
      NOTE: CLOUDINARY_URL goes in front of python [some_file.py], it is necessary because we are hosting our images there.
  VII. You can run the tests using: python test.py
 
@@ -41,6 +45,7 @@ If you ran the populate_db.py script:
 		email: test_shop1@email.com	password: password
 These accounts have mocked up schedules, services etc.
 However, you are more then encouraged to create your own accounts. 
+
 
 4. Functionality:
 

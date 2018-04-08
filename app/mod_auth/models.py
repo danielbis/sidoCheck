@@ -121,6 +121,7 @@ class Shop(db.Model):
 
 
 """
+
     Implementation: Abraham Dmitri Joseph
     
     This class is responsible for storing id of users who register with social authentication methods.

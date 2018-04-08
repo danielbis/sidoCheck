@@ -10,6 +10,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 # SQLite for this example
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 SQLALCHEMY_DATABASE_URI = 'postgres://iozdirrc:YJg3fp0JDOpNk5-I_atnkPxFol6vVBEU@baasu.db.elephantsql.com:5432/iozdirrc'
+
 #os.environ["SIDOCHECK_DB"]
 # DANIEL YOUR PATH IS 'postgresql://localhost/cutcheck' SET ENV VARS ASAP
 DATABASE_CONNECT_OPTIONS = {}
@@ -40,5 +41,7 @@ ADMINS = ['sidocheckdev@gmail.com']
 
 SECRET_KEY = "SECRET"
 
+
 #os.environ["SECRET"]
+
 

@@ -162,6 +162,7 @@ def google_logged_in(blueprint, token):
         #print("in else ", file=sys.stdout)
         #print(resp.json, file=sys.stdout)
 
+
         # Create a new local user account for this user
         user = User(
             # Remember that `email` can be None, if the user declines

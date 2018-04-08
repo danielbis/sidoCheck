@@ -17,7 +17,11 @@ from cloudinary.utils import cloudinary_url
 """
 random.seed(1)
 
+<<<<<<< HEAD
 for i in range(1, 10):
+=======
+for i in range(1, 21):
+>>>>>>> f07714b56e5ab504016c891d3a4921564f1ba839
     name = "test_user" + str(i)
     lastname = "test_user_last" + str(i)
     email = "test_user" + str(i) + "@email.com"
@@ -90,10 +94,40 @@ for i in range(1, 7):
         #    Append to a shop
         new_shop.users.append(empl)
 
+<<<<<<< HEAD
 
         #   April
         for d in range(1, 31):
             schedule = Schedule(start_time=datetime(2018, 4, d, 11, 0, 0), end_time=datetime(2018, 4, d, 23, 0, 0))
+=======
+        #    add schedules (MARCH)
+        for d in range(10, 32):
+            schedule = Schedule(start_time=datetime(2018, 3, d, 8, 0, 0), end_time=datetime(2018, 3, d, 0, 0, 0))
+            empl.schedules.append(schedule)
+
+            # add appointments __init__(self, datescheduled, username, user_last_name userphone, useremail, user_id):
+            for a in range(1, 6):
+                ap = None
+                random_user_id = random.randrange(1, 20)
+                if a < 3:
+                    ap = Appointment(datetime(2018, 3, d, 11, a * 20, 0), "test_user" + str(random_user_id),
+                                     "test_user_last" + str(random_user_id), "123456000" + str(random_user_id),
+                                     "test_user" + str(random_user_id) + "@email.com", random_user_id, 1)
+                elif a < 5:
+                    ap = Appointment(datetime(2018, 3, d, 12, (a - 2) * 20, 0), "test_user" + str(random_user_id),
+                                     "test_user_last" + str(random_user_id), "123456000" + str(random_user_id),
+                                     "test_user" + str(random_user_id) + "@email.com", random_user_id, 2)
+                else:
+                    ap = Appointment(datetime(2018, 3, d, 2, (a - 4) * 20, 0), "test_user" + str(random_user_id),
+                                     "test_user_last" + str(random_user_id), "123456000" + str(random_user_id),
+                                     "test_user" + str(random_user_id) + "@email.com", random_user_id, 3)
+                print("date: ", ap.date_scheduled, "email: ", ap.client_email)
+                empl.appointments.append(ap)
+
+        #   April
+        for d in range(1, 31):
+            schedule = Schedule(start_time=datetime(2018, 4, d, 11, 0, 0), end_time=datetime(2018, 4, d, 18, 0, 0))
+>>>>>>> f07714b56e5ab504016c891d3a4921564f1ba839
             empl.schedules.append(schedule)
 
             # add appointments __init__(self, datescheduled, username, user_last_name userphone, useremail, user_id):

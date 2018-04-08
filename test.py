@@ -1,5 +1,6 @@
 #Authors: Daniel Bis and Abraham Dmitri Joseph
 
+
 ########################################################################################
 ########  "premature optimization is root cause of all evil" - Donald Knuth ###########
 ########################################################################################
@@ -13,6 +14,7 @@ try:
     from urllib.parse import urlparse
 except ImportError:
      from urlparse import urlparse
+
 import os
 import unittest
 import tempfile
@@ -31,12 +33,14 @@ class TestBase(unittest.TestCase):
         db.drop_all()
         db.create_all()
         
+
         return app
 
     # executed after each test
     def tearDown(self):
         db.session.close()
         db.drop_all()
+
 
 
     ###############
@@ -51,11 +55,12 @@ class TestBase(unittest.TestCase):
     ########################
     #### helper methods ####
     ########################
- 
+
+
     def register(self, firstname, lastname, email, password):
         return self.app.post(
             'auth/signup',
-            data=dict(first_name = firstname, last_name = lastname, email=email, password=password),
+            data=dict(first_name=firstname, last_name=lastname, email=email, password=password),
             follow_redirects=True
         )
 
@@ -67,7 +72,8 @@ class TestBase(unittest.TestCase):
             'auth/login',
             data=dict(email=email, password=password),
             follow_redirects=True
-    )
+        )
+
 
     def register_shop_employee(self):
         user1 = User("shop1", "shop1", "shop1@gmail.com", "shop1pass", "shop", 1, "8506667676")
@@ -92,12 +98,6 @@ class TestBase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-    """def test_login(self):
-        expectedPath = "localhost:8080/dashboardcustomer"
-        response = self.login("testuser@gmail.com", "testuserpass")
-        self.assertEqual(response.status_code, 200)
-        self.assertIn (b'<title>Dashboard Customer</title>', response.data)"""
-
 
  #(USER) def __init__(self, firstname, lastname, email, password, role, manager = 0, phone_number = "")
     def test_user_model(self):
@@ -113,7 +113,6 @@ class TestBase(unittest.TestCase):
         user2 = User("shop1", "shop1", "shop1@gmail.com", "shop1pass", "shop", 1, "8506667676")
         new_shop = Shop("shop1", 'location')
         new_shop.users.append(user2)
-        #print("appended")
         db.session.add(user1)
         db.session.add(user2)
         db.session.commit()
@@ -123,7 +122,7 @@ class TestBase(unittest.TestCase):
 
     def test_employee_model(self):
         user1 = User("testuser", "testuserlast", "testuser@gmail.com", "testuserpass", "customer")
-        user2 = User("testuser2", "testuser2last",  "shop1@gmail.com","shop1pass", "employee", 1, "8506667676")
+        user2 = User("testuser2", "testuser2last", "shop1@gmail.com", "shop1pass", "employee", 1, "8506667676")
         db.session.add(user1)
         db.session.add(user2)
         db.session.commit()
@@ -148,8 +147,8 @@ class TestBase(unittest.TestCase):
         # register shop and employee
         empl = self.register_shop_employee()
 
-        for i in range(1,10):
-            schedule = Schedule(start_time= datetime(2018, 4, 10, 11, 0, 0), end_time=datetime(2018, 4, 10, 18, 0, 0))
+        for i in range(1, 10):
+            schedule = Schedule(start_time=datetime(2018, 4, 10, 11, 0, 0), end_time=datetime(2018, 4, 10, 18, 0, 0))
             empl.schedules.append(schedule)
 
         db.session.commit()
@@ -165,7 +164,7 @@ class TestBase(unittest.TestCase):
         empl.schedules.append(schedule)
         db.session.commit()
 
-        d = date(2018,4,10)
+        d = date(2018, 4, 10)
         print("d ", d)
         slots = [x.strftime("%H:%M") for x in
                  api.check_availability_by_employee_id(empl.id, d, 40)]
