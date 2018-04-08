@@ -25,23 +25,13 @@ The website requires a database and multiple python packages. It is significantl
  II. Run: pip install -r requirements.txt
  
  III. After installing postgres run command: createdb cutcheck
+      Your database url should now be 'postgresql://localhost/cutcheck’.
  
- IV. You have to create environment variables to connect to the postgres database.
-     If you followed step III your database url should be 'postgresql://localhost/cutcheck.
-     Set environment variable SIDOCHECK_DB to that url and SECRET variable to a string of your choice.
-
-	Guides for environment variables if needed: 
-	MAC OS: https://medium.com/@himanshuagarwal1395/setting-up-environment-variables-in-macos-sierra-f5978369b255
-	
-	WINDOWS: https://www.computerhope.com/issues/ch000549.htm
-	LINUX: https://askubuntu.com/questions/58814/how-do-i-add-environment-variables
-
-(you could also manually change the variables in config.py file [SQLALCHEMY_DATABASE_URI, CSRF_SESSION_KEY, SECRET_KEY] to your postgres url, and setup your own secret keys).
-
-
+ 
  V. [OPTIONAL] Now you can populate database by running: CLOUDINARY_URL=cloudinary://848925646618136:HelekvosM3FQEAPsY6gAlJhiedk@sidoproject  python populate_db.py
 (yes, it is one long command)
  VI. Now you can run the website locally using: CLOUDINARY_URL=cloudinary://848925646618136:HelekvosM3FQEAPsY6gAlJhiedk@sidoproject python run.py
+     NOTE: CLOUDINARY_URL goes in front of python [some_file.py], it is necessary because we are hosting our images there.
  VII. You can run the tests using: python test.py
 
 

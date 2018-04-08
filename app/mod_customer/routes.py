@@ -109,6 +109,10 @@ def book_next_available():
 
     service_id = session.pop('service_id', None)
     shop_id = session.pop('shop_id', None)
+    # my simple way of handling page refresh
+    session["service_id"] = service_id
+    session["shop_id"] = shop_id
+
     service = Service.query.filter_by(service_id=service_id).first()
 
     d = date.today()

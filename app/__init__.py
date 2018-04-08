@@ -9,7 +9,6 @@ from flask_sqlalchemy import SQLAlchemy
 
 #import login manager 
 from flask_login import LoginManager, current_user, login_required
-from flask_uploads import UploadSet, configure_uploads, IMAGES
 
 # import login manager
 from flask_login import LoginManager, current_user, login_user, logout_user
@@ -26,11 +25,8 @@ app = Flask(__name__)
 Bootstrap(app)
 # Configurations
 app.config.from_object('config')
-app.config['UPLOADED_IMAGES_DEST'] = 'app/static/img'
 
 
-images = UploadSet('images', IMAGES)
-configure_uploads(app, images)
 
 mail = Mail(app)
 
